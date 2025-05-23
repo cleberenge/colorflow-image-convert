@@ -16,13 +16,13 @@ const Header = () => {
       <div className="flex space-x-3">
         <Button
           variant="outline"
-          className="border-brand-cream text-brand-cream hover:bg-brand-cream hover:text-brand-teal transition-all duration-300"
+          className="border-brand-cream text-brand-cream hover:bg-transparent hover:text-brand-yellow hover:border-brand-yellow rounded-none transition-colors duration-300"
         >
           <LogIn className="w-4 h-4 mr-2" />
           Login
         </Button>
         <Button
-          className="bg-brand-yellow hover:bg-brand-yellow/90 text-brand-teal transition-all duration-300"
+          className="bg-brand-yellow hover:bg-transparent hover:border hover:border-brand-yellow hover:text-brand-yellow rounded-none transition-all duration-300"
         >
           <UserPlus className="w-4 h-4 mr-2" />
           Sign Up

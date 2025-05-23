@@ -139,8 +139,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
   }, [convertedFile, selectedFile, conversionInfo.to, toast]);
 
   return (
-    <div className="flex flex-col items-center space-y-6 animate-fade-in max-w-2xl mx-auto">
-      {/* Upload Area */}
+    <div className="flex flex-col items-center space-y-6 animate-fade-in mx-auto" style={{ maxWidth: '800px', margin: '0 auto', padding: '0 10px' }}>
+      {/* Upload Area - made narrower to leave space for ad banners */}
       <Card className="w-full p-6 border-2 border-dashed border-brand-blue/30 bg-brand-teal/30 hover:border-brand-blue/50 transition-all duration-300">
         <div className="text-center">
           <input
@@ -185,7 +185,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
             <Button
               onClick={handleConvert}
               disabled={isConverting}
-              className="bg-brand-yellow hover:bg-brand-yellow/90 text-brand-teal font-medium transition-all duration-300"
+              className="bg-transparent border border-brand-yellow hover:bg-brand-yellow/10 text-brand-yellow font-medium transition-all duration-300"
             >
               {isConverting ? 'Convertendo...' : `Converter para ${conversionInfo.to}`}
             </Button>
@@ -221,7 +221,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
             </div>
             <Button
               onClick={handleDownload}
-              className="bg-green-600 hover:bg-green-700 text-white transition-all duration-300"
+              className="bg-transparent border border-green-500 hover:bg-green-500/10 text-green-500 transition-all duration-300"
             >
               <Download className="w-4 h-4 mr-2" />
               Baixar {conversionInfo.to}
