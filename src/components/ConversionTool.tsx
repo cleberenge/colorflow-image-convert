@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -169,7 +170,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
         className="w-full p-6 border-2 border-dashed transition-all duration-300"
         style={{
           backgroundColor: conversionColor,
-          borderColor: conversionColor
+          borderColor: conversionColor,
+          borderRadius: '0px'
         }}
       >
         <div className="text-center">
@@ -202,7 +204,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
 
       {/* Selected File Info */}
       {selectedFile && (
-        <Card className="w-full p-5 bg-white border border-gray-200 shadow-sm">
+        <Card className="w-full p-5 bg-white border border-gray-200">
           <div className="flex items-center space-x-4">
             <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
               {getFileIcon()}
@@ -217,7 +219,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
               onClick={handleConvert}
               disabled={isConverting}
               variant="ghost"
-              className="text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-all duration-300 border-none shadow-none"
+              className="text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-all duration-300 border-none"
+              style={{ color: conversionColor }}
             >
               {isConverting ? t.converting : `${t.convertTo} ${conversionInfo.to}`}
             </Button>
@@ -227,7 +230,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
 
       {/* Progress */}
       {isConverting && (
-        <Card className="w-full p-5 bg-white border border-gray-200 shadow-sm">
+        <Card className="w-full p-5 bg-white border border-gray-200">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-800">{t.converting}</span>
@@ -240,7 +243,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
 
       {/* Download */}
       {convertedFile && (
-        <Card className="w-full p-5 bg-green-50 border border-green-200 shadow-sm">
+        <Card className="w-full p-5 bg-green-50 border border-green-200">
           <div className="flex items-center space-x-4">
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
               <CheckCircle className="w-6 h-6 text-green-600" />
@@ -254,7 +257,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
             <Button
               onClick={handleDownload}
               variant="ghost"
-              className="text-green-600 hover:text-green-700 hover:bg-green-50 transition-all duration-300 border-none shadow-none"
+              className="text-green-600 hover:text-green-700 hover:bg-green-50 transition-all duration-300 border-none"
             >
               <Download className="w-4 h-4 mr-2" />
               {t.download} {conversionInfo.to}
