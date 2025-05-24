@@ -1,16 +1,17 @@
-
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Upload, Download, CheckCircle, FileAudio, FileVideo, FileX, FileText, File } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useLanguage } from '@/hooks/useLanguage';
+import { getConversionColor, getConversionColorHover } from '@/utils/conversionColors';
 
 interface ConversionToolProps {
   conversionType: string;
   conversionInfo: {
     id: string;
-    label: string;
+    label: { pt: string; en: string; zh: string; };
     from: string;
     to: string;
     icon?: string;
@@ -23,6 +24,10 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
   const [convertedFile, setConvertedFile] = useState<string | null>(null);
   const [progress, setProgress] = useState(0);
   const { toast } = useToast();
+  const { language, t } = useLanguage();
+
+  const conversionColor = getConversionColor(conversionType);
+  const conversionColorHover = getConversionColorHover(conversionType);
 
   // Define accepted file types based on conversion type
   const getAcceptedTypes = () => {
@@ -65,31 +70,32 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
   // Get upload text based on conversion type
   const getUploadText = () => {
     if (conversionType === 'merge-pdf') {
-      return 'Clique para selecionar vários arquivos PDF';
+      return language === 'pt' ? 'Clique para selecionar vários arquivos PDF' :
+             language === 'en' ? 'Click to select multiple PDF files' :
+             '点击选择多个PDF文件';
     }
-    return `Clique para selecionar um arquivo ${conversionInfo.from}`;
+    return `${t.uploadText} ${conversionInfo.from}`;
   };
 
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
       if (conversionType === 'merge-pdf') {
-        // For merge, we'll just use the first file for demo purposes
         setSelectedFile(files[0]);
         toast({
-          title: "Arquivos selecionados",
-          description: `${files.length} arquivo(s) PDF selecionado(s) para juntar.`,
+          title: language === 'pt' ? "Arquivos selecionados" : language === 'en' ? "Files selected" : "文件已选择",
+          description: `${files.length} ${t.filesSelected}`,
         });
       } else {
         setSelectedFile(files[0]);
         toast({
-          title: "Arquivo selecionado",
-          description: `${files[0].name} está pronto para conversão.`,
+          title: language === 'pt' ? "Arquivo selecionado" : language === 'en' ? "File selected" : "文件已选择",
+          description: `${files[0].name} ${t.fileSelected}`,
         });
       }
       setConvertedFile(null);
     }
-  }, [toast, conversionType]);
+  }, [toast, conversionType, t, language]);
 
   const handleConvert = useCallback(async () => {
     if (!selectedFile) return;
@@ -98,7 +104,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     setProgress(0);
 
     try {
-      // Simulate progress
       const progressInterval = setInterval(() => {
         setProgress(prev => {
           if (prev >= 90) {
@@ -109,45 +114,39 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
         });
       }, 100);
 
-      // Simulate conversion based on type
       await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      // In a real app, we would do the actual conversion here
-      // For now, we'll just simulate success
       
       setProgress(100);
       setConvertedFile(URL.createObjectURL(selectedFile));
       
       toast({
-        title: "Conversão concluída!",
-        description: `Seu arquivo foi convertido para ${conversionInfo.to} com sucesso.`,
+        title: t.conversionComplete,
+        description: t.conversionCompleteToast,
       });
 
     } catch (error) {
       console.error('Erro na conversão:', error);
       toast({
-        title: "Erro na conversão",
-        description: "Ocorreu um erro ao converter o arquivo.",
+        title: language === 'pt' ? "Erro na conversão" : language === 'en' ? "Conversion error" : "转换错误",
+        description: language === 'pt' ? "Ocorreu um erro ao converter o arquivo." : language === 'en' ? "An error occurred while converting the file." : "转换文件时出错。",
         variant: "destructive",
       });
     } finally {
       setIsConverting(false);
     }
-  }, [selectedFile, toast, conversionInfo.to]);
+  }, [selectedFile, toast, t, language]);
 
   const handleDownload = useCallback(() => {
     if (convertedFile && selectedFile) {
       const link = document.createElement('a');
       link.href = convertedFile;
       
-      // Set appropriate file extension based on conversion type
       let filename = selectedFile.name;
       const extension = conversionInfo.to.toLowerCase().replace(' comprimido', '').replace('s separados', '').replace(' único', '');
       
-      // Replace old extension with new one
       const nameParts = filename.split('.');
       if (nameParts.length > 1) {
-        nameParts.pop(); // Remove old extension
+        nameParts.pop();
       }
       filename = `${nameParts.join('.')}.${extension}`;
       
@@ -157,16 +156,22 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
       document.body.removeChild(link);
       
       toast({
-        title: "Download iniciado",
-        description: `Seu arquivo ${conversionInfo.to} está sendo baixado.`,
+        title: language === 'pt' ? "Download iniciado" : language === 'en' ? "Download started" : "下载开始",
+        description: `${conversionInfo.to} ${t.downloadStarted}`,
       });
     }
-  }, [convertedFile, selectedFile, conversionInfo.to, toast]);
+  }, [convertedFile, selectedFile, conversionInfo.to, toast, t, language]);
 
   return (
     <div className="flex flex-col items-center space-y-6 animate-fade-in mx-auto" style={{ maxWidth: '800px', margin: '0 auto', padding: '0 10px' }}>
       {/* Upload Area */}
-      <Card className="w-full p-6 border-2 border-dashed border-gray-300 bg-gray-50 hover:border-brand-blue hover:bg-gray-100 transition-all duration-300">
+      <Card 
+        className="w-full p-6 border-2 border-dashed border-gray-300 hover:border-gray-400 transition-all duration-300"
+        style={{
+          backgroundColor: conversionColor + '10',
+          borderColor: isConverting ? conversionColor : undefined
+        }}
+      >
         <div className="text-center">
           <input
             type="file"
@@ -180,15 +185,18 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
             htmlFor="file-input"
             className="cursor-pointer flex flex-col items-center space-y-4"
           >
-            <div className="w-16 h-16 bg-brand-blue/10 rounded-full flex items-center justify-center">
-              <Upload className="w-8 h-8 text-brand-blue" />
+            <div 
+              className="w-16 h-16 rounded-full flex items-center justify-center"
+              style={{ backgroundColor: conversionColor + '20' }}
+            >
+              <Upload className="w-8 h-8" style={{ color: conversionColor }} />
             </div>
             <div>
-              <p className="text-lg font-medium text-gray-800 mb-2">
+              <p className="text-lg font-medium mb-2" style={{ color: conversionColor }}>
                 {getUploadText()}
               </p>
               <p className="text-sm text-gray-600">
-                Ou arraste e solte seu arquivo aqui
+                {t.dragText}
               </p>
             </div>
           </label>
@@ -211,10 +219,10 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
             <Button
               onClick={handleConvert}
               disabled={isConverting}
-              variant="outline"
-              className="text-gray-700 border-gray-300 hover:bg-gray-50 transition-all duration-300"
+              variant="ghost"
+              className="text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-all duration-300 border-none shadow-none"
             >
-              {isConverting ? 'Convertendo...' : `Converter para ${conversionInfo.to}`}
+              {isConverting ? t.converting : `${t.convertTo} ${conversionInfo.to}`}
             </Button>
           </div>
         </Card>
@@ -225,7 +233,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
         <Card className="w-full p-5 bg-white border border-gray-200 shadow-sm">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-800">Convertendo...</span>
+              <span className="text-sm font-medium text-gray-800">{t.converting}</span>
               <span className="text-sm text-gray-600">{progress}%</span>
             </div>
             <Progress value={progress} className="h-2" />
@@ -241,18 +249,18 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
               <CheckCircle className="w-6 h-6 text-green-600" />
             </div>
             <div className="flex-1">
-              <p className="font-medium text-gray-800">Conversão concluída!</p>
+              <p className="font-medium text-gray-800">{t.conversionComplete}</p>
               <p className="text-sm text-gray-600">
-                Seu arquivo {conversionInfo.to} está pronto para download
+                {conversionInfo.to} {t.readyForDownload}
               </p>
             </div>
             <Button
               onClick={handleDownload}
-              variant="outline"
-              className="text-green-600 border-green-300 hover:bg-green-50 transition-all duration-300"
+              variant="ghost"
+              className="text-green-600 hover:text-green-700 hover:bg-green-50 transition-all duration-300 border-none shadow-none"
             >
               <Download className="w-4 h-4 mr-2" />
-              Baixar {conversionInfo.to}
+              {t.download} {conversionInfo.to}
             </Button>
           </div>
         </Card>
