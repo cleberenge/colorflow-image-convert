@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import Header from '@/components/Header';
 import ConversionTool from '@/components/ConversionTool';
 import { useLanguage } from '@/hooks/useLanguage';
+import { getConversionColor } from '@/utils/conversionColors';
 
 // Conversion types
 const conversionTypes = [
@@ -34,7 +35,7 @@ const Index = () => {
         {/* Main content - centered with margin on sides for ads */}
         <main className="flex-grow max-w-4xl mx-auto px-4 py-12" style={{ margin: '0 auto' }}>
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-bold mb-6 text-gray-800 animate-fade-in">
+            <h1 className="text-4xl font-bold mb-6 text-gray-700 animate-fade-in">
               {t.title}
             </h1>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto animate-fade-in">
@@ -43,24 +44,31 @@ const Index = () => {
           </div>
           
           {/* Conversion type selector */}
-          <div className="flex flex-wrap justify-center gap-3 mb-10">
-            {conversionTypes.map((type) => (
-              <button
-                key={type.id}
-                onClick={() => setActiveConversion(type.id)}
-                className={`px-4 py-3 flex items-center gap-2 transition-all duration-300 rounded-lg ${
-                  activeConversion === type.id 
-                  ? 'bg-gray-100 shadow-lg' 
-                  : 'bg-gray-50 hover:bg-gray-100'
-                }`}
-                style={{
-                  color: activeConversion === type.id ? '#374151' : '#6B7280'
-                }}
-              >
-                <span className="text-lg">{type.icon}</span>
-                <span className="text-sm font-medium">{type.label[language]}</span>
-              </button>
-            ))}
+          <div className="flex flex-wrap justify-center gap-1 mb-10">
+            {conversionTypes.map((type) => {
+              const conversionColor = getConversionColor(type.id);
+              return (
+                <button
+                  key={type.id}
+                  onClick={() => setActiveConversion(type.id)}
+                  className={`px-3 py-2 flex items-center gap-2 transition-all duration-300 rounded-lg ${
+                    activeConversion === type.id 
+                    ? 'bg-gray-50 shadow-lg' 
+                    : 'bg-white hover:bg-gray-50'
+                  }`}
+                >
+                  <span className="text-lg">{type.icon}</span>
+                  <span 
+                    className="text-sm font-medium"
+                    style={{ 
+                      color: activeConversion === type.id ? conversionColor : '#6B7280'
+                    }}
+                  >
+                    {type.label[language]}
+                  </span>
+                </button>
+              );
+            })}
           </div>
           
           {/* Active conversion tool */}

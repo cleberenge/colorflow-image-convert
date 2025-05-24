@@ -166,10 +166,10 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     <div className="flex flex-col items-center space-y-6 animate-fade-in mx-auto" style={{ maxWidth: '800px', margin: '0 auto', padding: '0 10px' }}>
       {/* Upload Area */}
       <Card 
-        className="w-full p-6 border-2 border-dashed border-gray-300 hover:border-gray-400 transition-all duration-300"
+        className="w-full p-6 border-2 border-dashed transition-all duration-300"
         style={{
-          backgroundColor: conversionColor + '10',
-          borderColor: isConverting ? conversionColor : undefined
+          backgroundColor: conversionColor,
+          borderColor: conversionColor
         }}
       >
         <div className="text-center">
@@ -185,17 +185,14 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
             htmlFor="file-input"
             className="cursor-pointer flex flex-col items-center space-y-4"
           >
-            <div 
-              className="w-16 h-16 rounded-full flex items-center justify-center"
-              style={{ backgroundColor: conversionColor + '20' }}
-            >
-              <Upload className="w-8 h-8" style={{ color: conversionColor }} />
+            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+              <Upload className="w-8 h-8 text-white" />
             </div>
             <div>
-              <p className="text-lg font-medium mb-2" style={{ color: conversionColor }}>
+              <p className="text-lg font-medium mb-2 text-white">
                 {getUploadText()}
               </p>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-white/80">
                 {t.dragText}
               </p>
             </div>
