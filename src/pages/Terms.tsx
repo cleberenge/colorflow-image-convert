@@ -18,15 +18,15 @@ const Terms = () => {
         </div>
         
         <div className="prose prose-gray max-w-none text-center space-y-6">
-          <p className="text-lg text-gray-600 leading-relaxed">
+          <p className="text-lg text-gray-600 leading-relaxed text-justify">
             Ao utilizar nossos serviços de conversão de arquivos, você concorda com estes termos de uso. Nossa plataforma é oferecida gratuitamente para uso pessoal e comercial, com limitações razoáveis de tamanho e frequência para garantir qualidade do serviço para todos os usuários.
           </p>
           
-          <p className="text-lg text-gray-600 leading-relaxed">
+          <p className="text-lg text-gray-600 leading-relaxed text-justify">
             Você é responsável por garantir que possui os direitos necessários sobre os arquivos que converte e que seu uso está em conformidade com as leis aplicáveis. Proibimos o uso de nossos serviços para atividades ilegais, distribuição de malware ou violação de direitos autorais de terceiros.
           </p>
           
-          <p className="text-lg text-gray-600 leading-relaxed">
+          <p className="text-lg text-gray-600 leading-relaxed text-left">
             Embora nos esforcemos para manter nossos serviços sempre disponíveis e funcionais, não podemos garantir operação ininterrupta. Reservamos o direito de modificar estes termos e nossos serviços a qualquer momento, sempre notificando os usuários sobre mudanças significativas através de nossos canais oficiais.
           </p>
         </div>

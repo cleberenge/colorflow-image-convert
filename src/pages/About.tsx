@@ -18,15 +18,15 @@ const About = () => {
         </div>
         
         <div className="prose prose-gray max-w-none text-center space-y-6">
-          <p className="text-lg text-gray-600 leading-relaxed">
+          <p className="text-lg text-gray-600 leading-relaxed text-justify">
             Nossa plataforma foi criada para simplificar sua vida digital, oferecendo ferramentas de conversão de arquivos rápidas, seguras e totalmente gratuitas. Acreditamos que a tecnologia deve ser acessível a todos, sem complicações ou custos ocultos.
           </p>
           
-          <p className="text-lg text-gray-600 leading-relaxed">
+          <p className="text-lg text-gray-600 leading-relaxed text-justify">
             Com foco na privacidade e segurança, processamos seus arquivos localmente sempre que possível, garantindo que suas informações permaneçam protegidas. Nossa interface intuitiva permite que qualquer pessoa, independentemente do nível técnico, realize conversões profissionais em segundos.
           </p>
           
-          <p className="text-lg text-gray-600 leading-relaxed">
+          <p className="text-lg text-gray-600 leading-relaxed text-left">
             Estamos constantemente evoluindo para atender às suas necessidades, adicionando novos formatos e funcionalidades baseados no feedback da nossa comunidade. Junte-se a milhares de usuários que já descobriram a simplicidade e eficiência das nossas ferramentas.
           </p>
         </div>

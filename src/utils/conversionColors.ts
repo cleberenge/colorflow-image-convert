@@ -1,12 +1,12 @@
 
 export const getConversionColor = (conversionType: string) => {
   const colorMap: Record<string, string> = {
-    'png-jpg': '#8B5CF6', // roxo
+    'png-jpg': '#D81159', // rosa escuro (nova cor)
     'jpg-pdf': '#F97316', // laranja
     'pdf-word': '#559cad', // azul claro
     'word-pdf': '#DC2626', // crimson
     'video-mp3': '#10B981', // verde
-    'compress-video': '#D81159', // rosa escuro
+    'compress-video': '#8B5CF6', // roxo (cor antiga do PNG para JPG)
     'split-pdf': '#6366F1', // índigo
     'merge-pdf': '#F59E0B', // âmbar
     'reduce-pdf': '#820263' // roxo escuro
@@ -17,12 +17,12 @@ export const getConversionColor = (conversionType: string) => {
 
 export const getConversionColorHover = (conversionType: string) => {
   const colorMap: Record<string, string> = {
-    'png-jpg': '#7C3AED',
+    'png-jpg': '#c70e4f', // rosa escuro hover (nova cor)
     'jpg-pdf': '#EA580C',
     'pdf-word': '#4a8a9b', // azul claro hover
     'word-pdf': '#B91C1C',
     'video-mp3': '#059669',
-    'compress-video': '#c70e4f', // rosa escuro hover
+    'compress-video': '#7C3AED', // roxo hover (cor antiga do PNG para JPG)
     'split-pdf': '#4F46E5',
     'merge-pdf': '#D97706',
     'reduce-pdf': '#6e0254' // roxo escuro hover
