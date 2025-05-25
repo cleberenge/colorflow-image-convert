@@ -1,190 +1,18 @@
-
 import { useState, useEffect } from 'react';
 
+type LanguageCode = 'pt' | 'en' | 'zh' | 'es' | 'fr' | 'de' | 'hi' | 'ar' | 'ko' | 'ja';
+
 interface Translations {
-  pt: {
-    title: string;
-    subtitle: string;
-    uploadText: string;
-    dragText: string;
-    converting: string;
-    convertTo: string;
-    download: string;
-    conversionComplete: string;
-    readyForDownload: string;
-    fileSelected: string;
-    filesSelected: string;
-    conversionCompleteToast: string;
-    downloadStarted: string;
-    about: {
-      title: string;
-      subtitle: string;
-      mission: { title: string; content: string; };
-      technology: { title: string; content: string; };
-      commitment: { title: string; content: string; };
-    };
-    contact: {
-      title: string;
-      subtitle: string;
-      email: { title: string; content: string; };
-      support: { title: string; content: string; };
-      hours: { title: string; content: string; };
-    };
-    privacy: {
-      title: string;
-      subtitle: string;
-      dataCollection: { title: string; content: string; };
-      dataUsage: { title: string; content: string; };
-      dataProtection: { title: string; content: string; };
-      userRights: { title: string; content: string; };
-    };
-    terms: {
-      title: string;
-      subtitle: string;
-      acceptance: { title: string; content: string; };
-      serviceUse: { title: string; content: string; };
-      limitations: { title: string; content: string; };
-      modifications: { title: string; content: string; };
-    };
-    transparency: {
-      title: string;
-      subtitle: string;
-      openSource: { title: string; content: string; };
-      dataProcessing: { title: string; content: string; };
-      security: { title: string; content: string; };
-      updates: { title: string; content: string; };
-    };
-    cookies: {
-      title: string;
-      subtitle: string;
-      whatAre: { title: string; content: string; };
-      howWeUse: { title: string; content: string; };
-      control: { title: string; content: string; };
-      moreInfo: { title: string; content: string; };
-    };
-  };
-  en: {
-    title: string;
-    subtitle: string;
-    uploadText: string;
-    dragText: string;
-    converting: string;
-    convertTo: string;
-    download: string;
-    conversionComplete: string;
-    readyForDownload: string;
-    fileSelected: string;
-    filesSelected: string;
-    conversionCompleteToast: string;
-    downloadStarted: string;
-    about: {
-      title: string;
-      subtitle: string;
-      mission: { title: string; content: string; };
-      technology: { title: string; content: string; };
-      commitment: { title: string; content: string; };
-    };
-    contact: {
-      title: string;
-      subtitle: string;
-      email: { title: string; content: string; };
-      support: { title: string; content: string; };
-      hours: { title: string; content: string; };
-    };
-    privacy: {
-      title: string;
-      subtitle: string;
-      dataCollection: { title: string; content: string; };
-      dataUsage: { title: string; content: string; };
-      dataProtection: { title: string; content: string; };
-      userRights: { title: string; content: string; };
-    };
-    terms: {
-      title: string;
-      subtitle: string;
-      acceptance: { title: string; content: string; };
-      serviceUse: { title: string; content: string; };
-      limitations: { title: string; content: string; };
-      modifications: { title: string; content: string; };
-    };
-    transparency: {
-      title: string;
-      subtitle: string;
-      openSource: { title: string; content: string; };
-      dataProcessing: { title: string; content: string; };
-      security: { title: string; content: string; };
-      updates: { title: string; content: string; };
-    };
-    cookies: {
-      title: string;
-      subtitle: string;
-      whatAre: { title: string; content: string; };
-      howWeUse: { title: string; content: string; };
-      control: { title: string; content: string; };
-      moreInfo: { title: string; content: string; };
-    };
-  };
-  zh: {
-    title: string;
-    subtitle: string;
-    uploadText: string;
-    dragText: string;
-    converting: string;
-    convertTo: string;
-    download: string;
-    conversionComplete: string;
-    readyForDownload: string;
-    fileSelected: string;
-    filesSelected: string;
-    conversionCompleteToast: string;
-    downloadStarted: string;
-    about: {
-      title: string;
-      subtitle: string;
-      mission: { title: string; content: string; };
-      technology: { title: string; content: string; };
-      commitment: { title: string; content: string; };
-    };
-    contact: {
-      title: string;
-      subtitle: string;
-      email: { title: string; content: string; };
-      support: { title: string; content: string; };
-      hours: { title: string; content: string; };
-    };
-    privacy: {
-      title: string;
-      subtitle: string;
-      dataCollection: { title: string; content: string; };
-      dataUsage: { title: string; content: string; };
-      dataProtection: { title: string; content: string; };
-      userRights: { title: string; content: string; };
-    };
-    terms: {
-      title: string;
-      subtitle: string;
-      acceptance: { title: string; content: string; };
-      serviceUse: { title: string; content: string; };
-      limitations: { title: string; content: string; };
-      modifications: { title: string; content: string; };
-    };
-    transparency: {
-      title: string;
-      subtitle: string;
-      openSource: { title: string; content: string; };
-      dataProcessing: { title: string; content: string; };
-      security: { title: string; content: string; };
-      updates: { title: string; content: string; };
-    };
-    cookies: {
-      title: string;
-      subtitle: string;
-      whatAre: { title: string; content: string; };
-      howWeUse: { title: string; content: string; };
-      control: { title: string; content: string; };
-      moreInfo: { title: string; content: string; };
-    };
-  };
+  pt: { [key: string]: any };
+  en: { [key: string]: any };
+  zh: { [key: string]: any };
+  es: { [key: string]: any };
+  fr: { [key: string]: any };
+  de: { [key: string]: any };
+  hi: { [key: string]: any };
+  ar: { [key: string]: any };
+  ko: { [key: string]: any };
+  ja: { [key: string]: any };
 }
 
 const translations: Translations = {
@@ -568,11 +396,844 @@ const translations: Translations = {
         content: '有关我们Cookie使用和隐私选项的更多详细信息，请查看我们完整的隐私政策。'
       }
     }
+  },
+  es: {
+    title: 'Conversor de Archivos',
+    subtitle: 'Herramientas de conversión minimalistas y eficientes para sus archivos.',
+    uploadText: 'Haga clic para seleccionar un archivo',
+    dragText: 'O arrastre y suelte su archivo aquí',
+    converting: 'Convirtiendo...',
+    convertTo: 'Convertir a',
+    download: 'Descargar',
+    conversionComplete: '¡Conversión completada!',
+    readyForDownload: 'está listo para descargar',
+    fileSelected: 'está listo para conversión.',
+    filesSelected: 'archivo(s) PDF seleccionado(s) para unir.',
+    conversionCompleteToast: 'Su archivo ha sido convertido exitosamente.',
+    downloadStarted: 'se está descargando.',
+    about: {
+      title: 'Acerca de Nosotros',
+      subtitle: 'Conoce nuestra misión y valores',
+      mission: {
+        title: 'Nuestra Misión',
+        content: 'Democratizar el acceso a herramientas de conversión de archivos, ofreciendo soluciones gratuitas, seguras y eficientes. Creemos que todo usuario debe tener acceso a convertidores de calidad sin compromisos o costos.'
+      }
+    },
+    contact: {
+      title: 'Contacto',
+      subtitle: 'Póngase en contacto con nosotros',
+      email: {
+        title: 'Correo Electrónico',
+        content: 'Para consultas generales y soporte'
+      },
+      support: {
+        title: 'Soporte',
+        content: 'Ayuda técnica y resolución de problemas'
+      },
+      hours: {
+        title: 'Horas',
+        content: 'Lunes a Viernes, 9am a 6pm'
+      }
+    },
+    privacy: {
+      title: 'Política de Privacidad',
+      subtitle: 'Cómo protegemos sus datos',
+      dataCollection: {
+        title: 'Recolección de Datos',
+        content: 'No recolectamos, almacenamos ni transmitimos sus archivos. Todo el procesamiento ocurre localmente en su navegador, asegurando la máxima privacidad y seguridad para sus documentos.'
+      },
+      dataUsage: {
+        title: 'Uso de Datos',
+        content: 'Solo recolectamos análisis básicos y anónimos para mejorar nuestros servicios. Estos datos no incluyen información personal ni contenido de los archivos convertidos.'
+      },
+      dataProtection: {
+        title: 'Protección de Datos',
+        content: 'Implementamos medidas de seguridad estrictas y seguimos las mejores prácticas de protección. Sus archivos siempre permanecen bajo su control total.'
+      },
+      userRights: {
+        title: 'Sus Derechos',
+        content: 'Usted tiene derecho a acceder, corregir o eliminar cualquier información personal que podamos tener. Contáctenos para ejercer estos derechos.'
+      }
+    },
+    terms: {
+      title: 'Términos de Uso',
+      subtitle: 'Condiciones de uso del servicio',
+      acceptance: {
+        title: 'Aceptación de Términos',
+        content: 'Al utilizar nuestros servicios, usted acepta estos términos de uso. Estos términos establecen las reglas y condiciones para el uso adecuado de la plataforma.'
+      },
+      serviceUse: {
+        title: 'Uso del Servicio',
+        content: 'Nuestro servicio está destinado al uso personal y comercial legítimo. Está prohibido utilizar la plataforma para actividades ilegales, perjudiciales o que violen derechos de autor.'
+      },
+      limitations: {
+        title: 'Limitaciones',
+        content: 'El servicio se proporciona "tal cual" sin garantías. No somos responsables por la pérdida de datos o daños resultantes del uso de la plataforma.'
+      },
+      modifications: {
+        title: 'Modificaciones',
+        content: 'Nos reservamos el derecho de modificar estos términos en cualquier momento. Los cambios entrarán en vigor inmediatamente después de su publicación.'
+      }
+    },
+    transparency: {
+      title: 'Transparencia',
+      subtitle: 'Nuestro compromiso con la transparencia',
+      openSource: {
+        title: 'Código Abierto',
+        content: 'Creemos en la transparencia total. Nuestro código está disponible públicamente, permitiendo auditorías y contribuciones de la comunidad para mejorar continuamente nuestros servicios.'
+      },
+      dataProcessing: {
+        title: 'Procesamiento de Datos',
+        content: 'Todo el procesamiento de archivos ocurre localmente en su navegador. Ningún archivo se envía a nuestros servidores, asegurando total privacidad y control sobre sus documentos.'
+      },
+      security: {
+        title: 'Seguridad',
+        content: 'Implementamos las mejores prácticas de seguridad de la industria. Nuestra arquitectura fue diseñada con la privacidad y la seguridad como prioridades fundamentales.'
+      },
+      updates: {
+        title: 'Actualizaciones',
+        content: 'Publicamos regularmente informes sobre mejoras, correcciones de seguridad y nuevas funcionalidades. Mantenemos a nuestros usuarios informados sobre todos los cambios relevantes.'
+      }
+    },
+    cookies: {
+      title: 'Aviso de Cookies',
+      subtitle: 'Cómo utilizamos cookies',
+      whatAre: {
+        title: 'Qué son las Cookies',
+        content: 'Las cookies son pequeños archivos de texto almacenados en su dispositivo cuando visita nuestro sitio. Nos ayudan a proporcionar una mejor experiencia de usuario.'
+      },
+      howWeUse: {
+        title: 'Cómo las Usamos',
+        content: 'Utilizamos cookies solo para funcionalidades esenciales y análisis básicos. No utilizamos cookies para seguimiento de terceros o publicidad dirigida.'
+      },
+      control: {
+        title: 'Control de Cookies',
+        content: 'Puede controlar y eliminar cookies a través de la configuración de su navegador. Deshabilitar cookies puede afectar algunas funcionalidades del sitio.'
+      },
+      moreInfo: {
+        title: 'Más Información',
+        content: 'Para más detalles sobre nuestro uso de cookies y sus opciones de privacidad, consulte nuestra política de privacidad completa.'
+      }
+    }
+  },
+  fr: {
+    title: 'Convertisseur de Fichiers',
+    subtitle: 'Outils de conversion minimalistes et efficaces pour vos fichiers.',
+    uploadText: 'Cliquez pour sélectionner un fichier',
+    dragText: 'Ou glissez-déposez votre fichier ici',
+    converting: 'Conversion...',
+    convertTo: 'Convertir en',
+    download: 'Télécharger',
+    conversionComplete: 'Conversion terminée!',
+    readyForDownload: 'est prêt pour le téléchargement',
+    fileSelected: 'est prêt pour la conversion.',
+    filesSelected: 'fichier(s) PDF sélectionné(s) pour fusion.',
+    conversionCompleteToast: 'Votre fichier a été converti avec succès.',
+    downloadStarted: 'est en cours de téléchargement.',
+    about: {
+      title: 'À Propos de Nous',
+      subtitle: 'Découvrez notre mission et nos valeurs',
+      mission: {
+        title: 'Notre Mission',
+        content: 'Démocratiser l\'accès aux outils de conversion de fichiers en offrant des solutions gratuites, sécurisées et efficaces. Nous croyons que tout utilisateur devrait avoir accès à des convertisseurs de qualité sans compromis ni coûts.'
+      }
+    },
+    contact: {
+      title: 'Contact',
+      subtitle: 'Contactez-nous',
+      email: {
+        title: 'Email',
+        content: 'Pour des demandes générales et du support'
+      },
+      support: {
+        title: 'Support',
+        content: 'Aide technique et résolution de problèmes'
+      },
+      hours: {
+        title: 'Heures',
+        content: 'Lundi à Vendredi, 9h à 18h'
+      }
+    },
+    privacy: {
+      title: 'Politique de Confidentialité',
+      subtitle: 'Comment nous protégeons vos données',
+      dataCollection: {
+        title: 'Collecte de Données',
+        content: 'Nous ne collectons, stockons ni transmettons vos fichiers. Tout le traitement se fait localement dans votre navigateur, garantissant une confidentialité et une sécurité maximales pour vos documents.'
+      },
+      dataUsage: {
+        title: 'Utilisation des Données',
+        content: 'Nous ne collectons que des analyses anonymes de base pour améliorer nos services. Ces données n\'incluent pas d\'informations personnelles ni de contenu des fichiers convertis.'
+      },
+      dataProtection: {
+        title: 'Protection des Données',
+        content: 'Nous mettons en œuvre des mesures de sécurité strictes et suivons les meilleures pratiques de protection. Vos fichiers restent toujours sous votre contrôle total.'
+      },
+      userRights: {
+        title: 'Vos Droits',
+        content: 'Vous avez le droit d\'accéder, de corriger ou de supprimer toute information personnelle que nous pourrions avoir. Contactez-nous pour exercer ces droits.'
+      }
+    },
+    terms: {
+      title: 'Conditions d\'Utilisation',
+      subtitle: 'Conditions d\'utilisation du service',
+      acceptance: {
+        title: 'Acceptation des Conditions',
+        content: 'En utilisant nos services, vous acceptez ces conditions d\'utilisation. Ces conditions établissent les règles et conditions pour une utilisation appropriée de la plateforme.'
+      },
+      serviceUse: {
+        title: 'Utilisation du Service',
+        content: 'Notre service est destiné à un usage personnel et commercial légitime. Il est interdit d\'utiliser la plateforme pour des activités illégales, nuisibles ou violant des droits d\'auteur.'
+      },
+      limitations: {
+        title: 'Limitations',
+        content: 'Le service est fourni "tel quel" sans garanties. Nous ne sommes pas responsables de la perte de données ou des dommages résultant de l\'utilisation de la plateforme.'
+      },
+      modifications: {
+        title: 'Modifications',
+        content: 'Nous nous réservons le droit de modifier ces conditions à tout moment. Les modifications entreront en vigueur immédiatement après leur publication.'
+      }
+    },
+    transparency: {
+      title: 'Transparence',
+      subtitle: 'Notre engagement envers la transparence',
+      openSource: {
+        title: 'Code Ouvert',
+        content: 'Nous croyons en la transparence totale. Notre code est disponible publiquement, permettant des audits et des contributions de la communauté pour améliorer continuellement nos services.'
+      },
+      dataProcessing: {
+        title: 'Traitement des Données',
+        content: 'Tout le traitement des fichiers se fait localement dans votre navigateur. Aucun fichier n\'est envoyé à nos serveurs, garantissant une confidentialité et un contrôle complets sur vos documents.'
+      },
+      security: {
+        title: 'Sécurité',
+        content: 'Nous mettons en œuvre les meilleures pratiques de sécurité de l\'industrie. Notre architecture a été conçue avec la confidentialité et la sécurité comme priorités fondamentales.'
+      },
+      updates: {
+        title: 'Mises à Jour',
+        content: 'Nous publions régulièrement des rapports sur les améliorations, les corrections de sécurité et les nouvelles fonctionnalités. Nous tenons nos utilisateurs informés de tous les changements pertinents.'
+      }
+    },
+    cookies: {
+      title: 'Avis sur les Cookies',
+      subtitle: 'Comment nous utilisons les cookies',
+      whatAre: {
+        title: 'Qu\'est-ce que les Cookies',
+        content: 'Les cookies sont de petits fichiers texte stockés sur votre appareil lorsque vous visitez notre site. Ils nous aident à fournir une meilleure expérience utilisateur.'
+      },
+      howWeUse: {
+        title: 'Comment Nous les Utilisons',
+        content: 'Nous utilisons des cookies uniquement pour des fonctionnalités essentielles et des analyses de base. Nous n\'utilisons pas de cookies pour le suivi tiers ou la publicité ciblée.'
+      },
+      control: {
+        title: 'Contrôle des Cookies',
+        content: 'Vous pouvez contrôler et supprimer des cookies via les paramètres de votre navigateur. Désactiver les cookies peut affecter certaines fonctionnalités du site.'
+      },
+      moreInfo: {
+        title: 'Plus d\'Informations',
+        content: 'Pour plus de détails sur notre utilisation des cookies et vos options de confidentialité, consultez notre politique de confidentialité complète.'
+      }
+    }
+  },
+  de: {
+    title: 'Dateikonverter',
+    subtitle: 'Minimalistische und effiziente Konvertierungstools für Ihre Dateien.',
+    uploadText: 'Klicken Sie, um eine Datei auszuwählen',
+    dragText: 'Oder ziehen Sie Ihre Datei hierher',
+    converting: 'Konvertierung...',
+    convertTo: 'Konvertieren zu',
+    download: 'Herunterladen',
+    conversionComplete: 'Konvertierung abgeschlossen!',
+    readyForDownload: 'ist zum Download bereit',
+    fileSelected: 'ist zur Konvertierung bereit.',
+    filesSelected: 'PDF-Datei(en) zum Zusammenführen ausgewählt.',
+    conversionCompleteToast: 'Ihre Datei wurde erfolgreich konvertiert.',
+    downloadStarted: 'wird heruntergeladen.',
+    about: {
+      title: 'Über Uns',
+      subtitle: 'Erfahren Sie mehr über unsere Mission und Werte',
+      mission: {
+        title: 'Unsere Mission',
+        content: 'Den Zugang zu Dateikonvertierungstools zu demokratisieren, indem wir kostenlose, sichere und effiziente Lösungen anbieten. Wir glauben, dass jeder Benutzer Zugang zu hochwertigen Konvertern ohne Kompromisse oder Kosten haben sollte.'
+      }
+    },
+    contact: {
+      title: 'Kontakt',
+      subtitle: 'Kontaktieren Sie uns',
+      email: {
+        title: 'E-Mail',
+        content: 'Für allgemeine Anfragen und Unterstützung'
+      },
+      support: {
+        title: 'Unterstützung',
+        content: 'Technische Hilfe und Problemlösung'
+      },
+      hours: {
+        title: 'Öffnungszeiten',
+        content: 'Montag bis Freitag, 9 bis 18 Uhr'
+      }
+    },
+    privacy: {
+      title: 'Datenschutzrichtlinie',
+      subtitle: 'Wie wir Ihre Daten schützen',
+      dataCollection: {
+        title: 'Datenerfassung',
+        content: 'Wir sammeln, speichern oder übertragen Ihre Dateien nicht. Alle Verarbeitung erfolgt lokal in Ihrem Browser, um maximale Privatsphäre und Sicherheit für Ihre Dokumente zu gewährleisten.'
+      },
+      dataUsage: {
+        title: 'Nutzung von Daten',
+        content: 'Wir sammeln nur grundlegende anonyme Analysen, um unsere Dienste zu verbessern. Diese Daten enthalten keine persönlichen Informationen oder Inhalte von konvertierten Dateien.'
+      },
+      dataProtection: {
+        title: 'Datenschutz',
+        content: 'Wir implementieren strenge Sicherheitsmaßnahmen und folgen den besten Schutzpraktiken. Ihre Dateien bleiben immer unter Ihrer vollständigen Kontrolle.'
+      },
+      userRights: {
+        title: 'Ihre Rechte',
+        content: 'Sie haben das Recht, auf alle persönlichen Informationen zuzugreifen, diese zu korrigieren oder zu löschen, die wir möglicherweise haben. Kontaktieren Sie uns, um diese Rechte auszuüben.'
+      }
+    },
+    terms: {
+      title: 'Nutzungsbedingungen',
+      subtitle: 'Bedingungen für die Nutzung des Dienstes',
+      acceptance: {
+        title: 'Akzeptanz der Bedingungen',
+        content: 'Durch die Nutzung unserer Dienste stimmen Sie diesen Nutzungsbedingungen zu. Diese Bedingungen legen die Regeln und Bedingungen für die ordnungsgemäße Nutzung der Plattform fest.'
+      },
+      serviceUse: {
+        title: 'Nutzung des Dienstes',
+        content: 'Unser Dienst ist für die legale persönliche und kommerzielle Nutzung bestimmt. Die Nutzung der Plattform für illegale, schädliche Aktivitäten oder Urheberrechtsverletzungen ist untersagt.'
+      },
+      limitations: {
+        title: 'Einschränkungen',
+        content: 'Der Dienst wird "wie er ist" ohne Garantien bereitgestellt. Wir sind nicht verantwortlich für Datenverluste oder Schäden, die aus der Nutzung der Plattform resultieren.'
+      },
+      modifications: {
+        title: 'Änderungen',
+        content: 'Wir behalten uns das Recht vor, diese Bedingungen jederzeit zu ändern. Änderungen treten sofort nach der Veröffentlichung in Kraft.'
+      }
+    },
+    transparency: {
+      title: 'Transparenz',
+      subtitle: 'Unser Engagement für Transparenz',
+      openSource: {
+        title: 'Open Source',
+        content: 'Wir glauben an totale Transparenz. Unser Code ist öffentlich verfügbar, was der Gemeinschaft ermöglicht, Audits durchzuführen und zur kontinuierlichen Verbesserung unserer Dienste beizutragen.'
+      },
+      dataProcessing: {
+        title: 'Datenverarbeitung',
+        content: 'Alle Datei-Verarbeitungen erfolgen lokal in Ihrem Browser. Keine Dateien werden an unsere Server gesendet, was vollständige Privatsphäre und Kontrolle über Ihre Dokumente gewährleistet.'
+      },
+      security: {
+        title: 'Sicherheit',
+        content: 'Wir implementieren die besten Sicherheitspraktiken der Branche. Unsere Architektur wurde mit Datenschutz und Sicherheit als grundlegende Prioritäten entworfen.'
+      },
+      updates: {
+        title: 'Aktualisierungen',
+        content: 'Wir veröffentlichen regelmäßig Berichte über Verbesserungen, Sicherheitskorrekturen und neue Funktionen. Wir halten unsere Benutzer über alle relevanten Änderungen informiert.'
+      }
+    },
+    cookies: {
+      title: 'Cookie-Hinweis',
+      subtitle: 'Wie wir Cookies verwenden',
+      whatAre: {
+        title: 'Was sind Cookies',
+        content: 'Cookies sind kleine Textdateien, die auf Ihrem Gerät gespeichert werden, wenn Sie unsere Website besuchen. Sie helfen uns, eine bessere Benutzererfahrung zu bieten.'
+      },
+      howWeUse: {
+        title: 'Wie wir sie verwenden',
+        content: 'Wir verwenden Cookies nur für wesentliche Funktionen und grundlegende Analysen. Wir verwenden keine Cookies für Drittanbieter-Tracking oder gezielte Werbung.'
+      },
+      control: {
+        title: 'Cookie-Kontrolle',
+        content: 'Sie können Cookies über die Einstellungen Ihres Browsers steuern und löschen. Das Deaktivieren von Cookies kann einige Funktionen der Website beeinträchtigen.'
+      },
+      moreInfo: {
+        title: 'Weitere Informationen',
+        content: 'Für weitere Details zu unserer Verwendung von Cookies und Ihren Datenschutzoptionen lesen Sie bitte unsere vollständige Datenschutzrichtlinie.'
+      }
+    }
+  },
+  hi: {
+    title: 'फाइल कन्वर्टर',
+    subtitle: 'आपकी फाइलों के लिए न्यूनतम और कुशल रूपांतरण उपकरण।',
+    uploadText: 'फाइल चुनने के लिए क्लिक करें',
+    dragText: 'या अपनी फाइल को यहाँ खींचें और छोड़ें',
+    converting: 'रूपांतरण...',
+    convertTo: 'में बदलें',
+    download: 'डाउनलोड',
+    conversionComplete: 'रूपांतरण पूरा!',
+    readyForDownload: 'डाउनलोड के लिए तैयार है',
+    fileSelected: 'रूपांतरण के लिए तैयार है।',
+    filesSelected: 'मिलाने के लिए PDF फाइल(ें) चुनी गईं।',
+    conversionCompleteToast: 'आपकी फाइल सफलतापूर्वक रूपांतरित हो गई है।',
+    downloadStarted: 'डाउनलोड हो रही है।',
+    about: {
+      title: 'हमारे बारे में',
+      subtitle: 'हमारे मिशन और मूल्यों के बारे में जानें',
+      mission: {
+        title: 'हमारा मिशन',
+        content: 'मुफ्त, सुरक्षित और कुशल समाधान प्रदान करके फाइल रूपांतरण उपकरणों तक पहुंच को लोकतांत्रिक बनाना। हमारा मानना है कि हर उपयोगकर्ता को बिना किसी समझौते या लागत के गुणवत्तापूर्ण कन्वर्टर्स तक पहुंच होनी चाहिए।'
+      }
+    },
+    contact: {
+      title: 'संपर्क',
+      subtitle: 'हमसे संपर्क करें',
+      email: {
+        title: 'ईमेल',
+        content: 'सामान्य पूछताछ और समर्थन के लिए'
+      },
+      support: {
+        title: 'समर्थन',
+        content: 'तकनीकी सहायता और समस्या समाधान'
+      },
+      hours: {
+        title: 'घंटे',
+        content: 'सोमवार से शुक्रवार, सुबह 9 बजे से शाम 6 बजे तक'
+      }
+    },
+    privacy: {
+      title: 'गोपनीयता नीति',
+      subtitle: 'हम आपके डेटा की सुरक्षा कैसे करते हैं',
+      dataCollection: {
+        title: 'डेटा संग्रह',
+        content: 'हम आपकी फाइलों को एकत्र, स्टोर या ट्रांसमिट नहीं करते हैं। सभी प्रोसेसिंग आपके ब्राउज़र में स्थानीय रूप से होती है, अधिकतम गोपनीयता और सुरक्षा सुनिश्चित करती है।'
+      },
+      dataUsage: {
+        title: 'डेटा का उपयोग',
+        content: 'हम केवल अपने सेवाओं में सुधार के लिए बुनियादी एनालिटिक्स एकत्र करते हैं। ये डेटा व्यक्तिगत जानकारी या परिवर्तित फाइलों की सामग्री शामिल नहीं करते हैं।'
+      },
+      dataProtection: {
+        title: 'डेटा सुरक्षा',
+        content: 'हम सख्त सुरक्षा उपाय लागू करते हैं और सर्वोत्तम सुरक्षा प्रथाओं का पालन करते हैं। आपकी फाइलें हमेशा आपके पूर्ण नियंत्रण में रहती हैं।'
+      },
+      userRights: {
+        title: 'आपके अधिकार',
+        content: 'आपके पास किसी भी व्यक्तिगत जानकारी तक पहुंच, सुधार या हटाने का अधिकार है जो हमारे पास हो सकती है। इन अधिकारों का प्रयोग करने के लिए हमसे संपर्क करें।'
+      }
+    },
+    terms: {
+      title: 'उपयोग की शर्तें',
+      subtitle: 'सेवा के उपयोग की शर्तें',
+      acceptance: {
+        title: 'शर्तों की स्वीकृति',
+        content: 'हमारी सेवाओं का उपयोग करके, आप इन उपयोग की शर्तों से सहमत होते हैं। ये शर्तें प्लेटफ़ॉर्म के उचित उपयोग के लिए नियम और शर्तें स्थापित करती हैं।'
+      },
+      serviceUse: {
+        title: 'सेवा का उपयोग',
+        content: 'हमारी सेवा वैध व्यक्तिगत और व्यावसायिक उपयोग के लिए है। अवैध, हानिकारक गतिविधियों या कॉपीराइट उल्लंघनों के लिए प्लेटफ़ॉर्म का उपयोग करना मना है।'
+      },
+      limitations: {
+        title: 'सीमाएँ',
+        content: 'सेवा "जैसा है" प्रदान की जाती है बिना किसी वारंटी के। हम प्लेटफ़ॉर्म के उपयोग से होने वाले डेटा हानि या क्षति के लिए जिम्मेदार नहीं हैं।'
+      },
+      modifications: {
+        title: 'संशोधन',
+        content: 'हम इन शर्तों को किसी भी समय संशोधित करने का अधिकार सुरक्षित रखते हैं। परिवर्तन तुरंत प्रकाशन के बाद प्रभावी होंगे।'
+      }
+    },
+    transparency: {
+      title: 'पारदर्शिता',
+      subtitle: 'पारदर्शिता के प्रति हमारी प्रतिबद्धता',
+      openSource: {
+        title: 'ओपन सोर्स',
+        content: 'हम पूर्ण पारदर्शिता में विश्वास करते हैं। हमारा कोड सार्वजनिक रूप से उपलब्ध है, जो समुदाय को ऑडिट और सुधार के लिए योगदान करने की अनुमति देता है।'
+      },
+      dataProcessing: {
+        title: 'डेटा प्रोसेसिंग',
+        content: 'सभी फाइल प्रोसेसिंग आपके ब्राउज़र में स्थानीय रूप से होती है। कोई फाइल हमारे सर्वर पर नहीं भेजी जाती, जिससे आपके दस्तावेज़ों पर पूर्ण गोपनीयता और नियंत्रण सुनिश्चित होता है।'
+      },
+      security: {
+        title: 'सुरक्षा',
+        content: 'हम उद्योग की सर्वोत्तम सुरक्षा प्रथाओं को लागू करते हैं। हमारी आर्किटेक्चर को गोपनीयता और सुरक्षा को प्राथमिकता के रूप में डिज़ाइन किया गया है।'
+      },
+      updates: {
+        title: 'अपडेट',
+        content: 'हम नियमित रूप से सुधार, सुरक्षा सुधार और नई सुविधाओं पर रिपोर्ट प्रकाशित करते हैं। हम अपने उपयोगकर्ताओं को सभी प्रासंगिक परिवर्तनों के बारे में सूचित रखते हैं।'
+      }
+    },
+    cookies: {
+      title: 'कुकीज़ की सूचना',
+      subtitle: 'हम कुकीज़ का उपयोग कैसे करते हैं',
+      whatAre: {
+        title: 'कुकीज़ क्या हैं',
+        content: 'कुकीज़ आपके डिवाइस पर छोटे टेक्स्ट फ़ाइलें हैं जो आप हमारी साइट पर जाते समय संग्रहीत होती हैं। वे हमें बेहतर उपयोगकर्ता अनुभव प्रदान करने में मदद करते हैं।'
+      },
+      howWeUse: {
+        title: 'हम उनका उपयोग कैसे करते हैं',
+        content: 'हम केवल आवश्यक कार्यक्षमता और बुनियादी विश्लेषण के लिए कुकीज़ का उपयोग करते हैं। हम तृतीय पक्ष ट्रैकिंग या लक्षित विज्ञापन के लिए कुकीज़ का उपयोग नहीं करते हैं।'
+      },
+      control: {
+        title: 'कुकीज़ नियंत्रण',
+        content: 'आप अपने ब्राउज़र की सेटिंग्स के माध्यम से कुकीज़ को नियंत्रित और हटा सकते हैं। कुकीज़ को अक्षम करने से साइट की कुछ कार्यक्षमताओं पर प्रभाव पड़ सकता है।'
+      },
+      moreInfo: {
+        title: 'अधिक जानकारी',
+        content: 'हमारी कुकीज़ के उपयोग और आपकी गोपनीयता विकल्पों के बारे में अधिक जानकारी के लिए, कृपया हमारी पूर्ण गोपनीयता नीति देखें।'
+      }
+    }
+  },
+  ar: {
+    title: 'محول الملفات',
+    subtitle: 'أدوات تحويل بسيطة وفعالة لملفاتك.',
+    uploadText: 'انقر لتحديد ملف',
+    dragText: 'أو اسحب وأفلت ملفك هنا',
+    converting: 'جاري التحويل...',
+    convertTo: 'تحويل إلى',
+    download: 'تحميل',
+    conversionComplete: 'اكتمل التحويل!',
+    readyForDownload: 'جاهز للتحميل',
+    fileSelected: 'جاهز للتحويل.',
+    filesSelected: 'ملف(ات) PDF محددة للدمج.',
+    conversionCompleteToast: 'تم تحويل ملفك بنجاح.',
+    downloadStarted: 'جاري التحميل.',
+    about: {
+      title: 'معلومات عنا',
+      subtitle: 'تعرف على مهمتنا وقيمنا',
+      mission: {
+        title: 'مهمتنا',
+        content: 'إضفاء الطابع الديمقراطي على الوصول إلى أدوات تحويل الملفات من خلال تقديم حلول مجانية وآمنة وفعالة. نؤمن أن كل مستخدم يجب أن يكون له الوصول إلى محولات عالية الجودة دون تنازلات أو تكاليف.'
+      }
+    },
+    contact: {
+      title: 'اتصال',
+      subtitle: 'تواصل معنا',
+      email: {
+        title: 'البريد الإلكتروني',
+        content: 'للاستفسارات العامة والدعم'
+      },
+      support: {
+        title: 'الدعم',
+        content: 'المساعدة التقنية وحل المشكلات'
+      },
+      hours: {
+        title: 'ساعات العمل',
+        content: 'من الاثنين إلى الجمعة، من 9 صباحًا إلى 6 مساءً'
+      }
+    },
+    privacy: {
+      title: 'سياسة الخصوصية',
+      subtitle: 'كيف نحمي بياناتك',
+      dataCollection: {
+        title: 'جمع البيانات',
+        content: 'نحن لا نجمع أو نخزن أو ننقل ملفاتك. تتم جميع المعالجة محليًا في متصفحك، مما يضمن أقصى درجات الخصوصية والأمان لوثائقك.'
+      },
+      dataUsage: {
+        title: 'استخدام البيانات',
+        content: 'نجمع فقط تحليلات أساسية مجهولة لتحسين خدماتنا. لا تتضمن هذه البيانات معلومات شخصية أو محتوى من الملفات المحولة.'
+      },
+      dataProtection: {
+        title: 'حماية البيانات',
+        content: 'نحن نطبق تدابير أمان صارمة ونتبع أفضل ممارسات الحماية. تظل ملفاتك دائمًا تحت سيطرتك الكاملة.'
+      },
+      userRights: {
+        title: 'حقوقك',
+        content: 'لديك الحق في الوصول إلى أي معلومات شخصية قد نكون لدينا، وتصحيحها أو حذفها. اتصل بنا لممارسة هذه الحقوق.'
+      }
+    },
+    terms: {
+      title: 'شروط الاستخدام',
+      subtitle: 'شروط استخدام الخدمة',
+      acceptance: {
+        title: 'قبول الشروط',
+        content: 'باستخدام خدماتنا، فإنك توافق على شروط الاستخدام هذه. تحدد هذه الشروط القواعد والشروط للاستخدام الصحيح للمنصة.'
+      },
+      serviceUse: {
+        title: 'استخدام الخدمة',
+        content: 'تُستخدم خدمتنا للاستخدام الشخصي والتجاري الشرعي. يُحظر استخدام المنصة في الأنشطة غير القانونية أو الضارة أو التي تنتهك حقوق الطبع والنشر.'
+      },
+      limitations: {
+        title: 'القيود',
+        content: 'تُقدم الخدمة "كما هي" دون ضمانات. نحن غير مسؤولين عن فقدان البيانات أو الأضرار الناتجة عن استخدام المنصة.'
+      },
+      modifications: {
+        title: 'التعديلات',
+        content: 'نحتفظ بالحق في تعديل هذه الشروط في أي وقت. ستدخل التغييرات حيز التنفيذ على الفور بعد النشر.'
+      }
+    },
+    transparency: {
+      title: 'الشفافية',
+      subtitle: 'التزامنا بالشفافية',
+      openSource: {
+        title: 'المصدر المفتوح',
+        content: 'نؤمن بالشفافية الكاملة. كودنا متاح للجمهور، مما يسمح بإجراء تدقيقات ومساهمات من المجتمع لتحسين خدماتنا باستمرار.'
+      },
+      dataProcessing: {
+        title: 'معالجة البيانات',
+        content: 'تتم جميع معالجة الملفات محليًا في متصفحك. لا يتم إرسال أي ملفات إلى خوادمنا، مما يضمن الخصوصية الكاملة والتحكم في مستنداتك.'
+      },
+      security: {
+        title: 'الأمان',
+        content: 'نحن نطبق أفضل ممارسات الأمان في الصناعة. تم تصميم هيكلنا مع الخصوصية والأمان كأولويات أساسية.'
+      },
+      updates: {
+        title: 'التحديثات',
+        content: 'نقوم بانتظام بنشر تقارير حول التحسينات وإصلاحات الأمان والميزات الجديدة. نبقي مستخدمينا على اطلاع بجميع التغييرات ذات الصلة.'
+      }
+    },
+    cookies: {
+      title: 'إشعار الكوكيز',
+      subtitle: 'كيف نستخدم الكوكيز',
+      whatAre: {
+        title: 'ما هي الكوكيز',
+        content: 'الكوكيز هي ملفات نصية صغيرة يتم تخزينها على جهازك عند زيارة موقعنا. تساعدنا في تقديم تجربة مستخدم أفضل.'
+      },
+      howWeUse: {
+        title: 'كيف نستخدمها',
+        content: 'نستخدم الكوكيز فقط للوظائف الأساسية والتحليلات الأساسية. لا نستخدم الكوكيز للتتبع من طرف ثالث أو الإعلانات المستهدفة.'
+      },
+      control: {
+        title: 'تحكم في الكوكيز',
+        content: 'يمكنك التحكم في الكوكيز وحذفها من خلال إعدادات متصفحك. قد يؤثر تعطيل الكوكيز على بعض وظائف الموقع.'
+      },
+      moreInfo: {
+        title: 'مزيد من المعلومات',
+        content: 'للحصول على مزيد من التفاصيل حول استخدامنا للكوكيز وخيارات الخصوصية الخاصة بك، يرجى مراجعة سياسة الخصوصية الكاملة لدينا.'
+      }
+    }
+  },
+  ko: {
+    title: '파일 변환기',
+    subtitle: '파일을 위한 미니멀하고 효율적인 변환 도구.',
+    uploadText: '파일을 선택하려면 클릭하세요',
+    dragText: '또는 파일을 여기에 끌어다 놓으세요',
+    converting: '변환 중...',
+    convertTo: '변환하기',
+    download: '다운로드',
+    conversionComplete: '변환 완료!',
+    readyForDownload: '다운로드 준비됨',
+    fileSelected: '변환 준비됨.',
+    filesSelected: '병합할 PDF 파일이 선택되었습니다.',
+    conversionCompleteToast: '파일이 성공적으로 변환되었습니다.',
+    downloadStarted: '다운로드 중입니다.',
+    about: {
+      title: '회사 소개',
+      subtitle: '우리의 사명과 가치에 대해 알아보세요',
+      mission: {
+        title: '우리의 사명',
+        content: '무료, 안전하고 효율적인 솔루션을 제공하여 파일 변환 도구에 대한 접근을 민주화하는 것입니다. 모든 사용자가 타협이나 비용 없이 고품질 변환기에 접근할 수 있어야 한다고 믿습니다.'
+      }
+    },
+    contact: {
+      title: '연락처',
+      subtitle: '문의하기',
+      email: {
+        title: '이메일',
+        content: '일반 문의 및 지원'
+      },
+      support: {
+        title: '지원',
+        content: '기술 지원 및 문제 해결'
+      },
+      hours: {
+        title: '근무 시간',
+        content: '월요일부터 금요일까지, 오전 9시부터 오후 6시까지'
+      }
+    },
+    privacy: {
+      title: '개인정보 보호정책',
+      subtitle: '우리가 당신의 데이터를 보호하는 방법',
+      dataCollection: {
+        title: '데이터 수집',
+        content: '우리는 당신의 파일을 수집, 저장 또는 전송하지 않습니다. 모든 처리는 당신의 브라우저에서 로컬로 이루어져 최대한의 개인 정보 보호와 보안을 보장합니다.'
+      },
+      dataUsage: {
+        title: '데이터 사용',
+        content: '우리는 서비스 개선을 위해 기본적인 익명 분석만 수집합니다. 이 데이터는 개인 정보나 변환된 파일의 내용을 포함하지 않습니다.'
+      },
+      dataProtection: {
+        title: '데이터 보호',
+        content: '우리는 엄격한 보안 조치를 시행하고 최선의 보호 관행을 따릅니다. 당신의 파일은 항상 당신의 완전한 통제 하에 있습니다.'
+      },
+      userRights: {
+        title: '당신의 권리',
+        content: '우리가 가질 수 있는 개인 정보에 접근하고, 수정하거나 삭제할 권리가 있습니다. 이러한 권리를 행사하기 위해 저희에게 연락하십시오.'
+      }
+    },
+    terms: {
+      title: '이용 약관',
+      subtitle: '서비스 이용 조건',
+      acceptance: {
+        title: '약관 수락',
+        content: '우리의 서비스를 사용함으로써, 당신은 이 이용 약관에 동의합니다. 이 약관은 플랫폼의 적절한 사용을 위한 규칙과 조건을 설정합니다.'
+      },
+      serviceUse: {
+        title: '서비스 사용',
+        content: '우리의 서비스는 합법적인 개인 및 상업적 사용을 위해 설계되었습니다. 불법적이거나 해로운 활동 또는 저작권 침해를 위해 플랫폼을 사용하는 것은 금지됩니다.'
+      },
+      limitations: {
+        title: '제한 사항',
+        content: '서비스는 "있는 그대로" 제공되며 보증이 없습니다. 우리는 플랫폼 사용으로 인한 데이터 손실이나 손해에 대해 책임지지 않습니다.'
+      },
+      modifications: {
+        title: '수정',
+        content: '우리는 언제든지 이 약관을 수정할 권리를 보유합니다. 변경 사항은 게시 후 즉시 발효됩니다.'
+      }
+    },
+    transparency: {
+      title: '투명성',
+      subtitle: '투명성에 대한 우리의 약속',
+      openSource: {
+        title: '오픈 소스',
+        content: '우리는 완전한 투명성을 믿습니다. 우리의 코드는 공개적으로 이용 가능하여 커뮤니티가 감사하고 지속적으로 서비스를 개선할 수 있도록 기여할 수 있습니다.'
+      },
+      dataProcessing: {
+        title: '데이터 처리',
+        content: '모든 파일 처리는 당신의 브라우저에서 로컬로 이루어집니다. 어떤 파일도 우리의 서버로 전송되지 않으며, 당신의 문서에 대한 완전한 개인 정보 보호와 통제를 보장합니다.'
+      },
+      security: {
+        title: '보안',
+        content: '우리는 업계 최고의 보안 관행을 시행합니다. 우리의 아키텍처는 개인 정보 보호와 보안을 기본 우선 사항으로 설계되었습니다.'
+      },
+      updates: {
+        title: '업데이트',
+        content: '우리는 정기적으로 개선 사항, 보안 수정 및 새로운 기능에 대한 보고서를 게시합니다. 우리는 모든 관련 변경 사항에 대해 사용자에게 정보를 제공합니다.'
+      }
+    },
+    cookies: {
+      title: '쿠키 알림',
+      subtitle: '우리가 쿠키를 사용하는 방법',
+      whatAre: {
+        title: '쿠키란 무엇인가',
+        content: '쿠키는 사용자가 우리 사이트를 방문할 때 장치에 저장되는 작은 텍스트 파일입니다. 이는 더 나은 사용자 경험을 제공하는 데 도움을 줍니다.'
+      },
+      howWeUse: {
+        title: '우리가 사용하는 방법',
+        content: '우리는 필수 기능과 기본 분석을 위해서만 쿠키를 사용합니다. 우리는 제3자 추적이나 타겟 광고를 위해 쿠키를 사용하지 않습니다.'
+      },
+      control: {
+        title: '쿠키 제어',
+        content: '브라우저 설정을 통해 쿠키를 제어하고 삭제할 수 있습니다. 쿠키를 비활성화하면 사이트의 일부 기능에 영향을 줄 수 있습니다.'
+      },
+      moreInfo: {
+        title: '자세한 정보',
+        content: '쿠키 사용 및 개인 정보 옵션에 대한 자세한 내용은 전체 개인 정보 보호 정책을 참조하십시오.'
+      }
+    }
+  },
+  ja: {
+    title: 'ファイルコンバーター',
+    subtitle: 'あなたのファイルのためのミニマルで効率的な変換ツール。',
+    uploadText: 'ファイルを選択するにはクリック',
+    dragText: 'またはファイルをここにドラッグ＆ドロップ',
+    converting: '変換中...',
+    convertTo: '変換する',
+    download: 'ダウンロード',
+    conversionComplete: '変換完了！',
+    readyForDownload: 'ダウンロード準備完了',
+    fileSelected: '変換準備完了。',
+    filesSelected: '結合するPDFファイルが選択されました。',
+    conversionCompleteToast: 'ファイルが正常に変換されました。',
+    downloadStarted: 'ダウンロード中です。',
+    about: {
+      title: '私たちについて',
+      subtitle: '私たちの使命と価値について学ぶ',
+      mission: {
+        title: '私たちの使命',
+        content: '無料で安全かつ効率的なソリューションを提供することにより、ファイル変換ツールへのアクセスを民主化することです。すべてのユーザーが妥協やコストなしに高品質のコンバーターにアクセスできるべきだと信じています。'
+      }
+    },
+    contact: {
+      title: '連絡先',
+      subtitle: 'お問い合わせ',
+      email: {
+        title: 'メール',
+        content: '一般的なお問い合わせとサポート'
+      },
+      support: {
+        title: 'サポート',
+        content: '技術的な支援と問題解決'
+      },
+      hours: {
+        title: '営業時間',
+        content: '月曜日から金曜日まで、午前9時から午後6時まで'
+      }
+    },
+    privacy: {
+      title: 'プライバシーポリシー',
+      subtitle: '私たちがあなたのデータを保護する方法',
+      dataCollection: {
+        title: 'データ収集',
+        content: '私たちはあなたのファイルを収集、保存、または転送しません。すべての処理はあなたのブラウザ内でローカルに行われ、最大限のプライバシーとセキュリティを保証します。'
+      },
+      dataUsage: {
+        title: 'データの使用',
+        content: '私たちはサービスを改善するために基本的な匿名分析のみを収集します。これらのデータには個人情報や変換されたファイルの内容は含まれません。'
+      },
+      dataProtection: {
+        title: 'データ保護',
+        content: '私たちは厳格なセキュリティ対策を実施し、最良の保護慣行に従います。あなたのファイルは常にあなたの完全な制御下にあります。'
+      },
+      userRights: {
+        title: 'あなたの権利',
+        content: '私たちが持っている可能性のある個人情報にアクセスし、修正または削除する権利があります。これらの権利を行使するために私たちに連絡してください。'
+      }
+    },
+    terms: {
+      title: '利用規約',
+      subtitle: 'サービス利用条件',
+      acceptance: {
+        title: '条件の受諾',
+        content: '私たちのサービスを利用することにより、あなたはこれらの利用規約に同意します。これらの条件はプラットフォームの適切な使用のためのルールと条件を定めています。'
+      },
+      serviceUse: {
+        title: 'サービスの使用',
+        content: '私たちのサービスは合法的な個人および商業的使用を目的としています。違法、有害な活動や著作権侵害のためにプラットフォームを使用することは禁止されています。'
+      },
+      limitations: {
+        title: '制限',
+        content: 'サービスは「現状のまま」提供され、保証はありません。私たちはプラットフォームの使用によるデータ損失や損害について責任を負いません。'
+      },
+      modifications: {
+        title: '変更',
+        content: '私たちはいつでもこれらの条件を変更する権利を保留します。変更は公開後すぐに発効します。'
+      }
+    },
+    transparency: {
+      title: '透明性',
+      subtitle: '透明性への私たちのコミットメント',
+      openSource: {
+        title: 'オープンソース',
+        content: '私たちは完全な透明性を信じています。私たちのコードは公開されており、コミュニティが監査し、サービスを継続的に改善するために貢献できるようにしています。'
+      },
+      dataProcessing: {
+        title: 'データ処理',
+        content: 'すべてのファイル処理はあなたのブラウザ内でローカルに行われます。ファイルは私たちのサーバーに送信されず、あなたの文書に対する完全なプライバシーと制御が保証されます。'
+      },
+      security: {
+        title: 'セキュリティ',
+        content: '私たちは業界のベストプラクティスを実施しています。私たちのアーキテクチャはプライバシーとセキュリティを基本的な優先事項として設計されています。'
+      },
+      updates: {
+        title: '更新',
+        content: '私たちは定期的に改善、セキュリティ修正、新機能に関する報告を公開します。私たちはすべての関連する変更についてユーザーに情報を提供します。'
+      }
+    },
+    cookies: {
+      title: 'クッキー通知',
+      subtitle: '私たちがクッキーを使用する方法',
+      whatAre: {
+        title: 'クッキーとは',
+        content: 'クッキーは、あなたが私たちのサイトを訪れるときにあなたのデバイスに保存される小さなテキストファイルです。これにより、より良いユーザー体験を提供するのに役立ちます。'
+      },
+      howWeUse: {
+        title: '私たちの使用方法',
+        content: '私たちは基本的な機能と基本的な分析のためにのみクッキーを使用します。私たちは第三者の追跡やターゲット広告のためにクッキーを使用しません。'
+      },
+      control: {
+        title: 'クッキーの制御',
+        content: 'ブラウザの設定を通じてクッキーを制御し、削除できます。クッキーを無効にすると、サイトの一部の機能に影響を与える可能性があります。'
+      },
+      moreInfo: {
+        title: '詳細情報',
+        content: '私たちのクッキーの使用とあなたのプライバシーオプションに関する詳細については、完全なプライバシーポリシーを参照してください。'
+      }
+    }
   }
 };
 
 export const useLanguage = () => {
-  const [language, setLanguage] = useState<'pt' | 'en' | 'zh'>('pt');
+  const [language, setLanguage] = useState<LanguageCode>('pt');
 
   useEffect(() => {
     const browserLang = navigator.language.toLowerCase();
@@ -583,6 +1244,20 @@ export const useLanguage = () => {
       setLanguage('en');
     } else if (browserLang.includes('pt')) {
       setLanguage('pt');
+    } else if (browserLang.includes('es')) {
+      setLanguage('es');
+    } else if (browserLang.includes('fr')) {
+      setLanguage('fr');
+    } else if (browserLang.includes('de')) {
+      setLanguage('de');
+    } else if (browserLang.includes('hi')) {
+      setLanguage('hi');
+    } else if (browserLang.includes('ar')) {
+      setLanguage('ar');
+    } else if (browserLang.includes('ko')) {
+      setLanguage('ko');
+    } else if (browserLang.includes('ja')) {
+      setLanguage('ja');
     }
   }, []);
 

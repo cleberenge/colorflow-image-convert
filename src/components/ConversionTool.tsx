@@ -12,7 +12,7 @@ interface ConversionToolProps {
   conversionType: string;
   conversionInfo: {
     id: string;
-    label: { pt: string; en: string; zh: string; };
+    label: { pt: string; en: string; zh: string; es: string; fr: string; de: string; hi: string; ar: string; ko: string; ja: string; };
     from: string;
     to: string;
     icon?: string;
@@ -84,13 +84,13 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
       if (conversionType === 'merge-pdf') {
         setSelectedFile(files[0]);
         toast({
-          title: language === 'pt' ? "Arquivos selecionados" : language === 'en' ? "Files selected" : "文件已选择",
+          title: language === 'pt' ? "Arquivos selecionados" : language === 'en' ? "Files selected" : language === 'zh' ? "文件已选择" : language === 'es' ? "Archivos seleccionados" : language === 'fr' ? "Fichiers sélectionnés" : language === 'de' ? "Dateien ausgewählt" : language === 'hi' ? "फाइलें चुनी गईं" : language === 'ar' ? "تم اختيار الملفات" : language === 'ko' ? "파일이 선택됨" : "ファイルが選択されました",
           description: `${files.length} ${t.filesSelected}`,
         });
       } else {
         setSelectedFile(files[0]);
         toast({
-          title: language === 'pt' ? "Arquivo selecionado" : language === 'en' ? "File selected" : "文件已选择",
+          title: language === 'pt' ? "Arquivo selecionado" : language === 'en' ? "File selected" : language === 'zh' ? "文件已选择" : language === 'es' ? "Archivo seleccionado" : language === 'fr' ? "Fichier sélectionné" : language === 'de' ? "Datei ausgewählt" : language === 'hi' ? "फाइल चुनी गई" : language === 'ar' ? "تم اختيار الملف" : language === 'ko' ? "파일이 선택됨" : "ファイルが選択されました",
           description: `${files[0].name} ${t.fileSelected}`,
         });
       }
@@ -171,7 +171,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
         style={{
           backgroundColor: conversionColor,
           borderColor: conversionColor,
-          borderRadius: '0px'
+          borderRadius: '0px',
+          opacity: 0.9
         }}
       >
         <div className="text-center">
