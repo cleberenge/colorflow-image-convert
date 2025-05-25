@@ -1,9 +1,8 @@
-
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Upload, Download, CheckCircle, FileAudio, FileVideo, FileX, FileText, File } from 'lucide-react';
+import { Upload, Download, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/hooks/useLanguage';
 import { getConversionColor, getConversionColorHover } from '@/utils/conversionColors';
@@ -53,18 +52,51 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     }
   };
 
-  // Get icon based on file type
+  // Get simple two-color icon based on file type
   const getFileIcon = () => {
+    const iconSize = "w-8 h-8";
+    const iconColor = conversionColor;
+    
     if (conversionType.includes('video') || conversionType === 'compress-video') {
-      return <FileVideo className="w-6 h-6 text-brand-blue" />;
+      return (
+        <div className={`${iconSize} rounded-full flex items-center justify-center`} style={{ backgroundColor: iconColor }}>
+          <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M8 5v10l8-5-8-5z"/>
+          </svg>
+        </div>
+      );
     } else if (conversionType === 'video-mp3') {
-      return <FileAudio className="w-6 h-6 text-brand-blue" />;
+      return (
+        <div className={`${iconSize} rounded-full flex items-center justify-center`} style={{ backgroundColor: iconColor }}>
+          <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"/>
+          </svg>
+        </div>
+      );
     } else if (conversionType.includes('pdf')) {
-      return <File className="w-6 h-6 text-brand-blue" />;
+      return (
+        <div className={`${iconSize} rounded-full flex items-center justify-center`} style={{ backgroundColor: iconColor }}>
+          <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7a1 1 0 00-1 1z" clipRule="evenodd"/>
+          </svg>
+        </div>
+      );
     } else if (conversionType.includes('word')) {
-      return <FileText className="w-6 h-6 text-brand-blue" />;
+      return (
+        <div className={`${iconSize} rounded-full flex items-center justify-center`} style={{ backgroundColor: iconColor }}>
+          <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm6 10a1 1 0 01-1-1V9a1 1 0 112 0v4a1 1 0 01-1 1zm-4-1a1 1 0 001 1h6a1 1 0 100-2H7a1 1 0 00-1 1z" clipRule="evenodd"/>
+          </svg>
+        </div>
+      );
     } else {
-      return <FileX className="w-6 h-6 text-brand-blue" />;
+      return (
+        <div className={`${iconSize} rounded-full flex items-center justify-center`} style={{ backgroundColor: iconColor }}>
+          <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
+            <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd"/>
+          </svg>
+        </div>
+      );
     }
   };
 
@@ -172,7 +204,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
           backgroundColor: conversionColor,
           borderColor: conversionColor,
           borderRadius: '0px',
-          opacity: 0.9
+          opacity: 0.6
         }}
       >
         <div className="text-center">
