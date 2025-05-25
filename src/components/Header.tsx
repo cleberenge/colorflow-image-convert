@@ -2,8 +2,15 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
 import { LogIn, UserPlus } from 'lucide-react';
+import { getConversionColor } from '@/utils/conversionColors';
 
-const Header = () => {
+interface HeaderProps {
+  activeConversion?: string;
+}
+
+const Header: React.FC<HeaderProps> = ({ activeConversion = 'png-jpg' }) => {
+  const conversionColor = getConversionColor(activeConversion);
+
   return (
     <header className="w-full py-5 px-6 flex justify-between items-center bg-white border-b border-gray-200">
       <div className="flex items-center space-x-2">
@@ -22,7 +29,11 @@ const Header = () => {
           Login
         </Button>
         <Button
-          className="bg-brand-blue hover:bg-brand-blue/90 text-white rounded-lg transition-all duration-300"
+          className="text-white rounded-lg transition-all duration-300"
+          style={{ 
+            backgroundColor: conversionColor,
+            borderColor: conversionColor
+          }}
         >
           <UserPlus className="w-4 h-4 mr-2" />
           Sign Up
