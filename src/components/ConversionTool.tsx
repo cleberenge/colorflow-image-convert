@@ -203,8 +203,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
         style={{
           backgroundColor: conversionColor,
           borderColor: conversionColor,
-          borderRadius: '0px',
-          opacity: 0.6
+          borderRadius: '0px'
         }}
       >
         <div className="text-center">

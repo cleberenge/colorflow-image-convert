@@ -15,31 +15,20 @@ const Privacy = () => {
           <h1 className="text-4xl font-bold mb-6 text-gray-800">
             {t.privacy.title}
           </h1>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            {t.privacy.subtitle}
-          </p>
         </div>
         
-        <div className="prose prose-gray max-w-none space-y-8">
-          <div className="bg-gray-50 p-6 rounded-lg">
-            <h2 className="text-xl font-semibold mb-3 text-gray-800">{t.privacy.dataCollection.title}</h2>
-            <p className="text-gray-600">{t.privacy.dataCollection.content}</p>
-          </div>
+        <div className="prose prose-gray max-w-none text-center space-y-6">
+          <p className="text-lg text-gray-600 leading-relaxed">
+            Sua privacidade é nossa prioridade absoluta. Processamos a maioria das conversões diretamente no seu navegador, o que significa que seus arquivos nunca deixam seu dispositivo. Para conversões que requerem processamento em servidor, utilizamos conexões criptografadas e excluímos todos os arquivos imediatamente após o processo.
+          </p>
           
-          <div className="bg-gray-50 p-6 rounded-lg">
-            <h2 className="text-xl font-semibold mb-3 text-gray-800">{t.privacy.dataUsage.title}</h2>
-            <p className="text-gray-600">{t.privacy.dataUsage.content}</p>
-          </div>
+          <p className="text-lg text-gray-600 leading-relaxed">
+            Não armazenamos, compartilhamos ou vendemos seus dados pessoais para terceiros. Coletamos apenas informações técnicas básicas e anônimas para melhorar nossos serviços, como tipo de navegador e estatísticas de uso agregadas. Essas informações não podem ser usadas para identificá-lo pessoalmente.
+          </p>
           
-          <div className="bg-gray-50 p-6 rounded-lg">
-            <h2 className="text-xl font-semibold mb-3 text-gray-800">{t.privacy.dataProtection.title}</h2>
-            <p className="text-gray-600">{t.privacy.dataProtection.content}</p>
-          </div>
-          
-          <div className="bg-gray-50 p-6 rounded-lg">
-            <h2 className="text-xl font-semibold mb-3 text-gray-800">{t.privacy.userRights.title}</h2>
-            <p className="text-gray-600">{t.privacy.userRights.content}</p>
-          </div>
+          <p className="text-lg text-gray-600 leading-relaxed">
+            Implementamos as mais rigorosas medidas de segurança da indústria, incluindo criptografia de ponta a ponta e protocolos de segurança avançados. Revisamos regularmente nossas práticas de privacidade para garantir conformidade com as leis internacionais de proteção de dados, incluindo LGPD e GDPR.
+          </p>
         </div>
       </main>
     </div>
