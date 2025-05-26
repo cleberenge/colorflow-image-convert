@@ -112,17 +112,31 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
   };
 
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('handleFileSelect called');
+    console.log('Event target:', event.target);
+    console.log('Files object:', event.target.files);
+    
     const files = event.target.files;
     if (files && files.length > 0) {
+      console.log('Files found:', files.length);
       const fileArray = Array.from(files).slice(0, 20); // Limit to 20 files
+      console.log('File array created:', fileArray);
+      
       setSelectedFiles(fileArray);
       setConvertedFiles([]);
+      
+      console.log('Files set to state');
       
       toast({
         title: language === 'pt' ? "Arquivos selecionados" : language === 'en' ? "Files selected" : language === 'zh' ? "文件已选择" : language === 'es' ? "Archivos seleccionados" : language === 'fr' ? "Fichiers sélectionnés" : language === 'de' ? "Dateien ausgewählt" : language === 'hi' ? "फाइलें चुनी गईं" : language === 'ar' ? "تم اختيار الملفات" : language === 'ko' ? "파일이 선택됨" : "ファイルが選択されました",
         description: `${fileArray.length} ${t.filesSelected || 'files selected'}`,
       });
+    } else {
+      console.log('No files found or files is null');
     }
+    
+    // Reset the input value to allow selecting the same file again
+    event.target.value = '';
   }, [toast, t, language]);
 
   const removeFile = useCallback((index: number) => {
@@ -281,6 +295,18 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     }
   }, [convertedFiles, conversionType, toast, language]);
 
+  const handleLabelClick = useCallback((event: React.MouseEvent) => {
+    console.log('Label clicked');
+    event.preventDefault();
+    const input = document.getElementById('file-input') as HTMLInputElement;
+    if (input) {
+      console.log('Input found, triggering click');
+      input.click();
+    } else {
+      console.log('Input not found');
+    }
+  }, []);
+
   return (
     <div className="flex flex-col items-center space-y-6 animate-fade-in mx-auto" style={{ maxWidth: '800px', margin: '0 auto', padding: '0 10px' }}>
       {/* Upload Area */}
@@ -301,8 +327,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
             id="file-input"
             multiple
           />
-          <label
-            htmlFor="file-input"
+          <div
+            onClick={handleLabelClick}
             className="cursor-pointer flex flex-col items-center space-y-4"
           >
             <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
@@ -316,7 +342,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                 {t.dragText}
               </p>
             </div>
-          </label>
+          </div>
         </div>
       </Card>
 
