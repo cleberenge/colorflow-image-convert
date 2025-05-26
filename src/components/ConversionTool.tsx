@@ -1,8 +1,9 @@
+
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Upload, Download, CheckCircle } from 'lucide-react';
+import { Upload, Download, CheckCircle, X } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/hooks/useLanguage';
 import { getConversionColor, getConversionColorHover } from '@/utils/conversionColors';
@@ -19,9 +20,9 @@ interface ConversionToolProps {
 }
 
 const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, conversionInfo }) => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isConverting, setIsConverting] = useState(false);
-  const [convertedFile, setConvertedFile] = useState<string | null>(null);
+  const [convertedFiles, setConvertedFiles] = useState<string[]>([]);
   const [progress, setProgress] = useState(0);
   const { toast } = useToast();
   const { language, t } = useLanguage();
@@ -107,31 +108,29 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
              language === 'en' ? 'Click to select multiple PDF files' :
              '点击选择多个PDF文件';
     }
-    return `${t.uploadText} ${conversionInfo.from}`;
+    return `${t.uploadText} ${conversionInfo.from} (${language === 'pt' ? 'até 20 arquivos' : language === 'en' ? 'up to 20 files' : '最多20个文件'})`;
   };
 
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const files = event.target.files;
     if (files && files.length > 0) {
-      if (conversionType === 'merge-pdf') {
-        setSelectedFile(files[0]);
-        toast({
-          title: language === 'pt' ? "Arquivos selecionados" : language === 'en' ? "Files selected" : language === 'zh' ? "文件已选择" : language === 'es' ? "Archivos seleccionados" : language === 'fr' ? "Fichiers sélectionnés" : language === 'de' ? "Dateien ausgewählt" : language === 'hi' ? "फाइलें चुनी गईं" : language === 'ar' ? "تم اختيار الملفات" : language === 'ko' ? "파일이 선택됨" : "ファイルが選択されました",
-          description: `${files.length} ${t.filesSelected}`,
-        });
-      } else {
-        setSelectedFile(files[0]);
-        toast({
-          title: language === 'pt' ? "Arquivo selecionado" : language === 'en' ? "File selected" : language === 'zh' ? "文件已选择" : language === 'es' ? "Archivo seleccionado" : language === 'fr' ? "Fichier sélectionné" : language === 'de' ? "Datei ausgewählt" : language === 'hi' ? "फाइल चुनी गई" : language === 'ar' ? "تم اختيار الملف" : language === 'ko' ? "파일이 선택됨" : "ファイルが選択されました",
-          description: `${files[0].name} ${t.fileSelected}`,
-        });
-      }
-      setConvertedFile(null);
+      const fileArray = Array.from(files).slice(0, 20); // Limit to 20 files
+      setSelectedFiles(fileArray);
+      setConvertedFiles([]);
+      
+      toast({
+        title: language === 'pt' ? "Arquivos selecionados" : language === 'en' ? "Files selected" : language === 'zh' ? "文件已选择" : language === 'es' ? "Archivos seleccionados" : language === 'fr' ? "Fichiers sélectionnés" : language === 'de' ? "Dateien ausgewählt" : language === 'hi' ? "फाइलें चुनी गईं" : language === 'ar' ? "تم اختيار الملفات" : language === 'ko' ? "파일이 선택됨" : "ファイルが選択されました",
+        description: `${fileArray.length} ${t.filesSelected || 'files selected'}`,
+      });
     }
-  }, [toast, conversionType, t, language]);
+  }, [toast, t, language]);
+
+  const removeFile = useCallback((index: number) => {
+    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
+  }, []);
 
   const handleConvert = useCallback(async () => {
-    if (!selectedFile) return;
+    if (selectedFiles.length === 0) return;
 
     setIsConverting(true);
     setProgress(0);
@@ -150,31 +149,36 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       setProgress(100);
-      setConvertedFile(URL.createObjectURL(selectedFile));
+      
+      // Create converted file URLs for each selected file
+      const convertedUrls = selectedFiles.map(file => URL.createObjectURL(file));
+      setConvertedFiles(convertedUrls);
       
       toast({
         title: t.conversionComplete,
-        description: t.conversionCompleteToast,
+        description: `${selectedFiles.length} ${language === 'pt' ? 'arquivos convertidos' : language === 'en' ? 'files converted' : '文件已转换'}`,
       });
 
     } catch (error) {
       console.error('Erro na conversão:', error);
       toast({
         title: language === 'pt' ? "Erro na conversão" : language === 'en' ? "Conversion error" : "转换错误",
-        description: language === 'pt' ? "Ocorreu um erro ao converter o arquivo." : language === 'en' ? "An error occurred while converting the file." : "转换文件时出错。",
+        description: language === 'pt' ? "Ocorreu um erro ao converter os arquivos." : language === 'en' ? "An error occurred while converting the files." : "转换文件时出错。",
         variant: "destructive",
       });
     } finally {
       setIsConverting(false);
     }
-  }, [selectedFile, toast, t, language]);
+  }, [selectedFiles, toast, t, language]);
 
-  const handleDownload = useCallback(() => {
-    if (convertedFile && selectedFile) {
+  const handleDownloadAll = useCallback(() => {
+    if (convertedFiles.length === 0) return;
+
+    convertedFiles.forEach((convertedFile, index) => {
       const link = document.createElement('a');
       link.href = convertedFile;
       
-      let filename = selectedFile.name;
+      let filename = selectedFiles[index].name;
       const extension = conversionInfo.to.toLowerCase().replace(' comprimido', '').replace('s separados', '').replace(' único', '');
       
       const nameParts = filename.split('.');
@@ -187,13 +191,13 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
-      toast({
-        title: language === 'pt' ? "Download iniciado" : language === 'en' ? "Download started" : "下载开始",
-        description: `${conversionInfo.to} ${t.downloadStarted}`,
-      });
-    }
-  }, [convertedFile, selectedFile, conversionInfo.to, toast, t, language]);
+    });
+    
+    toast({
+      title: language === 'pt' ? "Downloads iniciados" : language === 'en' ? "Downloads started" : "下载开始",
+      description: `${convertedFiles.length} ${language === 'pt' ? 'arquivos baixados' : language === 'en' ? 'files downloaded' : '文件已下载'}`,
+    });
+  }, [convertedFiles, selectedFiles, conversionInfo.to, toast, language]);
 
   return (
     <div className="flex flex-col items-center space-y-6 animate-fade-in mx-auto" style={{ maxWidth: '800px', margin: '0 auto', padding: '0 10px' }}>
@@ -213,7 +217,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
             onChange={handleFileSelect}
             className="hidden"
             id="file-input"
-            multiple={conversionType === 'merge-pdf'}
+            multiple
           />
           <label
             htmlFor="file-input"
@@ -234,28 +238,49 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
         </div>
       </Card>
 
-      {/* Selected File Info */}
-      {selectedFile && (
+      {/* Selected Files Info */}
+      {selectedFiles.length > 0 && (
         <Card className="w-full p-5 bg-white border border-gray-200">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-gray-100 rounded-lg flex items-center justify-center">
-              {getFileIcon()}
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="font-medium text-gray-800">
+                {selectedFiles.length} {language === 'pt' ? 'arquivos selecionados' : language === 'en' ? 'files selected' : '文件已选择'}
+              </span>
+              <Button
+                onClick={handleConvert}
+                disabled={isConverting}
+                variant="ghost"
+                className="text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-all duration-300 border-none"
+                style={{ color: conversionColor }}
+              >
+                {isConverting ? t.converting : `${t.convertTo} ${conversionInfo.to}`}
+              </Button>
             </div>
-            <div className="flex-1">
-              <p className="font-medium text-gray-800">{selectedFile.name}</p>
-              <p className="text-sm text-gray-600">
-                {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-              </p>
+            
+            {/* File List */}
+            <div className="max-h-40 overflow-y-auto space-y-2">
+              {selectedFiles.map((file, index) => (
+                <div key={index} className="flex items-center space-x-3 p-2 bg-gray-50 rounded">
+                  <div className="w-8 h-8 bg-gray-100 rounded flex items-center justify-center">
+                    {getFileIcon()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-800 truncate">{file.name}</p>
+                    <p className="text-xs text-gray-600">
+                      {(file.size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                  </div>
+                  <Button
+                    onClick={() => removeFile(index)}
+                    variant="ghost"
+                    size="sm"
+                    className="text-gray-400 hover:text-red-500 p-1"
+                  >
+                    <X className="w-4 h-4" />
+                  </Button>
+                </div>
+              ))}
             </div>
-            <Button
-              onClick={handleConvert}
-              disabled={isConverting}
-              variant="ghost"
-              className="text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-all duration-300 border-none"
-              style={{ color: conversionColor }}
-            >
-              {isConverting ? t.converting : `${t.convertTo} ${conversionInfo.to}`}
-            </Button>
           </div>
         </Card>
       )}
@@ -266,15 +291,24 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-800">{t.converting}</span>
-              <span className="text-sm text-gray-600">{progress}%</span>
+              <span className="text-sm font-medium" style={{ color: conversionColor }}>{progress}%</span>
             </div>
-            <Progress value={progress} className="h-2" />
+            <div className="relative">
+              <Progress value={progress} className="h-3" />
+              <div 
+                className="absolute top-0 left-0 h-3 rounded-full transition-all duration-300"
+                style={{ 
+                  width: `${progress}%`, 
+                  backgroundColor: conversionColor 
+                }}
+              />
+            </div>
           </div>
         </Card>
       )}
 
       {/* Download */}
-      {convertedFile && (
+      {convertedFiles.length > 0 && (
         <Card className="w-full p-5 bg-green-50 border border-green-200">
           <div className="flex items-center space-x-4">
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
@@ -283,16 +317,16 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
             <div className="flex-1">
               <p className="font-medium text-gray-800">{t.conversionComplete}</p>
               <p className="text-sm text-gray-600">
-                {conversionInfo.to} {t.readyForDownload}
+                {convertedFiles.length} {language === 'pt' ? 'arquivos prontos para download' : language === 'en' ? 'files ready for download' : '文件准备下载'}
               </p>
             </div>
             <Button
-              onClick={handleDownload}
+              onClick={handleDownloadAll}
               variant="ghost"
               className="text-green-600 hover:text-green-700 hover:bg-green-50 transition-all duration-300 border-none"
             >
               <Download className="w-4 h-4 mr-2" />
-              {t.download} {conversionInfo.to}
+              {language === 'pt' ? 'Baixar Todos' : language === 'en' ? 'Download All' : '下载全部'}
             </Button>
           </div>
         </Card>
