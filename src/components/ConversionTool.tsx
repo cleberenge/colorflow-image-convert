@@ -22,7 +22,7 @@ interface ConversionToolProps {
 const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, conversionInfo }) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [isConverting, setIsConverting] = useState(false);
-  const [convertedFiles, setConvertedFiles] = useState<string[]>([]);
+  const [convertedFiles, setConvertedFiles] = useState<{ file: File; originalName: string }[]>([]);
   const [progress, setProgress] = useState(0);
   const { toast } = useToast();
   const { language, t } = useLanguage();
@@ -78,7 +78,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
       return (
         <div className={`${iconSize} rounded-full flex items-center justify-center`} style={{ backgroundColor: iconColor }}>
           <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2h-6a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7a1 1 0 00-1 1z" clipRule="evenodd"/>
+            <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 01-1-1V9a1 1 0 112 0v4a1 1 0 01-1 1zm-4-1a1 1 0 001 1h6a1 1 0 100-2H7a1 1 0 00-1 1z" clipRule="evenodd"/>
           </svg>
         </div>
       );
@@ -141,6 +141,21 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     });
   }, [toast, language]);
 
+  // Function to simulate file conversion
+  const convertFile = async (file: File): Promise<File> => {
+    // Simulate conversion process by creating a new file with different extension
+    const extension = conversionInfo.to.toLowerCase().replace(' comprimido', '').replace('s separados', '').replace(' único', '');
+    const nameParts = file.name.split('.');
+    if (nameParts.length > 1) {
+      nameParts.pop();
+    }
+    const newFileName = `${nameParts.join('.')}.${extension}`;
+    
+    // Create a new file object with the converted name
+    const convertedFile = new File([file], newFileName, { type: file.type });
+    return convertedFile;
+  };
+
   const handleConvert = useCallback(async () => {
     if (selectedFiles.length === 0) return;
 
@@ -158,13 +173,18 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
         });
       }, 100);
 
+      // Simulate conversion process for each file
+      const converted = await Promise.all(
+        selectedFiles.map(async (file) => {
+          const convertedFile = await convertFile(file);
+          return { file: convertedFile, originalName: file.name };
+        })
+      );
+
       await new Promise(resolve => setTimeout(resolve, 1500));
       
       setProgress(100);
-      
-      // Create converted file URLs for each selected file
-      const convertedUrls = selectedFiles.map(file => URL.createObjectURL(file));
-      setConvertedFiles(convertedUrls);
+      setConvertedFiles(converted);
       
       toast({
         title: t.conversionComplete,
@@ -181,35 +201,27 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     } finally {
       setIsConverting(false);
     }
-  }, [selectedFiles, toast, t, language]);
+  }, [selectedFiles, toast, t, language, conversionInfo.to]);
 
   const handleDownloadAll = useCallback(() => {
     if (convertedFiles.length === 0) return;
 
-    convertedFiles.forEach((convertedFile, index) => {
+    convertedFiles.forEach((convertedItem) => {
       const link = document.createElement('a');
-      link.href = convertedFile;
-      
-      let filename = selectedFiles[index].name;
-      const extension = conversionInfo.to.toLowerCase().replace(' comprimido', '').replace('s separados', '').replace(' único', '');
-      
-      const nameParts = filename.split('.');
-      if (nameParts.length > 1) {
-        nameParts.pop();
-      }
-      filename = `${nameParts.join('.')}.${extension}`;
-      
-      link.download = filename;
+      const url = URL.createObjectURL(convertedItem.file);
+      link.href = url;
+      link.download = convertedItem.file.name;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      URL.revokeObjectURL(url);
     });
     
     toast({
       title: language === 'pt' ? "Downloads iniciados" : language === 'en' ? "Downloads started" : "下载开始",
       description: `${convertedFiles.length} ${language === 'pt' ? 'arquivos baixados' : language === 'en' ? 'files downloaded' : '文件已下载'}`,
     });
-  }, [convertedFiles, selectedFiles, conversionInfo.to, toast, language]);
+  }, [convertedFiles, toast, language]);
 
   const handleDownloadZip = useCallback(async () => {
     if (convertedFiles.length === 0) return;
@@ -217,30 +229,32 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     try {
       const zip = new JSZip();
       
+      console.log('Iniciando criação do ZIP com', convertedFiles.length, 'arquivos');
+      
       // Add each converted file to the ZIP
       for (let index = 0; index < convertedFiles.length; index++) {
-        const convertedFile = convertedFiles[index];
-        const originalFile = selectedFiles[index];
+        const convertedItem = convertedFiles[index];
+        const file = convertedItem.file;
         
-        // Fetch the blob data from the URL
-        const response = await fetch(convertedFile);
-        const blob = await response.blob();
+        console.log('Adicionando arquivo ao ZIP:', file.name, 'Tamanho:', file.size);
         
-        // Generate filename with new extension
-        let filename = originalFile.name;
-        const extension = conversionInfo.to.toLowerCase().replace(' comprimido', '').replace('s separados', '').replace(' único', '');
+        // Read file as array buffer
+        const arrayBuffer = await file.arrayBuffer();
         
-        const nameParts = filename.split('.');
-        if (nameParts.length > 1) {
-          nameParts.pop();
-        }
-        filename = `${nameParts.join('.')}.${extension}`;
-        
-        zip.file(filename, blob);
+        // Add file to ZIP with its converted name
+        zip.file(file.name, arrayBuffer);
       }
       
+      console.log('Gerando arquivo ZIP...');
+      
       // Generate ZIP file
-      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      const zipBlob = await zip.generateAsync({ 
+        type: 'blob',
+        compression: 'DEFLATE',
+        compressionOptions: { level: 6 }
+      });
+      
+      console.log('ZIP gerado com sucesso. Tamanho:', zipBlob.size);
       
       // Create download link
       const link = document.createElement('a');
@@ -249,6 +263,9 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
+      
+      // Clean up the object URL
+      URL.revokeObjectURL(link.href);
       
       toast({
         title: language === 'pt' ? "Download ZIP iniciado" : language === 'en' ? "ZIP download started" : "ZIP下载开始",
@@ -262,7 +279,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
         variant: "destructive",
       });
     }
-  }, [convertedFiles, selectedFiles, conversionInfo.to, conversionType, toast, language]);
+  }, [convertedFiles, conversionType, toast, language]);
 
   return (
     <div className="flex flex-col items-center space-y-6 animate-fade-in mx-auto" style={{ maxWidth: '800px', margin: '0 auto', padding: '0 10px' }}>
