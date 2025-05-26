@@ -1,12 +1,12 @@
-
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Upload, Download, CheckCircle, X } from 'lucide-react';
+import { Upload, Download, CheckCircle, X, RotateCcw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/hooks/useLanguage';
 import { getConversionColor, getConversionColorHover } from '@/utils/conversionColors';
+import JSZip from 'jszip';
 
 interface ConversionToolProps {
   conversionType: string;
@@ -129,6 +129,18 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     setSelectedFiles(prev => prev.filter((_, i) => i !== index));
   }, []);
 
+  const clearAllFiles = useCallback(() => {
+    setSelectedFiles([]);
+    setConvertedFiles([]);
+    setProgress(0);
+    setIsConverting(false);
+    
+    toast({
+      title: language === 'pt' ? "Arquivos limpos" : language === 'en' ? "Files cleared" : language === 'zh' ? "文件已清除" : language === 'es' ? "Archivos limpiados" : language === 'fr' ? "Fichiers effacés" : language === 'de' ? "Dateien gelöscht" : language === 'hi' ? "फाइलें साफ़ की गईं" : language === 'ar' ? "تم مسح الملفات" : language === 'ko' ? "파일이 지워짐" : "ファイルがクリアされました",
+      description: language === 'pt' ? "Todos os arquivos foram removidos" : language === 'en' ? "All files have been removed" : "所有文件已被移除",
+    });
+  }, [toast, language]);
+
   const handleConvert = useCallback(async () => {
     if (selectedFiles.length === 0) return;
 
@@ -199,6 +211,59 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     });
   }, [convertedFiles, selectedFiles, conversionInfo.to, toast, language]);
 
+  const handleDownloadZip = useCallback(async () => {
+    if (convertedFiles.length === 0) return;
+
+    try {
+      const zip = new JSZip();
+      
+      // Add each converted file to the ZIP
+      for (let index = 0; index < convertedFiles.length; index++) {
+        const convertedFile = convertedFiles[index];
+        const originalFile = selectedFiles[index];
+        
+        // Fetch the blob data from the URL
+        const response = await fetch(convertedFile);
+        const blob = await response.blob();
+        
+        // Generate filename with new extension
+        let filename = originalFile.name;
+        const extension = conversionInfo.to.toLowerCase().replace(' comprimido', '').replace('s separados', '').replace(' único', '');
+        
+        const nameParts = filename.split('.');
+        if (nameParts.length > 1) {
+          nameParts.pop();
+        }
+        filename = `${nameParts.join('.')}.${extension}`;
+        
+        zip.file(filename, blob);
+      }
+      
+      // Generate ZIP file
+      const zipBlob = await zip.generateAsync({ type: 'blob' });
+      
+      // Create download link
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(zipBlob);
+      link.download = `converted_files_${conversionType}.zip`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      toast({
+        title: language === 'pt' ? "Download ZIP iniciado" : language === 'en' ? "ZIP download started" : "ZIP下载开始",
+        description: `${convertedFiles.length} ${language === 'pt' ? 'arquivos baixados em ZIP' : language === 'en' ? 'files downloaded in ZIP' : '文件已打包下载'}`,
+      });
+    } catch (error) {
+      console.error('Erro ao criar ZIP:', error);
+      toast({
+        title: language === 'pt' ? "Erro no download" : language === 'en' ? "Download error" : "下载错误",
+        description: language === 'pt' ? "Ocorreu um erro ao criar o arquivo ZIP." : language === 'en' ? "An error occurred while creating the ZIP file." : "创建ZIP文件时出错。",
+        variant: "destructive",
+      });
+    }
+  }, [convertedFiles, selectedFiles, conversionInfo.to, conversionType, toast, language]);
+
   return (
     <div className="flex flex-col items-center space-y-6 animate-fade-in mx-auto" style={{ maxWidth: '800px', margin: '0 auto', padding: '0 10px' }}>
       {/* Upload Area */}
@@ -246,15 +311,25 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
               <span className="font-medium text-gray-800">
                 {selectedFiles.length} {language === 'pt' ? 'arquivos selecionados' : language === 'en' ? 'files selected' : '文件已选择'}
               </span>
-              <Button
-                onClick={handleConvert}
-                disabled={isConverting}
-                variant="ghost"
-                className="text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-all duration-300 border-none"
-                style={{ color: conversionColor }}
-              >
-                {isConverting ? t.converting : `${t.convertTo} ${conversionInfo.to}`}
-              </Button>
+              <div className="flex gap-2">
+                <Button
+                  onClick={clearAllFiles}
+                  variant="ghost"
+                  className="text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all duration-300 border-none"
+                >
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  {language === 'pt' ? 'Limpar' : language === 'en' ? 'Clear' : '清除'}
+                </Button>
+                <Button
+                  onClick={handleConvert}
+                  disabled={isConverting}
+                  variant="ghost"
+                  className="text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-all duration-300 border-none"
+                  style={{ color: conversionColor }}
+                >
+                  {isConverting ? t.converting : `${t.convertTo} ${conversionInfo.to}`}
+                </Button>
+              </div>
             </div>
             
             {/* File List */}
@@ -293,16 +368,11 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
               <span className="text-sm font-medium text-gray-800">{t.converting}</span>
               <span className="text-sm font-medium" style={{ color: conversionColor }}>{progress}%</span>
             </div>
-            <div className="relative">
-              <Progress value={progress} className="h-3" />
-              <div 
-                className="absolute top-0 left-0 h-3 rounded-full transition-all duration-300"
-                style={{ 
-                  width: `${progress}%`, 
-                  backgroundColor: conversionColor 
-                }}
-              />
-            </div>
+            <Progress 
+              value={progress} 
+              className="h-3" 
+              indicatorColor={conversionColor}
+            />
           </div>
         </Card>
       )}
@@ -321,12 +391,12 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
               </p>
             </div>
             <Button
-              onClick={handleDownloadAll}
+              onClick={handleDownloadZip}
               variant="ghost"
               className="text-green-600 hover:text-green-700 hover:bg-green-50 transition-all duration-300 border-none"
             >
               <Download className="w-4 h-4 mr-2" />
-              {language === 'pt' ? 'Baixar Todos' : language === 'en' ? 'Download All' : '下载全部'}
+              {language === 'pt' ? 'Baixar ZIP' : language === 'en' ? 'Download ZIP' : '下载ZIP'}
             </Button>
           </div>
         </Card>
