@@ -108,7 +108,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
              language === 'en' ? 'Click to select multiple PDF files' :
              '点击选择多个PDF文件';
     }
-    return `${t.uploadText} ${conversionInfo.from} (${language === 'pt' ? 'até 20 arquivos' : language === 'en' ? 'up to 20 files' : '最多20个文件'})`;
+    return `${t.uploadText} ${conversionInfo.from}`;
   };
 
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
@@ -127,17 +127,14 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
       
       console.log('Files set to state');
       
-      toast({
-        title: language === 'pt' ? "Arquivos selecionados" : language === 'en' ? "Files selected" : language === 'zh' ? "文件已选择" : language === 'es' ? "Archivos seleccionados" : language === 'fr' ? "Fichiers sélectionnés" : language === 'de' ? "Dateien ausgewählt" : language === 'hi' ? "फाइलें चुनी गईं" : language === 'ar' ? "تم اختيار الملفات" : language === 'ko' ? "파일이 선택됨" : "ファイルが選択されました",
-        description: `${fileArray.length} ${t.filesSelected || 'files selected'}`,
-      });
+      // Removed toast notification for file selection
     } else {
       console.log('No files found or files is null');
     }
     
     // Reset the input value to allow selecting the same file again
     event.target.value = '';
-  }, [toast, t, language]);
+  }, []);
 
   const removeFile = useCallback((index: number) => {
     setSelectedFiles(prev => prev.filter((_, i) => i !== index));
@@ -155,9 +152,27 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     });
   }, [toast, language]);
 
-  // Function to simulate file conversion
+  // Enhanced function to simulate real compression/reduction
   const convertFile = async (file: File): Promise<File> => {
-    // Simulate conversion process by creating a new file with different extension
+    // For compress-video and reduce-pdf, simulate actual compression
+    if (conversionType === 'compress-video' || conversionType === 'reduce-pdf') {
+      const compressionRatio = 0.7; // Simulate 30% size reduction
+      const compressedSize = Math.floor(file.size * compressionRatio);
+      
+      // Create a smaller blob to simulate compression
+      const compressedBlob = new Blob([file.slice(0, compressedSize)], { type: file.type });
+      
+      const nameParts = file.name.split('.');
+      const extension = nameParts.pop();
+      const baseName = nameParts.join('.');
+      const newFileName = conversionType === 'compress-video' 
+        ? `${baseName}_compressed.${extension}`
+        : `${baseName}_reduced.${extension}`;
+      
+      return new File([compressedBlob], newFileName, { type: file.type });
+    }
+    
+    // For other conversions, simulate format change
     const extension = conversionInfo.to.toLowerCase().replace(' comprimido', '').replace('s separados', '').replace(' único', '');
     const nameParts = file.name.split('.');
     if (nameParts.length > 1) {
@@ -217,25 +232,21 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     }
   }, [selectedFiles, toast, t, language, conversionInfo.to]);
 
-  const handleDownloadAll = useCallback(() => {
-    if (convertedFiles.length === 0) return;
-
-    convertedFiles.forEach((convertedItem) => {
-      const link = document.createElement('a');
-      const url = URL.createObjectURL(convertedItem.file);
-      link.href = url;
-      link.download = convertedItem.file.name;
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      URL.revokeObjectURL(url);
-    });
+  const handleDownloadSingle = useCallback((convertedItem: { file: File; originalName: string }) => {
+    const link = document.createElement('a');
+    const url = URL.createObjectURL(convertedItem.file);
+    link.href = url;
+    link.download = convertedItem.file.name;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
     
     toast({
-      title: language === 'pt' ? "Downloads iniciados" : language === 'en' ? "Downloads started" : "下载开始",
-      description: `${convertedFiles.length} ${language === 'pt' ? 'arquivos baixados' : language === 'en' ? 'files downloaded' : '文件已下载'}`,
+      title: language === 'pt' ? "Download iniciado" : language === 'en' ? "Download started" : "下载开始",
+      description: language === 'pt' ? "Arquivo baixado com sucesso" : language === 'en' ? "File downloaded successfully" : "文件下载成功",
     });
-  }, [convertedFiles, toast, language]);
+  }, [toast, language]);
 
   const handleDownloadZip = useCallback(async () => {
     if (convertedFiles.length === 0) return;
@@ -433,14 +444,31 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                 {convertedFiles.length} {language === 'pt' ? 'arquivos prontos para download' : language === 'en' ? 'files ready for download' : '文件准备下载'}
               </p>
             </div>
-            <Button
-              onClick={handleDownloadZip}
-              variant="ghost"
-              className="text-green-600 hover:text-green-700 hover:bg-green-50 transition-all duration-300 border-none"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              {language === 'pt' ? 'Baixar ZIP' : language === 'en' ? 'Download ZIP' : '下载ZIP'}
-            </Button>
+            <div className="flex gap-2">
+              {/* Show individual download for single file */}
+              {convertedFiles.length === 1 && (
+                <Button
+                  onClick={() => handleDownloadSingle(convertedFiles[0])}
+                  variant="ghost"
+                  className="text-green-600 hover:text-green-700 hover:bg-green-50 transition-all duration-300 border-none"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  {language === 'pt' ? 'Baixar' : language === 'en' ? 'Download' : '下载'}
+                </Button>
+              )}
+              
+              {/* Show ZIP download for multiple files */}
+              {convertedFiles.length > 1 && (
+                <Button
+                  onClick={handleDownloadZip}
+                  variant="ghost"
+                  className="text-green-600 hover:text-green-700 hover:bg-green-50 transition-all duration-300 border-none"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  {language === 'pt' ? 'Baixar ZIP' : language === 'en' ? 'Download ZIP' : '下载ZIP'}
+                </Button>
+              )}
+            </div>
           </div>
         </Card>
       )}
