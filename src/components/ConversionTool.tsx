@@ -119,15 +119,13 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     const files = event.target.files;
     if (files && files.length > 0) {
       console.log('Files found:', files.length);
-      const fileArray = Array.from(files).slice(0, 20); // Limit to 20 files
+      const fileArray = Array.from(files);
       console.log('File array created:', fileArray);
       
       setSelectedFiles(fileArray);
       setConvertedFiles([]);
       
       console.log('Files set to state');
-      
-      // Removed toast notification for file selection
     } else {
       console.log('No files found or files is null');
     }
@@ -152,15 +150,32 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     });
   }, [toast, language]);
 
-  // Enhanced function to simulate real compression/reduction
+  // Enhanced function to simulate real compression/reduction with higher compression rates
   const convertFile = async (file: File): Promise<File> => {
-    // For compress-video and reduce-pdf, simulate actual compression
+    console.log(`Converting file: ${file.name}, size: ${file.size}, type: ${conversionType}`);
+    
+    // For compress-video and reduce-pdf, simulate more aggressive compression
     if (conversionType === 'compress-video' || conversionType === 'reduce-pdf') {
-      const compressionRatio = 0.7; // Simulate 30% size reduction
+      // More aggressive compression - 40-60% size reduction
+      const compressionRatio = conversionType === 'compress-video' ? 0.4 : 0.5; // 60% and 50% reduction respectively
       const compressedSize = Math.floor(file.size * compressionRatio);
       
-      // Create a smaller blob to simulate compression
-      const compressedBlob = new Blob([file.slice(0, compressedSize)], { type: file.type });
+      console.log(`Original size: ${file.size}, Compressed size: ${compressedSize}, Reduction: ${((1 - compressionRatio) * 100).toFixed(1)}%`);
+      
+      // Create a compressed blob by taking a portion of the original file data
+      const arrayBuffer = await file.arrayBuffer();
+      const uint8Array = new Uint8Array(arrayBuffer);
+      
+      // Create a new compressed array by sampling data
+      const compressedArray = new Uint8Array(compressedSize);
+      const sampleRate = Math.floor(uint8Array.length / compressedSize);
+      
+      for (let i = 0; i < compressedSize; i++) {
+        const sourceIndex = Math.min(i * sampleRate, uint8Array.length - 1);
+        compressedArray[i] = uint8Array[sourceIndex];
+      }
+      
+      const compressedBlob = new Blob([compressedArray], { type: file.type });
       
       const nameParts = file.name.split('.');
       const extension = nameParts.pop();
@@ -169,7 +184,13 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
         ? `${baseName}_compressed.${extension}`
         : `${baseName}_reduced.${extension}`;
       
-      return new File([compressedBlob], newFileName, { type: file.type });
+      const convertedFile = new File([compressedBlob], newFileName, { 
+        type: file.type,
+        lastModified: Date.now()
+      });
+      
+      console.log(`Converted file: ${convertedFile.name}, new size: ${convertedFile.size}`);
+      return convertedFile;
     }
     
     // For other conversions, simulate format change
@@ -181,13 +202,19 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     const newFileName = `${nameParts.join('.')}.${extension}`;
     
     // Create a new file object with the converted name
-    const convertedFile = new File([file], newFileName, { type: file.type });
+    const convertedFile = new File([file], newFileName, { 
+      type: file.type,
+      lastModified: Date.now()
+    });
+    
+    console.log(`Format converted: ${file.name} -> ${convertedFile.name}`);
     return convertedFile;
   };
 
   const handleConvert = useCallback(async () => {
     if (selectedFiles.length === 0) return;
 
+    console.log(`Starting conversion for ${selectedFiles.length} files, type: ${conversionType}`);
     setIsConverting(true);
     setProgress(0);
 
@@ -204,7 +231,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
 
       // Simulate conversion process for each file
       const converted = await Promise.all(
-        selectedFiles.map(async (file) => {
+        selectedFiles.map(async (file, index) => {
+          console.log(`Processing file ${index + 1}/${selectedFiles.length}: ${file.name}`);
           const convertedFile = await convertFile(file);
           return { file: convertedFile, originalName: file.name };
         })
@@ -215,6 +243,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
       setProgress(100);
       setConvertedFiles(converted);
       
+      console.log('Conversion completed successfully');
       toast({
         title: t.conversionComplete,
         description: `${selectedFiles.length} ${language === 'pt' ? 'arquivos convertidos' : language === 'en' ? 'files converted' : '文件已转换'}`,
@@ -230,7 +259,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     } finally {
       setIsConverting(false);
     }
-  }, [selectedFiles, toast, t, language, conversionInfo.to]);
+  }, [selectedFiles, toast, t, language, conversionInfo.to, conversionType]);
 
   const handleDownloadSingle = useCallback((convertedItem: { file: File; originalName: string }) => {
     const link = document.createElement('a');
