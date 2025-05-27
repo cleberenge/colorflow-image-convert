@@ -113,24 +113,14 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
 
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     console.log('handleFileSelect called');
-    console.log('Event target:', event.target);
-    console.log('Files object:', event.target.files);
-    
     const files = event.target.files;
     if (files && files.length > 0) {
       console.log('Files found:', files.length);
       const fileArray = Array.from(files);
-      console.log('File array created:', fileArray);
-      
       setSelectedFiles(fileArray);
       setConvertedFiles([]);
-      
       console.log('Files set to state');
-    } else {
-      console.log('No files found or files is null');
     }
-    
-    // Reset the input value to allow selecting the same file again
     event.target.value = '';
   }, []);
 
@@ -150,59 +140,44 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     });
   }, [toast, language]);
 
-  // Enhanced function to simulate real compression/reduction while maintaining file integrity
+  // Fixed conversion function that maintains file integrity
   const convertFile = async (file: File): Promise<File> => {
     console.log(`Converting file: ${file.name}, size: ${file.size}, type: ${conversionType}`);
     
-    // For PDF reduction, we need to maintain file integrity
+    // For PDF reduction - we'll create a simulated smaller file but keep the original
     if (conversionType === 'reduce-pdf') {
-      // Create a simulated reduction by keeping the original file but with a new name
-      // In a real implementation, you would use a PDF library like pdf-lib
       const nameParts = file.name.split('.');
       const baseName = nameParts.slice(0, -1).join('.');
       const newFileName = `${baseName}_reduced.pdf`;
       
-      // For simulation, we'll create a slightly smaller file by trimming some bytes from the end
-      // This maintains basic PDF structure while showing size reduction
-      const arrayBuffer = await file.arrayBuffer();
-      const originalSize = arrayBuffer.byteLength;
+      // For simulation, we'll just rename the file and keep the original content
+      // In real implementation, you would use a PDF library to actually compress
+      console.log(`PDF "reduction" simulation: keeping original file integrity`);
       
-      // Keep 70% of the original size for demonstration (30% reduction)
-      const targetSize = Math.floor(originalSize * 0.7);
-      const reducedBuffer = arrayBuffer.slice(0, targetSize);
-      
-      console.log(`PDF reduction: ${originalSize} -> ${targetSize} bytes (${((1 - 0.7) * 100).toFixed(1)}% reduction)`);
-      
-      const convertedFile = new File([reducedBuffer], newFileName, { 
+      const convertedFile = new File([file], newFileName, { 
         type: 'application/pdf',
         lastModified: Date.now()
       });
       
-      console.log(`Converted file: ${convertedFile.name}, new size: ${convertedFile.size}`);
+      console.log(`Simulated PDF reduction: ${file.name} -> ${convertedFile.name}`);
       return convertedFile;
     }
     
-    // For video compression
+    // For video compression - similar approach, keep original content
     if (conversionType === 'compress-video') {
-      const compressionRatio = 0.4; // 60% reduction
-      const arrayBuffer = await file.arrayBuffer();
-      const originalSize = arrayBuffer.byteLength;
-      const targetSize = Math.floor(originalSize * compressionRatio);
-      const compressedBuffer = arrayBuffer.slice(0, targetSize);
-      
       const nameParts = file.name.split('.');
       const extension = nameParts.pop();
       const baseName = nameParts.join('.');
       const newFileName = `${baseName}_compressed.${extension}`;
       
-      console.log(`Video compression: ${originalSize} -> ${targetSize} bytes (${((1 - compressionRatio) * 100).toFixed(1)}% reduction)`);
+      console.log(`Video "compression" simulation: keeping original file integrity`);
       
-      const convertedFile = new File([compressedBuffer], newFileName, { 
+      const convertedFile = new File([file], newFileName, { 
         type: file.type,
         lastModified: Date.now()
       });
       
-      console.log(`Converted file: ${convertedFile.name}, new size: ${convertedFile.size}`);
+      console.log(`Simulated video compression: ${file.name} -> ${convertedFile.name}`);
       return convertedFile;
     }
     
@@ -214,7 +189,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     }
     const newFileName = `${nameParts.join('.')}.${extension}`;
     
-    // Create a new file object with the converted name
     const convertedFile = new File([file], newFileName, { 
       type: file.type,
       lastModified: Date.now()
@@ -242,7 +216,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
         });
       }, 100);
 
-      // Simulate conversion process for each file
       const converted = await Promise.all(
         selectedFiles.map(async (file, index) => {
           console.log(`Processing file ${index + 1}/${selectedFiles.length}: ${file.name}`);
@@ -283,12 +256,10 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
       link.href = url;
       link.download = convertedItem.file.name;
       
-      // Add to DOM, click, and remove
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
       
-      // Clean up the object URL
       setTimeout(() => URL.revokeObjectURL(url), 100);
       
       console.log('Single file download completed successfully');
@@ -315,23 +286,18 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
       
       console.log('Iniciando criação do ZIP com', convertedFiles.length, 'arquivos');
       
-      // Add each converted file to the ZIP
       for (let index = 0; index < convertedFiles.length; index++) {
         const convertedItem = convertedFiles[index];
         const file = convertedItem.file;
         
         console.log('Adicionando arquivo ao ZIP:', file.name, 'Tamanho:', file.size);
         
-        // Read file as array buffer
         const arrayBuffer = await file.arrayBuffer();
-        
-        // Add file to ZIP with its converted name
         zip.file(file.name, arrayBuffer);
       }
       
       console.log('Gerando arquivo ZIP...');
       
-      // Generate ZIP file
       const zipBlob = await zip.generateAsync({ 
         type: 'blob',
         compression: 'DEFLATE',
@@ -340,7 +306,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
       
       console.log('ZIP gerado com sucesso. Tamanho:', zipBlob.size);
       
-      // Create download link
       const link = document.createElement('a');
       link.href = URL.createObjectURL(zipBlob);
       link.download = `converted_files_${conversionType}.zip`;
@@ -348,7 +313,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
       link.click();
       document.body.removeChild(link);
       
-      // Clean up the object URL
       URL.revokeObjectURL(link.href);
       
       toast({
@@ -504,7 +468,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
               </p>
             </div>
             <div className="flex gap-2">
-              {/* Show individual download for single file */}
               {convertedFiles.length === 1 && (
                 <Button
                   onClick={() => handleDownloadSingle(convertedFiles[0])}
@@ -516,7 +479,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                 </Button>
               )}
               
-              {/* Show ZIP download for multiple files */}
               {convertedFiles.length > 1 && (
                 <Button
                   onClick={handleDownloadZip}
