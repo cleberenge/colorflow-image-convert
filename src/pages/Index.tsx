@@ -1,12 +1,12 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
 import ConversionTool from '@/components/ConversionTool';
+import ConversionIcon from '@/components/ConversionIcon';
 import { useLanguage } from '@/hooks/useLanguage';
 import { getConversionColor } from '@/utils/conversionColors';
 
-// Conversion types with SmallPDF-inspired icons
+// Conversion types with SmallPDF-inspired design
 const conversionTypes = [
   { 
     id: 'png-jpg', 
@@ -244,22 +244,25 @@ const Index = () => {
           </div>
           
           {/* Conversion type selector */}
-          <div className="flex flex-wrap justify-center gap-1 mb-6">
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-2 mb-6 max-w-4xl mx-auto">
             {conversionTypes.map((type) => {
               const conversionColor = getConversionColor(type.id);
               return (
                 <button
                   key={type.id}
                   onClick={() => setActiveConversion(type.id)}
-                  className={`px-3 py-2 flex items-center gap-2 transition-all duration-300 ${
+                  className={`p-3 flex flex-col items-center gap-2 transition-all duration-300 rounded-lg hover:shadow-md ${
                     activeConversion === type.id 
-                    ? 'bg-white' 
+                    ? 'bg-white shadow-lg ring-2' 
                     : 'bg-white hover:bg-gray-50'
                   }`}
+                  style={{ 
+                    ringColor: activeConversion === type.id ? conversionColor : 'transparent'
+                  }}
                 >
-                  <span className="text-lg">{type.icon}</span>
+                  <ConversionIcon conversionType={type.id} className="w-10 h-10" />
                   <span 
-                    className="text-sm font-medium"
+                    className="text-xs font-medium text-center leading-tight"
                     style={{ 
                       color: activeConversion === type.id ? conversionColor : '#6B7280'
                     }}

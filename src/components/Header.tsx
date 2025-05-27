@@ -3,6 +3,7 @@ import React from 'react';
 import { Button } from '@/components/ui/button';
 import { LogIn, UserPlus } from 'lucide-react';
 import { getConversionColor } from '@/utils/conversionColors';
+import PDFChoiceLogo from '@/components/PDFChoiceLogo';
 
 interface HeaderProps {
   activeConversion?: string;
@@ -13,12 +14,7 @@ const Header: React.FC<HeaderProps> = ({ activeConversion = 'png-jpg' }) => {
 
   return (
     <header className="w-full py-5 px-6 flex justify-between items-center bg-white border-b border-gray-200">
-      <div className="flex items-center space-x-2">
-        <div className="w-8 h-8 bg-brand-blue rounded-lg flex items-center justify-center">
-          <span className="text-white font-bold text-sm">FC</span>
-        </div>
-        <span className="text-gray-700 font-semibold text-xl">File Converter</span>
-      </div>
+      <PDFChoiceLogo />
       
       <div className="flex space-x-3">
         <Button
