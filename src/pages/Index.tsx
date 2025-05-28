@@ -259,21 +259,21 @@ const Index = () => {
               </p>
             </div>
             
-            {/* Main tools - top row */}
-            <div className="grid grid-cols-5 gap-1 mb-2 max-w-4xl mx-auto">
+            {/* Main tools - top row with tighter spacing */}
+            <div className="flex justify-center gap-0.5 mb-1 max-w-4xl mx-auto">
               {mainTools.map((type) => {
                 const conversionColor = getConversionColor(type.id);
                 return (
                   <button
                     key={type.id}
                     onClick={() => setActiveConversion(type.id)}
-                    className={`p-3 flex items-center gap-2 transition-all duration-300 hover:bg-gray-50 ${
+                    className={`p-2 flex items-center gap-1.5 transition-all duration-300 hover:bg-gray-50 flex-1 ${
                       activeConversion === type.id ? 'bg-gray-50' : 'bg-white'
                     }`}
                   >
-                    <ConversionIcon conversionType={type.id} className="w-5 h-5 flex-shrink-0" />
+                    <ConversionIcon conversionType={type.id} className="w-4 h-4 flex-shrink-0" />
                     <span 
-                      className="text-sm font-medium text-left leading-tight flex-1"
+                      className="text-xs font-medium text-left leading-tight flex-1"
                       style={{ 
                         color: activeConversion === type.id ? conversionColor : '#374151'
                       }}
@@ -285,21 +285,21 @@ const Index = () => {
               })}
             </div>
             
-            {/* Other tools - bottom row */}
-            <div className="grid grid-cols-4 gap-1 mb-6 max-w-4xl mx-auto">
+            {/* Other tools - bottom row with tighter spacing */}
+            <div className="flex justify-center gap-0.5 mb-6 max-w-4xl mx-auto">
               {otherTools.map((type) => {
                 const conversionColor = getConversionColor(type.id);
                 return (
                   <button
                     key={type.id}
                     onClick={() => setActiveConversion(type.id)}
-                    className={`p-3 flex items-center gap-2 transition-all duration-300 hover:bg-gray-50 ${
+                    className={`p-2 flex items-center gap-1.5 transition-all duration-300 hover:bg-gray-50 flex-1 ${
                       activeConversion === type.id ? 'bg-gray-50' : 'bg-white'
                     }`}
                   >
-                    <ConversionIcon conversionType={type.id} className="w-5 h-5 flex-shrink-0" />
+                    <ConversionIcon conversionType={type.id} className="w-4 h-4 flex-shrink-0" />
                     <span 
-                      className="text-sm font-medium text-left leading-tight flex-1"
+                      className="text-xs font-medium text-left leading-tight flex-1"
                       style={{ 
                         color: activeConversion === type.id ? conversionColor : '#374151'
                       }}
