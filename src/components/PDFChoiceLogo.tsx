@@ -9,15 +9,18 @@ interface PDFChoiceLogoProps {
 const PDFChoiceLogo: React.FC<PDFChoiceLogoProps> = ({ className = "w-8 h-8", showText = true }) => {
   return (
     <div className="flex items-center space-x-3">
-      <div className={`${className} rounded-xl flex items-center justify-center relative overflow-hidden`}
-           style={{ background: 'linear-gradient(135deg, #6366F1 0%, #8B5CF6 50%, #EC4899 100%)' }}>
-        <svg className="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
-        </svg>
-        <div className="absolute inset-0 bg-white/10 rounded-xl"></div>
+      <div className={`${className} flex items-center justify-center relative overflow-hidden`}>
+        <div className="w-full h-full flex items-center justify-center space-x-0.5">
+          <div className="w-1 h-5 bg-red-500 rounded-sm"></div>
+          <div className="w-1 h-5 bg-orange-500 rounded-sm"></div>
+          <div className="w-1 h-5 bg-yellow-500 rounded-sm"></div>
+          <div className="w-1 h-5 bg-blue-500 rounded-sm"></div>
+          <div className="w-1 h-5 bg-purple-400 rounded-sm"></div>
+          <div className="w-1 h-5 bg-pink-500 rounded-sm"></div>
+        </div>
       </div>
       {showText && (
-        <span className="text-gray-900 font-bold text-xl tracking-tight" style={{ fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+        <span className="text-black font-bold text-xl tracking-tight" style={{ fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
           ChoicePDF
         </span>
       )}
