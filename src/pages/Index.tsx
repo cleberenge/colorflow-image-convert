@@ -259,15 +259,15 @@ const Index = () => {
               </p>
             </div>
             
-            {/* Main tools - top row with tighter spacing */}
-            <div className="flex justify-center gap-0.5 mb-1 max-w-4xl mx-auto">
+            {/* Main tools - top row with very tight spacing */}
+            <div className="flex justify-center mb-1 max-w-3xl mx-auto">
               {mainTools.map((type) => {
                 const conversionColor = getConversionColor(type.id);
                 return (
                   <button
                     key={type.id}
                     onClick={() => setActiveConversion(type.id)}
-                    className={`p-2 flex items-center gap-1.5 transition-all duration-300 hover:bg-gray-50 flex-1 ${
+                    className={`px-1 py-2 flex items-center gap-1 transition-all duration-300 hover:bg-gray-50 flex-1 ${
                       activeConversion === type.id ? 'bg-gray-50' : 'bg-white'
                     }`}
                   >
@@ -285,15 +285,15 @@ const Index = () => {
               })}
             </div>
             
-            {/* Other tools - bottom row with tighter spacing */}
-            <div className="flex justify-center gap-0.5 mb-6 max-w-4xl mx-auto">
+            {/* Other tools - bottom row with very tight spacing */}
+            <div className="flex justify-center mb-6 max-w-3xl mx-auto">
               {otherTools.map((type) => {
                 const conversionColor = getConversionColor(type.id);
                 return (
                   <button
                     key={type.id}
                     onClick={() => setActiveConversion(type.id)}
-                    className={`p-2 flex items-center gap-1.5 transition-all duration-300 hover:bg-gray-50 flex-1 ${
+                    className={`px-1 py-2 flex items-center gap-1 transition-all duration-300 hover:bg-gray-50 flex-1 ${
                       activeConversion === type.id ? 'bg-gray-50' : 'bg-white'
                     }`}
                   >
