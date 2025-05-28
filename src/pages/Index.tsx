@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -105,6 +104,10 @@ const Index = () => {
   const [activeConversion, setActiveConversion] = useState('png-jpg');
   const { language, t } = useLanguage();
 
+  // Separate main tools (top row) and other tools (bottom)
+  const mainTools = conversionTypes.slice(0, 5); // PNG->JPG, JPG->PDF, PDF->Word, Word->PDF, Extract MP3
+  const otherTools = conversionTypes.slice(5); // Compress Video, Split PDF, Merge PDF, Reduce PDF
+
   // Page links with compact three-line descriptions
   const pageLinks = [
     { 
@@ -142,7 +145,7 @@ const Index = () => {
         hi: 'प्रश्न पूछने या सहायता का अनुरोध करने के लिए संपर्क करें। हमारी टीम हमेशा मदद के लिए तैयार है। हमारी सेवाओं को बेहतर बनाने के लिए सुझाव भेजें।',
         ar: 'تواصل معنا لطرح الأسئلة أو طلب الدعم. فريقنا مستعد دائماً للمساعدة. أرسل اقتراحات لتحسين خدماتنا.',
         ko: '질문을 하거나 지원을 요청하려면 연락하십시오. 우리 팀은 항상 도울 준비가 되어 있습니다. 서비스 개선을 위한 제안을 보내주십시오.',
-        ja: '質問をしたりサポートを要請するために連絡してください。私たちのチームはいつでも助ける準備ができています。サービス改善のための提案を送ってください。'
+        ja: '質問をしたりサポートを要청するために連絡してください。私たちのチームはいつでも助ける準備ができています。サービス改善のための提案を送ってください。'
       } 
     },
     { 
@@ -244,28 +247,61 @@ const Index = () => {
             </p>
           </div>
           
-          {/* Conversion type selector */}
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-2 mb-6 max-w-4xl mx-auto">
-            {conversionTypes.map((type) => {
+          {/* Main tools - top row */}
+          <div className="grid grid-cols-5 gap-3 mb-4 max-w-4xl mx-auto">
+            {mainTools.map((type) => {
               const conversionColor = getConversionColor(type.id);
               return (
                 <button
                   key={type.id}
                   onClick={() => setActiveConversion(type.id)}
-                  className={`p-3 flex flex-col items-center gap-2 transition-all duration-300 rounded-lg hover:shadow-md ${
-                    activeConversion === type.id 
-                    ? 'bg-white shadow-lg ring-2' 
-                    : 'bg-white hover:bg-gray-50'
+                  className={`p-4 flex items-center gap-3 transition-all duration-300 hover:shadow-md bg-white hover:bg-gray-50 ${
+                    activeConversion === type.id ? 'shadow-lg' : ''
                   }`}
                   style={{ 
-                    ...(activeConversion === type.id && { borderColor: conversionColor, borderWidth: '2px' })
+                    ...(activeConversion === type.id && { 
+                      backgroundColor: `${conversionColor}15`,
+                      borderLeft: `4px solid ${conversionColor}`
+                    })
                   }}
                 >
-                  <ConversionIcon conversionType={type.id} className="w-6 h-6" />
+                  <ConversionIcon conversionType={type.id} className="w-5 h-5 flex-shrink-0" />
                   <span 
-                    className="text-xs font-medium text-center leading-tight"
+                    className="text-sm font-medium text-left leading-tight flex-1"
                     style={{ 
-                      color: activeConversion === type.id ? conversionColor : '#6B7280'
+                      color: activeConversion === type.id ? conversionColor : '#374151'
+                    }}
+                  >
+                    {type.label[language]}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
+          
+          {/* Other tools - bottom row */}
+          <div className="grid grid-cols-4 gap-3 mb-6 max-w-4xl mx-auto">
+            {otherTools.map((type) => {
+              const conversionColor = getConversionColor(type.id);
+              return (
+                <button
+                  key={type.id}
+                  onClick={() => setActiveConversion(type.id)}
+                  className={`p-4 flex items-center gap-3 transition-all duration-300 hover:shadow-md bg-white hover:bg-gray-50 ${
+                    activeConversion === type.id ? 'shadow-lg' : ''
+                  }`}
+                  style={{ 
+                    ...(activeConversion === type.id && { 
+                      backgroundColor: `${conversionColor}15`,
+                      borderLeft: `4px solid ${conversionColor}`
+                    })
+                  }}
+                >
+                  <ConversionIcon conversionType={type.id} className="w-5 h-5 flex-shrink-0" />
+                  <span 
+                    className="text-sm font-medium text-left leading-tight flex-1"
+                    style={{ 
+                      color: activeConversion === type.id ? conversionColor : '#374151'
                     }}
                   >
                     {type.label[language]}
