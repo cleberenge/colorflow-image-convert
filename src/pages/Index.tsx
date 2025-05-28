@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Header from '@/components/Header';
@@ -257,10 +258,10 @@ const Index = () => {
                     : 'bg-white hover:bg-gray-50'
                   }`}
                   style={{ 
-                    ringColor: activeConversion === type.id ? conversionColor : 'transparent'
+                    ...(activeConversion === type.id && { borderColor: conversionColor, borderWidth: '2px' })
                   }}
                 >
-                  <ConversionIcon conversionType={type.id} className="w-10 h-10" />
+                  <ConversionIcon conversionType={type.id} className="w-6 h-6" />
                   <span 
                     className="text-xs font-medium text-center leading-tight"
                     style={{ 
