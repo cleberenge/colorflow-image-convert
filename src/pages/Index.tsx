@@ -229,11 +229,11 @@ const Index = () => {
   return (
     <>
       <Helmet>
-        <title>ChoicePDF - Conversor de Arquivos Online Gratuito</title>
-        <meta name="description" content="Converta arquivos PNG para JPG, JPG para PDF, PDF para Word, Word para PDF, extraia MP3 de vídeos e muito mais. Ferramenta online gratuita e segura." />
+        <title>ChoicePDF - O melhor e mais rápido conversor</title>
+        <meta name="description" content="O melhor e mais rápido conversor de arquivos PNG para JPG, JPG para PDF, PDF para Word, Word para PDF, extraia MP3 de vídeos e muito mais. Ferramenta online gratuita e segura." />
         <meta name="keywords" content="converter PDF, PNG para JPG, JPG para PDF, PDF para Word, Word para PDF, extrair MP3, comprimir vídeo, dividir PDF, juntar PDF" />
-        <meta property="og:title" content="ChoicePDF - Conversor de Arquivos Online" />
-        <meta property="og:description" content="Converta seus arquivos online de forma gratuita e segura" />
+        <meta property="og:title" content="ChoicePDF - O melhor e mais rápido conversor" />
+        <meta property="og:description" content="O melhor e mais rápido conversor de arquivos online de forma gratuita e segura" />
         <meta property="og:type" content="website" />
         <meta name="robots" content="index, follow" />
         <link rel="canonical" href="https://choicepdf.com/" />
@@ -252,22 +252,22 @@ const Index = () => {
           <main className="flex-grow max-w-4xl mx-auto px-4 py-12" style={{ margin: '0 auto' }}>
             <div className="text-center mb-12">
               <h1 className="text-4xl font-bold mb-6 text-gray-700 animate-fade-in">
-                {t.title}
+                O melhor e mais rápido conversor
               </h1>
               <p className="text-xl text-gray-600 max-w-2xl mx-auto animate-fade-in">
                 {t.subtitle}
               </p>
             </div>
             
-            {/* Main tools - top row with very tight spacing */}
-            <div className="flex justify-center mb-1 max-w-3xl mx-auto">
+            {/* Main tools - top row with tighter spacing */}
+            <div className="flex justify-center mb-1 max-w-2xl mx-auto gap-0">
               {mainTools.map((type) => {
                 const conversionColor = getConversionColor(type.id);
                 return (
                   <button
                     key={type.id}
                     onClick={() => setActiveConversion(type.id)}
-                    className={`px-1 py-2 flex items-center gap-1 transition-all duration-300 hover:bg-gray-50 flex-1 ${
+                    className={`px-0.5 py-2 flex items-center gap-1 transition-all duration-300 hover:bg-gray-50 flex-1 ${
                       activeConversion === type.id ? 'bg-gray-50' : 'bg-white'
                     }`}
                   >
@@ -285,15 +285,15 @@ const Index = () => {
               })}
             </div>
             
-            {/* Other tools - bottom row with very tight spacing */}
-            <div className="flex justify-center mb-6 max-w-3xl mx-auto">
+            {/* Other tools - bottom row with tighter spacing and justified */}
+            <div className="flex justify-between mb-6 max-w-2xl mx-auto gap-0">
               {otherTools.map((type) => {
                 const conversionColor = getConversionColor(type.id);
                 return (
                   <button
                     key={type.id}
                     onClick={() => setActiveConversion(type.id)}
-                    className={`px-1 py-2 flex items-center gap-1 transition-all duration-300 hover:bg-gray-50 flex-1 ${
+                    className={`px-0.5 py-2 flex items-center gap-1 transition-all duration-300 hover:bg-gray-50 flex-1 ${
                       activeConversion === type.id ? 'bg-gray-50' : 'bg-white'
                     }`}
                   >
