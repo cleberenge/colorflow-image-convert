@@ -285,15 +285,15 @@ const Index = () => {
               })}
             </div>
             
-            {/* Other tools - bottom row with tighter spacing and justified */}
-            <div className="flex justify-between mb-6 max-w-2xl mx-auto gap-0">
+            {/* Other tools - bottom row with much tighter spacing */}
+            <div className="flex justify-center mb-6 max-w-xl mx-auto gap-0">
               {otherTools.map((type) => {
                 const conversionColor = getConversionColor(type.id);
                 return (
                   <button
                     key={type.id}
                     onClick={() => setActiveConversion(type.id)}
-                    className={`px-0.5 py-2 flex items-center gap-1 transition-all duration-300 hover:bg-gray-50 flex-1 ${
+                    className={`px-1 py-2 flex items-center gap-1 transition-all duration-300 hover:bg-gray-50 flex-1 ${
                       activeConversion === type.id ? 'bg-gray-50' : 'bg-white'
                     }`}
                   >

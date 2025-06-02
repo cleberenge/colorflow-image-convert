@@ -9,7 +9,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ activeConversion = 'png-jpg' }) => {
   return (
-    <header className="w-full py-5 px-6 flex justify-center items-center bg-white border-b border-gray-200">
+    <header className="w-full py-5 px-6 flex justify-start items-center bg-white border-b border-gray-200">
       <PDFChoiceLogo />
     </header>
   );
