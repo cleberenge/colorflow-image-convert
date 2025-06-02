@@ -11,7 +11,7 @@ const ConversionIcon: React.FC<ConversionIconProps> = ({ conversionType, classNa
     switch (conversionType) {
       case 'png-jpg':
         return {
-          color: '#D81159',
+          color: '#820263', // roxo escuro (trocado com reduce-pdf)
           icon: (
             <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
               <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17l2.5-3.5L14 17H9zm0-9c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2z"/>
@@ -83,7 +83,7 @@ const ConversionIcon: React.FC<ConversionIconProps> = ({ conversionType, classNa
         };
       case 'reduce-pdf':
         return {
-          color: '#820263',
+          color: '#D81159', // rosa escuro (trocado com png-jpg)
           icon: (
             <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
               <path d="M6 2c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h7v-2H6V4h7v5h5v6h2V8l-6-6H6zm9.5 12L12 17.5 8.5 14 12 10.5 15.5 14z"/>
