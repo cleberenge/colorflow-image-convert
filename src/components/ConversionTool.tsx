@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -7,6 +6,7 @@ import { Upload, Download, CheckCircle, X, RotateCcw } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useLanguage } from '@/hooks/useLanguage';
 import { getConversionColor, getConversionColorHover } from '@/utils/conversionColors';
+import { useFileConverter } from '@/hooks/useFileConverter';
 import JSZip from 'jszip';
 
 interface ConversionToolProps {
@@ -22,11 +22,10 @@ interface ConversionToolProps {
 
 const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, conversionInfo }) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [isConverting, setIsConverting] = useState(false);
   const [convertedFiles, setConvertedFiles] = useState<{ file: File; originalName: string }[]>([]);
-  const [progress, setProgress] = useState(0);
   const { toast } = useToast();
   const { language, t } = useLanguage();
+  const { convertFiles, isConverting, progress } = useFileConverter();
 
   const conversionColor = getConversionColor(conversionType);
   const conversionColorHover = getConversionColorHover(conversionType);
@@ -132,8 +131,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
   const clearAllFiles = useCallback(() => {
     setSelectedFiles([]);
     setConvertedFiles([]);
-    setProgress(0);
-    setIsConverting(false);
     
     toast({
       title: language === 'pt' ? "Arquivos limpos" : language === 'en' ? "Files cleared" : language === 'zh' ? "文件已清除" : language === 'es' ? "Archivos limpiados" : language === 'fr' ? "Fichiers effacés" : language === 'de' ? "Dateien gelöscht" : language === 'hi' ? "फाइलें साफ़ की गईं" : language === 'ar' ? "تم مسح الملفات" : language === 'ko' ? "파일이 지워짐" : "ファイルがクリアされました",
@@ -141,112 +138,21 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     });
   }, [toast, language]);
 
-  // Fixed conversion function that maintains file integrity
-  const convertFile = async (file: File): Promise<File> => {
-    console.log(`Converting file: ${file.name}, size: ${file.size}, type: ${conversionType}`);
-    
-    // For PDF reduction - we'll create a simulated smaller file but keep the original
-    if (conversionType === 'reduce-pdf') {
-      const nameParts = file.name.split('.');
-      const baseName = nameParts.slice(0, -1).join('.');
-      const newFileName = `${baseName}_reduced.pdf`;
-      
-      // For simulation, we'll just rename the file and keep the original content
-      // In real implementation, you would use a PDF library to actually compress
-      console.log(`PDF "reduction" simulation: keeping original file integrity`);
-      
-      const convertedFile = new File([file], newFileName, { 
-        type: 'application/pdf',
-        lastModified: Date.now()
-      });
-      
-      console.log(`Simulated PDF reduction: ${file.name} -> ${convertedFile.name}`);
-      return convertedFile;
-    }
-    
-    // For video compression - similar approach, keep original content
-    if (conversionType === 'compress-video') {
-      const nameParts = file.name.split('.');
-      const extension = nameParts.pop();
-      const baseName = nameParts.join('.');
-      const newFileName = `${baseName}_compressed.${extension}`;
-      
-      console.log(`Video "compression" simulation: keeping original file integrity`);
-      
-      const convertedFile = new File([file], newFileName, { 
-        type: file.type,
-        lastModified: Date.now()
-      });
-      
-      console.log(`Simulated video compression: ${file.name} -> ${convertedFile.name}`);
-      return convertedFile;
-    }
-    
-    // For other conversions, simulate format change
-    const extension = conversionInfo.to.toLowerCase().replace(' comprimido', '').replace('s separados', '').replace(' único', '');
-    const nameParts = file.name.split('.');
-    if (nameParts.length > 1) {
-      nameParts.pop();
-    }
-    const newFileName = `${nameParts.join('.')}.${extension}`;
-    
-    const convertedFile = new File([file], newFileName, { 
-      type: file.type,
-      lastModified: Date.now()
-    });
-    
-    console.log(`Format converted: ${file.name} -> ${convertedFile.name}`);
-    return convertedFile;
-  };
-
   const handleConvert = useCallback(async () => {
     if (selectedFiles.length === 0) return;
 
-    console.log(`Starting conversion for ${selectedFiles.length} files, type: ${conversionType}`);
-    setIsConverting(true);
-    setProgress(0);
+    console.log(`Starting real conversion for ${selectedFiles.length} files, type: ${conversionType}`);
 
     try {
-      const progressInterval = setInterval(() => {
-        setProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return 90;
-          }
-          return prev + 10;
-        });
-      }, 100);
-
-      const converted = await Promise.all(
-        selectedFiles.map(async (file, index) => {
-          console.log(`Processing file ${index + 1}/${selectedFiles.length}: ${file.name}`);
-          const convertedFile = await convertFile(file);
-          return { file: convertedFile, originalName: file.name };
-        })
-      );
-
-      await new Promise(resolve => setTimeout(resolve, 1500));
-      
-      setProgress(100);
+      const converted = await convertFiles(selectedFiles, conversionType);
       setConvertedFiles(converted);
       
-      console.log('Conversion completed successfully');
-      toast({
-        title: t.conversionComplete,
-        description: `${selectedFiles.length} ${language === 'pt' ? 'arquivos convertidos' : language === 'en' ? 'files converted' : '文件已转换'}`,
-      });
-
+      console.log('Real conversion completed successfully');
     } catch (error) {
-      console.error('Erro na conversão:', error);
-      toast({
-        title: language === 'pt' ? "Erro na conversão" : language === 'en' ? "Conversion error" : "转换错误",
-        description: language === 'pt' ? "Ocorreu um erro ao converter os arquivos." : language === 'en' ? "An error occurred while converting the files." : "转换文件时出错。",
-        variant: "destructive",
-      });
-    } finally {
-      setIsConverting(false);
+      console.error('Real conversion failed:', error);
+      // Error handling is done in the hook
     }
-  }, [selectedFiles, toast, t, language, conversionInfo.to, conversionType]);
+  }, [selectedFiles, conversionType, convertFiles]);
 
   const handleDownloadSingle = useCallback((convertedItem: { file: File; originalName: string }) => {
     try {
