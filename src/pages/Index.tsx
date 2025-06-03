@@ -4,6 +4,8 @@ import { Helmet } from 'react-helmet-async';
 import Header from '@/components/Header';
 import ConversionTool from '@/components/ConversionTool';
 import ConversionIcon from '@/components/ConversionIcon';
+import AnimatedBackground from '@/components/AnimatedBackground';
+import FloatingShapes from '@/components/FloatingShapes';
 import { useLanguage } from '@/hooks/useLanguage';
 import { getConversionColor } from '@/utils/conversionColors';
 
@@ -239,7 +241,11 @@ const Index = () => {
         <link rel="canonical" href="https://choicepdf.com/" />
       </Helmet>
       
-      <div className="min-h-screen bg-white text-gray-700">
+      {/* Animated background elements */}
+      <AnimatedBackground />
+      <FloatingShapes />
+      
+      <div className="min-h-screen bg-transparent text-gray-700 relative z-20">
         <Header activeConversion={activeConversion} />
         
         <div className="flex">
@@ -251,24 +257,24 @@ const Index = () => {
           {/* Main content - centered with margin on sides for ads */}
           <main className="flex-grow max-w-4xl mx-auto px-4 py-12" style={{ margin: '0 auto' }}>
             <div className="text-center mb-12">
-              <h1 className="text-4xl font-bold mb-6 text-gray-700 animate-fade-in">
+              <h1 className="text-4xl font-bold mb-6 text-gray-700 animate-fade-in drop-shadow-sm">
                 O melhor e mais rápido conversor
               </h1>
-              <p className="text-xl text-gray-600 max-w-2xl mx-auto animate-fade-in">
+              <p className="text-xl text-gray-600 max-w-2xl mx-auto animate-fade-in drop-shadow-sm">
                 {t.subtitle}
               </p>
             </div>
             
             {/* Main tools - top row with tighter spacing */}
-            <div className="flex justify-center mb-1 max-w-2xl mx-auto gap-0">
+            <div className="flex justify-center mb-1 max-w-2xl mx-auto gap-0 backdrop-blur-sm bg-white/80 rounded-lg shadow-lg">
               {mainTools.map((type) => {
                 const conversionColor = getConversionColor(type.id);
                 return (
                   <button
                     key={type.id}
                     onClick={() => setActiveConversion(type.id)}
-                    className={`px-0.5 py-2 flex items-center gap-1 transition-all duration-300 hover:bg-gray-50 flex-1 ${
-                      activeConversion === type.id ? 'bg-gray-50' : 'bg-white'
+                    className={`px-0.5 py-2 flex items-center gap-1 transition-all duration-300 hover:bg-white/60 flex-1 first:rounded-l-lg last:rounded-r-lg ${
+                      activeConversion === type.id ? 'bg-white/60' : 'bg-transparent'
                     }`}
                   >
                     <ConversionIcon conversionType={type.id} className="w-4 h-4 flex-shrink-0" />
@@ -286,15 +292,15 @@ const Index = () => {
             </div>
             
             {/* Other tools - bottom row with very tight spacing and justification */}
-            <div className="flex justify-between mb-6 max-w-lg mx-auto">
+            <div className="flex justify-between mb-6 max-w-lg mx-auto backdrop-blur-sm bg-white/80 rounded-lg shadow-lg">
               {otherTools.map((type) => {
                 const conversionColor = getConversionColor(type.id);
                 return (
                   <button
                     key={type.id}
                     onClick={() => setActiveConversion(type.id)}
-                    className={`px-0.5 py-2 flex items-center gap-1 transition-all duration-300 hover:bg-gray-50 flex-1 ${
-                      activeConversion === type.id ? 'bg-gray-50' : 'bg-white'
+                    className={`px-0.5 py-2 flex items-center gap-1 transition-all duration-300 hover:bg-white/60 flex-1 first:rounded-l-lg last:rounded-r-lg ${
+                      activeConversion === type.id ? 'bg-white/60' : 'bg-transparent'
                     }`}
                   >
                     <ConversionIcon conversionType={type.id} className="w-4 h-4 flex-shrink-0" />
@@ -312,10 +318,12 @@ const Index = () => {
             </div>
             
             {/* Active conversion tool */}
-            <ConversionTool 
-              conversionType={activeConversion} 
-              conversionInfo={conversionTypes.find(t => t.id === activeConversion) || conversionTypes[0]} 
-            />
+            <div className="backdrop-blur-sm bg-white/90 rounded-xl shadow-xl p-6">
+              <ConversionTool 
+                conversionType={activeConversion} 
+                conversionInfo={conversionTypes.find(t => t.id === activeConversion) || conversionTypes[0]} 
+              />
+            </div>
             
             {/* Page Links with compact styling */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mx-auto mt-8">
@@ -323,7 +331,7 @@ const Index = () => {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className="text-center bg-gray-50 p-2 animate-fade-in hover:bg-gray-100 transition-colors duration-300 block"
+                  className="text-center backdrop-blur-sm bg-white/80 p-2 animate-fade-in hover:bg-white/90 transition-all duration-300 block rounded-lg shadow-lg hover:shadow-xl"
                 >
                   <h3 className="font-semibold mb-1 text-base text-gray-700">{link.title[language]}</h3>
                   <p className="text-gray-600 text-xs leading-snug">{link.description[language]}</p>
