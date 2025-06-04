@@ -62,7 +62,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     return 10; // Default for other conversions
   };
 
-  // Get simple two-color icon based on file type - sem sombras
+  // Get simple two-color icon based on file type
   const getFileIcon = () => {
     const iconSize = "w-6 h-6";
     const iconColor = conversionColor;
@@ -281,12 +281,11 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     <div className="flex flex-col items-center space-y-6 animate-fade-in mx-auto" style={{ maxWidth: '800px', margin: '0 auto', padding: '0 10px' }}>
       {/* Upload Area */}
       <Card 
-        className="w-full p-6 border-2 border-dashed transition-all duration-300"
+        className="w-full p-6 border-2 border-dashed transition-all duration-300 shadow-none"
         style={{
           backgroundColor: conversionColor,
           borderColor: conversionColor,
-          borderRadius: '0px',
-          boxShadow: 'none'
+          borderRadius: '0px'
         }}
       >
         <div className="text-center">
@@ -319,33 +318,12 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
               <div className="bg-white/10 rounded-lg p-4 w-full max-w-md">
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-white font-medium">
-                    {selectedFiles.length} {language === 'pt' ? 'arquivos selecionados' : language === 'en' ? 'files selected' : language === 'ru' ? 'файлов выбрано' : '文件已选择'}
+                    {language === 'pt' ? 'Arquivos selecionados:' : language === 'en' ? 'Selected files:' : language === 'ru' ? 'Выбранные файлы:' : '已选择文件:'}
                   </span>
                 </div>
                 
-                <div className="flex gap-2 mb-3">
-                  <Button
-                    onClick={clearAllFiles}
-                    variant="ghost"
-                    size="sm"
-                    className="text-white hover:bg-white/20 border border-white/30 flex-1"
-                  >
-                    <RotateCcw className="w-4 h-4 mr-1" />
-                    {language === 'pt' ? 'Limpar' : language === 'en' ? 'Clear' : language === 'ru' ? 'Очистить' : '清除'}
-                  </Button>
-                  <Button
-                    onClick={handleConvert}
-                    disabled={isConverting}
-                    variant="ghost"
-                    size="sm"
-                    className="text-white hover:bg-white/20 border border-white/30 flex-1"
-                  >
-                    {isConverting ? t.converting : `${t.convertTo} ${conversionInfo.to}`}
-                  </Button>
-                </div>
-                
                 {/* Lista de arquivos compacta */}
-                <div className="max-h-32 overflow-y-auto space-y-1">
+                <div className="max-h-32 overflow-y-auto space-y-1 mb-3">
                   {selectedFiles.map((file, index) => (
                     <div key={index} className="flex items-center space-x-2 p-1 bg-white/10 rounded text-xs">
                       <div className="w-4 h-4 bg-transparent rounded flex items-center justify-center">
@@ -368,6 +346,42 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                     </div>
                   ))}
                 </div>
+                
+                {/* Controles alinhados horizontalmente */}
+                <div className="flex gap-2">
+                  <Button
+                    onClick={handleConvert}
+                    disabled={isConverting}
+                    variant="ghost"
+                    size="sm"
+                    className="text-white hover:bg-white/20 border border-white/30 flex-1"
+                  >
+                    {isConverting ? t.converting : `${t.convertTo} ${conversionInfo.to}`}
+                  </Button>
+                  {convertedFiles.length > 0 && (
+                    <Button
+                      onClick={convertedFiles.length === 1 ? () => handleDownloadSingle(convertedFiles[0]) : handleDownloadZip}
+                      variant="ghost"
+                      size="sm"
+                      className="text-white hover:bg-white/20 border border-white/30 flex-1"
+                    >
+                      <Download className="w-4 h-4 mr-1" />
+                      {convertedFiles.length === 1 ? 
+                        (language === 'pt' ? 'Baixar' : language === 'en' ? 'Download' : language === 'ru' ? 'Скачать' : '下载') :
+                        (language === 'pt' ? 'Baixar ZIP' : language === 'en' ? 'Download ZIP' : language === 'ru' ? 'Скачать ZIP' : '下载ZIP')
+                      }
+                    </Button>
+                  )}
+                  <Button
+                    onClick={clearAllFiles}
+                    variant="ghost"
+                    size="sm"
+                    className="text-white hover:bg-white/20 border border-white/30 flex-1"
+                  >
+                    <RotateCcw className="w-4 h-4 mr-1" />
+                    {language === 'pt' ? 'Limpar' : language === 'en' ? 'Clear' : language === 'ru' ? 'Очистить' : '清除'}
+                  </Button>
+                </div>
               </div>
             )}
           </div>
@@ -376,7 +390,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
 
       {/* Progress */}
       {isConverting && (
-        <Card className="w-full p-5 bg-white border-0" style={{ boxShadow: 'none' }}>
+        <Card className="w-full p-5 bg-white border-0 shadow-none">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-800">{t.converting}</span>
@@ -391,9 +405,9 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
         </Card>
       )}
 
-      {/* Download */}
+      {/* Success message only */}
       {convertedFiles.length > 0 && (
-        <Card className="w-full p-5 bg-green-50 border-0" style={{ boxShadow: 'none' }}>
+        <Card className="w-full p-5 bg-green-50 border-0 shadow-none">
           <div className="flex items-center space-x-4">
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
               <CheckCircle className="w-6 h-6 text-green-600" />
@@ -403,29 +417,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
               <p className="text-sm text-gray-600">
                 {convertedFiles.length} {language === 'pt' ? 'arquivos prontos para download' : language === 'en' ? 'files ready for download' : language === 'ru' ? 'файлов готово к скачиванию' : '文件准备下载'}
               </p>
-            </div>
-            <div className="flex gap-2">
-              {convertedFiles.length === 1 && (
-                <Button
-                  onClick={() => handleDownloadSingle(convertedFiles[0])}
-                  variant="ghost"
-                  className="text-green-600 hover:text-green-700 hover:bg-green-50 transition-all duration-300 border-none"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  {language === 'pt' ? 'Baixar' : language === 'en' ? 'Download' : language === 'ru' ? 'Скачать' : '下载'}
-                </Button>
-              )}
-              
-              {convertedFiles.length > 1 && (
-                <Button
-                  onClick={handleDownloadZip}
-                  variant="ghost"
-                  className="text-green-600 hover:text-green-700 hover:bg-green-50 transition-all duration-300 border-none"
-                >
-                  <Download className="w-4 h-4 mr-2" />
-                  {language === 'pt' ? 'Baixar ZIP' : language === 'en' ? 'Download ZIP' : language === 'ru' ? 'Скачать ZIP' : '下载ZIP'}
-                </Button>
-              )}
             </div>
           </div>
         </Card>
