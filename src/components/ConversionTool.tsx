@@ -13,7 +13,7 @@ interface ConversionToolProps {
   conversionType: string;
   conversionInfo: {
     id: string;
-    label: { pt: string; en: string; zh: string; es: string; fr: string; de: string; hi: string; ar: string; ko: string; ja: string; };
+    label: { pt: string; en: string; zh: string; es: string; fr: string; de: string; hi: string; ar: string; ko: string; ja: string; ru: string; };
     from: string;
     to: string;
     icon?: string;
@@ -53,7 +53,15 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     }
   };
 
-  // Get simple two-color icon based on file type
+  // Define maximum files allowed based on conversion type
+  const getMaxFiles = () => {
+    if (['png-jpg', 'jpg-pdf', 'merge-pdf'].includes(conversionType)) {
+      return 25;
+    }
+    return 10; // Default for other conversions
+  };
+
+  // Get simple two-color icon based on file type - sem sombras
   const getFileIcon = () => {
     const iconSize = "w-6 h-6";
     const iconColor = conversionColor;
@@ -103,10 +111,18 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
 
   // Get upload text based on conversion type
   const getUploadText = () => {
+    const maxFiles = getMaxFiles();
     if (conversionType === 'merge-pdf') {
-      return language === 'pt' ? 'Clique para selecionar vários arquivos PDF' :
-             language === 'en' ? 'Click to select multiple PDF files' :
-             '点击选择多个PDF文件';
+      return language === 'pt' ? `Clique para selecionar até ${maxFiles} arquivos PDF` :
+             language === 'en' ? `Click to select up to ${maxFiles} PDF files` :
+             language === 'ru' ? `Нажмите, чтобы выбрать до ${maxFiles} PDF файлов` :
+             `点击选择最多${maxFiles}个PDF文件`;
+    }
+    if (['png-jpg', 'jpg-pdf'].includes(conversionType)) {
+      return language === 'pt' ? `Clique para selecionar até ${maxFiles} arquivos ${conversionInfo.from}` :
+             language === 'en' ? `Click to select up to ${maxFiles} ${conversionInfo.from} files` :
+             language === 'ru' ? `Нажмите, чтобы выбрать до ${maxFiles} ${conversionInfo.from} файлов` :
+             `点击选择最多${maxFiles}个${conversionInfo.from}文件`;
     }
     return `${t.uploadText} ${conversionInfo.from}`;
   };
@@ -117,12 +133,29 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     if (files && files.length > 0) {
       console.log('Files found:', files.length);
       const fileArray = Array.from(files);
+      const maxFiles = getMaxFiles();
+      
+      if (fileArray.length > maxFiles) {
+        toast({
+          title: language === 'pt' ? "Muitos arquivos" : 
+                 language === 'en' ? "Too many files" : 
+                 language === 'ru' ? "Слишком много файлов" :
+                 "文件过多",
+          description: language === 'pt' ? `Máximo de ${maxFiles} arquivos permitidos` : 
+                      language === 'en' ? `Maximum ${maxFiles} files allowed` :
+                      language === 'ru' ? `Максимально разрешено ${maxFiles} файлов` :
+                      `最多允许${maxFiles}个文件`,
+          variant: "destructive",
+        });
+        return;
+      }
+      
       setSelectedFiles(fileArray);
       setConvertedFiles([]);
       console.log('Files set to state');
     }
     event.target.value = '';
-  }, []);
+  }, [language, toast]);
 
   const removeFile = useCallback((index: number) => {
     setSelectedFiles(prev => prev.filter((_, i) => i !== index));
@@ -131,12 +164,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
   const clearAllFiles = useCallback(() => {
     setSelectedFiles([]);
     setConvertedFiles([]);
-    
-    toast({
-      title: language === 'pt' ? "Arquivos limpos" : language === 'en' ? "Files cleared" : language === 'zh' ? "文件已清除" : language === 'es' ? "Archivos limpiados" : language === 'fr' ? "Fichiers effacés" : language === 'de' ? "Dateien gelöscht" : language === 'hi' ? "फाइलें साफ़ की गईं" : language === 'ar' ? "تم مسح الملفات" : language === 'ko' ? "파일이 지워짐" : "ファイルがクリアされました",
-      description: language === 'pt' ? "Todos os arquivos foram removidos" : language === 'en' ? "All files have been removed" : "所有文件已被移除",
-    });
-  }, [toast, language]);
+  }, []);
 
   const handleConvert = useCallback(async () => {
     if (selectedFiles.length === 0) return;
@@ -172,14 +200,14 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
       console.log('Single file download completed successfully');
       
       toast({
-        title: language === 'pt' ? "Download iniciado" : language === 'en' ? "Download started" : "下载开始",
-        description: language === 'pt' ? "Arquivo baixado com sucesso" : language === 'en' ? "File downloaded successfully" : "文件下载成功",
+        title: language === 'pt' ? "Download iniciado" : language === 'en' ? "Download started" : language === 'ru' ? "Загрузка начата" : "下载开始",
+        description: language === 'pt' ? "Arquivo baixado com sucesso" : language === 'en' ? "File downloaded successfully" : language === 'ru' ? "Файл успешно загружен" : "文件下载成功",
       });
     } catch (error) {
       console.error('Error in single file download:', error);
       toast({
-        title: language === 'pt' ? "Erro no download" : language === 'en' ? "Download error" : "下载错误",
-        description: language === 'pt' ? "Ocorreu um erro ao baixar o arquivo." : language === 'en' ? "An error occurred while downloading the file." : "下载文件时出错。",
+        title: language === 'pt' ? "Erro no download" : language === 'en' ? "Download error" : language === 'ru' ? "Ошибка загрузки" : "下载错误",
+        description: language === 'pt' ? "Ocorreu um erro ao baixar o arquivo." : language === 'en' ? "An error occurred while downloading the file." : language === 'ru' ? "Произошла ошибка при загрузке файла." : "下载文件时出错。",
         variant: "destructive",
       });
     }
@@ -223,14 +251,14 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
       URL.revokeObjectURL(link.href);
       
       toast({
-        title: language === 'pt' ? "Download ZIP iniciado" : language === 'en' ? "ZIP download started" : "ZIP下载开始",
-        description: `${convertedFiles.length} ${language === 'pt' ? 'arquivos baixados em ZIP' : language === 'en' ? 'files downloaded in ZIP' : '文件已打包下载'}`,
+        title: language === 'pt' ? "Download ZIP iniciado" : language === 'en' ? "ZIP download started" : language === 'ru' ? "Загрузка ZIP начата" : "ZIP下载开始",
+        description: `${convertedFiles.length} ${language === 'pt' ? 'arquivos baixados em ZIP' : language === 'en' ? 'files downloaded in ZIP' : language === 'ru' ? 'файлов загружено в ZIP' : '文件已打包下载'}`,
       });
     } catch (error) {
       console.error('Erro ao criar ZIP:', error);
       toast({
-        title: language === 'pt' ? "Erro no download" : language === 'en' ? "Download error" : "下载错误",
-        description: language === 'pt' ? "Ocorreu um erro ao criar o arquivo ZIP." : language === 'en' ? "An error occurred while creating the ZIP file." : "创建ZIP文件时出错。",
+        title: language === 'pt' ? "Erro no download" : language === 'en' ? "Download error" : language === 'ru' ? "Ошибка загрузки" : "下载错误",
+        description: language === 'pt' ? "Ocorreu um erro ao criar o arquivo ZIP." : language === 'en' ? "An error occurred while creating the ZIP file." : language === 'ru' ? "Произошла ошибка при создании ZIP файла." : "创建ZIP文件时出错。",
         variant: "destructive",
       });
     }
@@ -293,7 +321,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="font-medium text-gray-800">
-                {selectedFiles.length} {language === 'pt' ? 'arquivos selecionados' : language === 'en' ? 'files selected' : '文件已选择'}
+                {selectedFiles.length} {language === 'pt' ? 'arquivos selecionados' : language === 'en' ? 'files selected' : language === 'ru' ? 'файлов выбрано' : '文件已选择'}
               </span>
               <div className="flex gap-2">
                 <Button
@@ -302,7 +330,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                   className="text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all duration-300 border-none"
                 >
                   <RotateCcw className="w-4 h-4 mr-2" />
-                  {language === 'pt' ? 'Limpar' : language === 'en' ? 'Clear' : '清除'}
+                  {language === 'pt' ? 'Limpar' : language === 'en' ? 'Clear' : language === 'ru' ? 'Очистить' : '清除'}
                 </Button>
                 <Button
                   onClick={handleConvert}
@@ -320,7 +348,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
             <div className="max-h-40 overflow-y-auto space-y-2">
               {selectedFiles.map((file, index) => (
                 <div key={index} className="flex items-center space-x-3 p-2 bg-gray-50 rounded">
-                  <div className="w-6 h-6 bg-gray-100 rounded flex items-center justify-center">
+                  <div className="w-6 h-6 bg-transparent rounded flex items-center justify-center">
                     {getFileIcon()}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -371,7 +399,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
             <div className="flex-1">
               <p className="font-medium text-gray-800">{t.conversionComplete}</p>
               <p className="text-sm text-gray-600">
-                {convertedFiles.length} {language === 'pt' ? 'arquivos prontos para download' : language === 'en' ? 'files ready for download' : '文件准备下载'}
+                {convertedFiles.length} {language === 'pt' ? 'arquivos prontos para download' : language === 'en' ? 'files ready for download' : language === 'ru' ? 'файлов готово к скачиванию' : '文件准备下载'}
               </p>
             </div>
             <div className="flex gap-2">
@@ -382,7 +410,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                   className="text-green-600 hover:text-green-700 hover:bg-green-50 transition-all duration-300 border-none"
                 >
                   <Download className="w-4 h-4 mr-2" />
-                  {language === 'pt' ? 'Baixar' : language === 'en' ? 'Download' : '下载'}
+                  {language === 'pt' ? 'Baixar' : language === 'en' ? 'Download' : language === 'ru' ? 'Скачать' : '下载'}
                 </Button>
               )}
               
@@ -393,7 +421,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                   className="text-green-600 hover:text-green-700 hover:bg-green-50 transition-all duration-300 border-none"
                 >
                   <Download className="w-4 h-4 mr-2" />
-                  {language === 'pt' ? 'Baixar ZIP' : language === 'en' ? 'Download ZIP' : '下载ZIP'}
+                  {language === 'pt' ? 'Baixar ZIP' : language === 'en' ? 'Download ZIP' : language === 'ru' ? 'Скачать ZIP' : '下载ZIP'}
                 </Button>
               )}
             </div>
