@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -284,7 +285,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
         style={{
           backgroundColor: conversionColor,
           borderColor: conversionColor,
-          borderRadius: '0px'
+          borderRadius: '0px',
+          boxShadow: 'none'
         }}
       >
         <div className="text-center">
@@ -311,70 +313,70 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                 {t.dragText}
               </p>
             </div>
+            
+            {/* Controles integrados na área de upload */}
+            {selectedFiles.length > 0 && (
+              <div className="bg-white/10 rounded-lg p-4 w-full max-w-md">
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-white font-medium">
+                    {selectedFiles.length} {language === 'pt' ? 'arquivos selecionados' : language === 'en' ? 'files selected' : language === 'ru' ? 'файлов выбрано' : '文件已选择'}
+                  </span>
+                </div>
+                
+                <div className="flex gap-2 mb-3">
+                  <Button
+                    onClick={clearAllFiles}
+                    variant="ghost"
+                    size="sm"
+                    className="text-white hover:bg-white/20 border border-white/30 flex-1"
+                  >
+                    <RotateCcw className="w-4 h-4 mr-1" />
+                    {language === 'pt' ? 'Limpar' : language === 'en' ? 'Clear' : language === 'ru' ? 'Очистить' : '清除'}
+                  </Button>
+                  <Button
+                    onClick={handleConvert}
+                    disabled={isConverting}
+                    variant="ghost"
+                    size="sm"
+                    className="text-white hover:bg-white/20 border border-white/30 flex-1"
+                  >
+                    {isConverting ? t.converting : `${t.convertTo} ${conversionInfo.to}`}
+                  </Button>
+                </div>
+                
+                {/* Lista de arquivos compacta */}
+                <div className="max-h-32 overflow-y-auto space-y-1">
+                  {selectedFiles.map((file, index) => (
+                    <div key={index} className="flex items-center space-x-2 p-1 bg-white/10 rounded text-xs">
+                      <div className="w-4 h-4 bg-transparent rounded flex items-center justify-center">
+                        {getFileIcon()}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-white truncate font-medium">{file.name}</p>
+                        <p className="text-white/70">
+                          {(file.size / 1024 / 1024).toFixed(2)} MB
+                        </p>
+                      </div>
+                      <Button
+                        onClick={() => removeFile(index)}
+                        variant="ghost"
+                        size="sm"
+                        className="text-white/70 hover:text-white p-1 h-auto"
+                      >
+                        <X className="w-3 h-3" />
+                      </Button>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </Card>
 
-      {/* Selected Files Info */}
-      {selectedFiles.length > 0 && (
-        <Card className="w-full p-5 bg-white border border-gray-200">
-          <div className="space-y-3">
-            <div className="flex items-center justify-between">
-              <span className="font-medium text-gray-800">
-                {selectedFiles.length} {language === 'pt' ? 'arquivos selecionados' : language === 'en' ? 'files selected' : language === 'ru' ? 'файлов выбрано' : '文件已选择'}
-              </span>
-              <div className="flex gap-2">
-                <Button
-                  onClick={clearAllFiles}
-                  variant="ghost"
-                  className="text-gray-600 hover:text-red-600 hover:bg-red-50 transition-all duration-300 border-none"
-                >
-                  <RotateCcw className="w-4 h-4 mr-2" />
-                  {language === 'pt' ? 'Limpar' : language === 'en' ? 'Clear' : language === 'ru' ? 'Очистить' : '清除'}
-                </Button>
-                <Button
-                  onClick={handleConvert}
-                  disabled={isConverting}
-                  variant="ghost"
-                  className="text-gray-600 hover:text-gray-800 hover:bg-gray-100 transition-all duration-300 border-none"
-                  style={{ color: conversionColor }}
-                >
-                  {isConverting ? t.converting : `${t.convertTo} ${conversionInfo.to}`}
-                </Button>
-              </div>
-            </div>
-            
-            {/* File List */}
-            <div className="max-h-40 overflow-y-auto space-y-2">
-              {selectedFiles.map((file, index) => (
-                <div key={index} className="flex items-center space-x-3 p-2 bg-gray-50 rounded">
-                  <div className="w-6 h-6 bg-transparent rounded flex items-center justify-center">
-                    {getFileIcon()}
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-800 truncate">{file.name}</p>
-                    <p className="text-xs text-gray-600">
-                      {(file.size / 1024 / 1024).toFixed(2)} MB
-                    </p>
-                  </div>
-                  <Button
-                    onClick={() => removeFile(index)}
-                    variant="ghost"
-                    size="sm"
-                    className="text-gray-400 hover:text-red-500 p-1"
-                  >
-                    <X className="w-4 h-4" />
-                  </Button>
-                </div>
-              ))}
-            </div>
-          </div>
-        </Card>
-      )}
-
       {/* Progress */}
       {isConverting && (
-        <Card className="w-full p-5 bg-white border border-gray-200">
+        <Card className="w-full p-5 bg-white border-0" style={{ boxShadow: 'none' }}>
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-800">{t.converting}</span>
@@ -391,7 +393,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
 
       {/* Download */}
       {convertedFiles.length > 0 && (
-        <Card className="w-full p-5 bg-green-50 border border-green-200">
+        <Card className="w-full p-5 bg-green-50 border-0" style={{ boxShadow: 'none' }}>
           <div className="flex items-center space-x-4">
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
               <CheckCircle className="w-6 h-6 text-green-600" />
