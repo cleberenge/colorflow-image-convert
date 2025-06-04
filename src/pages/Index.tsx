@@ -14,7 +14,7 @@ const conversionTypes = [
     label: { 
       pt: 'PNG para JPG', en: 'PNG to JPG', zh: 'PNG转JPG', es: 'PNG a JPG', 
       fr: 'PNG vers JPG', de: 'PNG zu JPG', hi: 'PNG से JPG', ar: 'PNG إلى JPG', 
-      ko: 'PNG를 JPG로', ja: 'PNGをJPGへ' 
+      ko: 'PNG를 JPG로', ja: 'PNGをJPGへ', ru: 'PNG в JPG'
     }, 
     from: 'PNG', to: 'JPG', 
     icon: '🖼️' 
@@ -24,7 +24,7 @@ const conversionTypes = [
     label: { 
       pt: 'JPG para PDF', en: 'JPG to PDF', zh: 'JPG转PDF', es: 'JPG a PDF', 
       fr: 'JPG vers PDF', de: 'JPG zu PDF', hi: 'JPG से PDF', ar: 'JPG إلى PDF', 
-      ko: 'JPG를 PDF로', ja: 'JPGをPDFへ' 
+      ko: 'JPG를 PDF로', ja: 'JPGをPDFへ', ru: 'JPG в PDF'
     }, 
     from: 'JPG', to: 'PDF', 
     icon: '📸' 
@@ -34,7 +34,7 @@ const conversionTypes = [
     label: { 
       pt: 'PDF para Word', en: 'PDF to Word', zh: 'PDF转Word', es: 'PDF a Word', 
       fr: 'PDF vers Word', de: 'PDF zu Word', hi: 'PDF से Word', ar: 'PDF إلى Word', 
-      ko: 'PDF를 Word로', ja: 'PDFをWordへ' 
+      ko: 'PDF를 Word로', ja: 'PDFをWordへ', ru: 'PDF в Word'
     }, 
     from: 'PDF', to: 'Word', 
     icon: '📄' 
@@ -44,7 +44,7 @@ const conversionTypes = [
     label: { 
       pt: 'Word para PDF', en: 'Word to PDF', zh: 'Word转PDF', es: 'Word a PDF', 
       fr: 'Word vers PDF', de: 'Word zu PDF', hi: 'Word से PDF', ar: 'Word إلى PDF', 
-      ko: 'Word를 PDF로', ja: 'WordをPDFへ' 
+      ko: 'Word를 PDF로', ja: 'WordをPDFへ', ru: 'Word в PDF'
     }, 
     from: 'Word', to: 'PDF', 
     icon: '📝' 
@@ -54,7 +54,7 @@ const conversionTypes = [
     label: { 
       pt: 'Extrair MP3', en: 'Extract MP3', zh: '提取MP3', es: 'Extraer MP3', 
       fr: 'Extraire MP3', de: 'MP3 extrahieren', hi: 'MP3 निकालें', ar: 'استخراج MP3', 
-      ko: 'MP3 추출', ja: 'MP3を抽出' 
+      ko: 'MP3 추출', ja: 'MP3を抽出', ru: 'Извлечь MP3'
     }, 
     from: 'Vídeo', to: 'MP3', 
     icon: '🎵' 
@@ -64,7 +64,7 @@ const conversionTypes = [
     label: { 
       pt: 'Comprimir Vídeo', en: 'Compress Video', zh: '压缩视频', es: 'Comprimir Video', 
       fr: 'Compresser Vidéo', de: 'Video komprimieren', hi: 'वीडियो संपीड़ित करें', ar: 'ضغط الفيديو', 
-      ko: '동영상 압축', ja: '動画を圧縮' 
+      ko: '동영상 압축', ja: '動画を圧縮', ru: 'Сжать видео'
     }, 
     from: 'Vídeo', to: 'Vídeo Comprimido', 
     icon: '🎬' 
@@ -74,7 +74,7 @@ const conversionTypes = [
     label: { 
       pt: 'Dividir PDF', en: 'Split PDF', zh: '分割PDF', es: 'Dividir PDF', 
       fr: 'Diviser PDF', de: 'PDF teilen', hi: 'PDF विभाजित करें', ar: 'تقسيم PDF', 
-      ko: 'PDF 분할', ja: 'PDFを分割' 
+      ko: 'PDF 분할', ja: 'PDFを分割', ru: 'Разделить PDF'
     }, 
     from: 'PDF', to: 'PDFs Separados', 
     icon: '✂️' 
@@ -84,7 +84,7 @@ const conversionTypes = [
     label: { 
       pt: 'Juntar PDF', en: 'Merge PDF', zh: '合并PDF', es: 'Unir PDF', 
       fr: 'Fusionner PDF', de: 'PDF zusammenführen', hi: 'PDF मिलाएं', ar: 'دمج PDF', 
-      ko: 'PDF 병합', ja: 'PDFを結合' 
+      ko: 'PDF 병합', ja: 'PDFを結合', ru: 'Объединить PDF'
     }, 
     from: 'PDFs', to: 'PDF Único', 
     icon: '🔗' 
@@ -94,7 +94,7 @@ const conversionTypes = [
     label: { 
       pt: 'Reduzir PDF', en: 'Reduce PDF', zh: '压缩PDF', es: 'Reducir PDF', 
       fr: 'Réduire PDF', de: 'PDF reduzieren', hi: 'PDF कम करें', ar: 'تقليل PDF', 
-      ko: 'PDF 축소', ja: 'PDFを削減' 
+      ko: 'PDF 축소', ja: 'PDFを削減', ru: 'Уменьшить PDF'
     }, 
     from: 'PDF', to: 'PDF Comprimido', 
     icon: '📦' 
@@ -105,7 +105,7 @@ const pageLinks = [
   { 
     title: { 
       pt: 'Sobre', en: 'About', zh: '关于', es: 'Acerca de', fr: 'À propos', 
-      de: 'Über uns', hi: 'हमारे बारे में', ar: 'حول', ko: '정보', ja: '概要' 
+      de: 'Über uns', hi: 'हमारे बारे में', ar: 'حول', ko: '정보', ja: '概要', ru: 'О нас'
     }, 
     path: '/about', 
     description: { 
@@ -118,7 +118,8 @@ const pageLinks = [
       hi: 'हमारे मिशन और मूल मूल्यों के बारे में जानें। जानें कि हम समाधान प्रदान करने के लिए कैसे काम करते हैं। हमारी टीम और प्रतिबद्धता के बारे में और जानें।',
       ar: 'تعرف على مهمتنا وقيمنا الأساسية. اكتشف كيف نعمل لتقديم الحلول. تعرف أكثر على فريقنا والتزامنا.',
       ko: '우리의 사명과 핵심 가치에 대해 알아보세요. 우리가 솔루션을 제공하기 위해 어떻게 일하는지 발견하세요. 우리 팀과 약속에 대해 더 알아보세요.',
-      ja: '私たちのミッションと核となる価値観について学んでください。私たちがソリューションを提供するためにどのように働いているかを発見してください。私たちのチームとコミットメントについてもっと知ってください。'
+      ja: '私たちのミッションと核となる価値観について学んでください。私たちがソリューションを提供するためにどのように働いているかを発見してください。私たちのチームとコミットメントについてもっと知ってください。',
+      ru: 'Узнайте о нашей миссии и основных ценностях. Откройте для себя, как мы работаем над предоставлением решений. Узнайте больше о нашей команде и обязательствах.'
     } 
   },
   { 

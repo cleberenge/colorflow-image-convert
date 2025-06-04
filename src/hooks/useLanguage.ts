@@ -12,6 +12,25 @@ interface Translations {
   downloadFiles: string;
   selectFiles: string;
   chooseConversion: string;
+  subtitle: string;
+  about: {
+    title: string;
+  };
+  contact: {
+    title: string;
+  };
+  privacy: {
+    title: string;
+  };
+  terms: {
+    title: string;
+  };
+  cookies: {
+    title: string;
+  };
+  transparency: {
+    title: string;
+  };
   aboutTitle: string;
   aboutDescription: string;
   contactTitle: string;
@@ -43,6 +62,25 @@ const translations: Record<Language, Translations> = {
     downloadFiles: 'Baixar arquivos',
     selectFiles: 'Selecionar arquivos',
     chooseConversion: 'Escolha o tipo de conversão',
+    subtitle: 'Ferramenta gratuita e segura para conversão de arquivos online',
+    about: {
+      title: 'Sobre Nós'
+    },
+    contact: {
+      title: 'Contato'
+    },
+    privacy: {
+      title: 'Política de Privacidade'
+    },
+    terms: {
+      title: 'Termos de Uso'
+    },
+    cookies: {
+      title: 'Política de Cookies'
+    },
+    transparency: {
+      title: 'Transparência'
+    },
     aboutTitle: 'Sobre Nós',
     aboutDescription: 'Somos especialistas em conversão de arquivos online.',
     contactTitle: 'Contato',
@@ -72,6 +110,25 @@ const translations: Record<Language, Translations> = {
     downloadFiles: 'Download files',
     selectFiles: 'Select files',
     chooseConversion: 'Choose conversion type',
+    subtitle: 'Free and secure online file conversion tool',
+    about: {
+      title: 'About Us'
+    },
+    contact: {
+      title: 'Contact'
+    },
+    privacy: {
+      title: 'Privacy Policy'
+    },
+    terms: {
+      title: 'Terms of Use'
+    },
+    cookies: {
+      title: 'Cookie Policy'
+    },
+    transparency: {
+      title: 'Transparency'
+    },
     aboutTitle: 'About Us',
     aboutDescription: 'We are experts in online file conversion.',
     contactTitle: 'Contact',
@@ -101,6 +158,25 @@ const translations: Record<Language, Translations> = {
     downloadFiles: '下载文件',
     selectFiles: '选择文件',
     chooseConversion: '选择转换类型',
+    subtitle: '免费安全的在线文件转换工具',
+    about: {
+      title: '关于我们'
+    },
+    contact: {
+      title: '联系我们'
+    },
+    privacy: {
+      title: '隐私政策'
+    },
+    terms: {
+      title: '使用条款'
+    },
+    cookies: {
+      title: 'Cookie政策'
+    },
+    transparency: {
+      title: '透明度'
+    },
     aboutTitle: '关于我们',
     aboutDescription: '我们是在线文件转换专家。',
     contactTitle: '联系我们',
@@ -130,6 +206,25 @@ const translations: Record<Language, Translations> = {
     downloadFiles: 'Descargar archivos',
     selectFiles: 'Seleccionar archivos',
     chooseConversion: 'Elegir tipo de conversión',
+    subtitle: 'Herramienta gratuita y segura para conversión de archivos en línea',
+    about: {
+      title: 'Acerca de Nosotros'
+    },
+    contact: {
+      title: 'Contacto'
+    },
+    privacy: {
+      title: 'Política de Privacidad'
+    },
+    terms: {
+      title: 'Términos de Uso'
+    },
+    cookies: {
+      title: 'Política de Cookies'
+    },
+    transparency: {
+      title: 'Transparencia'
+    },
     aboutTitle: 'Acerca de Nosotros',
     aboutDescription: 'Somos expertos en conversión de archivos en línea.',
     contactTitle: 'Contacto',
@@ -159,6 +254,25 @@ const translations: Record<Language, Translations> = {
     downloadFiles: 'Télécharger les fichiers',
     selectFiles: 'Sélectionner des fichiers',
     chooseConversion: 'Choisir le type de conversion',
+    subtitle: 'Outil gratuit et sécurisé pour la conversion de fichiers en ligne',
+    about: {
+      title: 'À Propos'
+    },
+    contact: {
+      title: 'Contact'
+    },
+    privacy: {
+      title: 'Politique de Confidentialité'
+    },
+    terms: {
+      title: "Conditions d'Utilisation"
+    },
+    cookies: {
+      title: 'Politique des Cookies'
+    },
+    transparency: {
+      title: 'Transparence'
+    },
     aboutTitle: 'À Propos',
     aboutDescription: 'Nous sommes experts en conversion de fichiers en ligne.',
     contactTitle: 'Contact',
@@ -188,6 +302,25 @@ const translations: Record<Language, Translations> = {
     downloadFiles: 'Dateien herunterladen',
     selectFiles: 'Dateien auswählen',
     chooseConversion: 'Konvertierungstyp wählen',
+    subtitle: 'Kostenloses und sicheres Online-Dateikonvertierungstool',
+    about: {
+      title: 'Über Uns'
+    },
+    contact: {
+      title: 'Kontakt'
+    },
+    privacy: {
+      title: 'Datenschutzrichtlinie'
+    },
+    terms: {
+      title: 'Nutzungsbedingungen'
+    },
+    cookies: {
+      title: 'Cookie-Richtlinie'
+    },
+    transparency: {
+      title: 'Transparenz'
+    },
     aboutTitle: 'Über Uns',
     aboutDescription: 'Wir sind Experten für Online-Dateikonvertierung.',
     contactTitle: 'Kontakt',
@@ -217,6 +350,25 @@ const translations: Record<Language, Translations> = {
     downloadFiles: 'फाइलें डाउनलोड करें',
     selectFiles: 'फाइलें चुनें',
     chooseConversion: 'रूपांतरण प्रकार चुनें',
+    subtitle: 'मुफ्त और सुरक्षित ऑनलाइन फाइल रूपांतरण उपकरण',
+    about: {
+      title: 'हमारे बारे में'
+    },
+    contact: {
+      title: 'संपर्क'
+    },
+    privacy: {
+      title: 'गोपनीयता नीति'
+    },
+    terms: {
+      title: 'उपयोग की शर्तें'
+    },
+    cookies: {
+      title: 'कुकी नीति'
+    },
+    transparency: {
+      title: 'पारदर्शिता'
+    },
     aboutTitle: 'हमारे बारे में',
     aboutDescription: 'हम ऑनलाइन फाइल रूपांतरण के विशेषज्ञ हैं।',
     contactTitle: 'संपर्क',
@@ -246,6 +398,25 @@ const translations: Record<Language, Translations> = {
     downloadFiles: 'تحميل الملفات',
     selectFiles: 'تحديد الملفات',
     chooseConversion: 'اختر نوع التحويل',
+    subtitle: 'أداة مجانية وآمنة لتحويل الملفات عبر الإنترنت',
+    about: {
+      title: 'من نحن'
+    },
+    contact: {
+      title: 'اتصل بنا'
+    },
+    privacy: {
+      title: 'سياسة الخصوصية'
+    },
+    terms: {
+      title: 'شروط الاستخدام'
+    },
+    cookies: {
+      title: 'سياسة ملفات تعريف الارتباط'
+    },
+    transparency: {
+      title: 'الشفافية'
+    },
     aboutTitle: 'من نحن',
     aboutDescription: 'نحن خبراء في تحويل الملفات عبر الإنترنت.',
     contactTitle: 'اتصل بنا',
@@ -275,6 +446,25 @@ const translations: Record<Language, Translations> = {
     downloadFiles: '파일 다운로드',
     selectFiles: '파일 선택',
     chooseConversion: '변환 유형 선택',
+    subtitle: '무료이고 안전한 온라인 파일 변환 도구',
+    about: {
+      title: '회사 소개'
+    },
+    contact: {
+      title: '연락처'
+    },
+    privacy: {
+      title: '개인정보 보호정책'
+    },
+    terms: {
+      title: '이용약관'
+    },
+    cookies: {
+      title: '쿠키 정책'
+    },
+    transparency: {
+      title: '투명성'
+    },
     aboutTitle: '회사 소개',
     aboutDescription: '저희는 온라인 파일 변환 전문가입니다.',
     contactTitle: '연락처',
@@ -304,6 +494,25 @@ const translations: Record<Language, Translations> = {
     downloadFiles: 'ファイルをダウンロード',
     selectFiles: 'ファイルを選択',
     chooseConversion: '変換タイプを選択',
+    subtitle: '無料で安全なオンラインファイル変換ツール',
+    about: {
+      title: '会社概要'
+    },
+    contact: {
+      title: 'お問い合わせ'
+    },
+    privacy: {
+      title: 'プライバシーポリシー'
+    },
+    terms: {
+      title: '利用規約'
+    },
+    cookies: {
+      title: 'クッキーポリシー'
+    },
+    transparency: {
+      title: '透明性'
+    },
     aboutTitle: '会社概要',
     aboutDescription: '私たちはオンラインファイル変換の専門家です。',
     contactTitle: 'お問い合わせ',
@@ -333,6 +542,25 @@ const translations: Record<Language, Translations> = {
     downloadFiles: 'Скачать файлы',
     selectFiles: 'Выбрать файлы',
     chooseConversion: 'Выберите тип конвертации',
+    subtitle: 'Бесплатный и безопасный инструмент для онлайн конвертации файлов',
+    about: {
+      title: 'О нас'
+    },
+    contact: {
+      title: 'Контакты'
+    },
+    privacy: {
+      title: 'Политика конфиденциальности'
+    },
+    terms: {
+      title: 'Условия использования'
+    },
+    cookies: {
+      title: 'Политика cookies'
+    },
+    transparency: {
+      title: 'Прозрачность'
+    },
     aboutTitle: 'О нас',
     aboutDescription: 'Мы эксперты в онлайн конвертации файлов.',
     contactTitle: 'Контакты',
