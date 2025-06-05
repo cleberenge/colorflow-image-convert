@@ -65,7 +65,7 @@ serve(async (req) => {
       stderr: "piped",
     });
 
-    const process = command.spawn();
+    const process = sharpCommand.spawn();
     const output = await process.output();
 
     if (!process.success) {
