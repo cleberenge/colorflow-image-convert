@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -281,8 +280,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
         style={{
           backgroundColor: conversionColor,
           borderColor: conversionColor,
-          borderRadius: '0px',
-          boxShadow: 'none'
+          borderRadius: '0px'
         }}
       >
         <div className="text-center">
@@ -391,7 +389,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
 
       {/* Progress - REMOVIDO boxShadow */}
       {isConverting && (
-        <Card className="w-full p-5 bg-white border-0" style={{ boxShadow: 'none' }}>
+        <Card className="w-full p-5 bg-white border-0">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-800">{t.converting}</span>
@@ -408,7 +406,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
 
       {/* Success message - REMOVIDO boxShadow */}
       {convertedFiles.length > 0 && (
-        <Card className="w-full p-5 bg-green-50 border-0" style={{ boxShadow: 'none' }}>
+        <Card className="w-full p-5 bg-green-50 border-0">
           <div className="flex items-center space-x-4">
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
               <CheckCircle className="w-6 h-6 text-green-600" />
