@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -163,7 +164,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     setConvertedFiles([]);
   }, []);
 
-  const handleConvert = useCallback(async () => {
+  const handleConvert = useCallback(async (event: React.MouseEvent) => {
+    event.stopPropagation(); // Impede propagação do evento
     if (selectedFiles.length === 0) return;
 
     console.log(`Starting real conversion for ${selectedFiles.length} files, type: ${conversionType}`);
@@ -275,13 +277,12 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
   return (
     <div className="flex flex-col items-center space-y-6 animate-fade-in mx-auto" style={{ maxWidth: '800px', margin: '0 auto', padding: '0 10px' }}>
       {/* Upload Area */}
-      <Card 
+      <div 
         className="w-full p-6 border-2 border-dashed transition-all duration-300"
         style={{
           backgroundColor: conversionColor,
           borderColor: conversionColor,
-          borderRadius: '0px',
-          boxShadow: 'none'
+          borderRadius: '0px'
         }}
       >
         <div className="text-center">
@@ -311,7 +312,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
             
             {/* Nova área integrada para controles e arquivos selecionados */}
             {selectedFiles.length > 0 && (
-              <div className="bg-white/10 rounded-lg p-4 w-full max-w-2xl">
+              <div className="bg-white/10 rounded-lg p-4 w-full max-w-2xl" onClick={(e) => e.stopPropagation()}>
                 {/* Exibir nomes dos arquivos selecionados */}
                 <div className="mb-4">
                   <h4 className="text-white font-medium mb-2">
@@ -333,7 +334,10 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                           </div>
                         </div>
                         <Button
-                          onClick={() => removeFile(index)}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            removeFile(index);
+                          }}
                           variant="ghost"
                           size="sm"
                           className="text-white/70 hover:text-white p-1 h-auto ml-2"
@@ -359,7 +363,10 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                   
                   {convertedFiles.length > 0 && (
                     <Button
-                      onClick={convertedFiles.length === 1 ? () => handleDownloadSingle(convertedFiles[0]) : handleDownloadZip}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        convertedFiles.length === 1 ? handleDownloadSingle(convertedFiles[0]) : handleDownloadZip();
+                      }}
                       variant="ghost"
                       size="sm"
                       className="text-white hover:bg-white/20 border border-white/30 px-4 py-2"
@@ -373,7 +380,10 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                   )}
                   
                   <Button
-                    onClick={clearAllFiles}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      clearAllFiles();
+                    }}
                     variant="ghost"
                     size="sm"
                     className="text-white hover:bg-white/20 border border-white/30 px-4 py-2"
@@ -386,11 +396,11 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
             )}
           </div>
         </div>
-      </Card>
+      </div>
 
       {/* Progress */}
       {isConverting && (
-        <Card className="w-full p-5 bg-white border-0" style={{ boxShadow: 'none' }}>
+        <div className="w-full p-5 bg-white border-0">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-800">{t.converting}</span>
@@ -402,12 +412,12 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
               indicatorColor={conversionColor}
             />
           </div>
-        </Card>
+        </div>
       )}
 
       {/* Success message */}
       {convertedFiles.length > 0 && (
-        <Card className="w-full p-5 bg-green-50 border-0" style={{ boxShadow: 'none' }}>
+        <div className="w-full p-5 bg-green-50 border-0">
           <div className="flex items-center space-x-4">
             <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
               <CheckCircle className="w-6 h-6 text-green-600" />
@@ -419,7 +429,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
               </p>
             </div>
           </div>
-        </Card>
+        </div>
       )}
     </div>
   );
