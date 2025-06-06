@@ -15,16 +15,29 @@ export const useFileConverter = () => {
     try {
       const convertedFiles: { file: File; originalName: string }[] = [];
 
-      // Progress simulation
-      const progressInterval = setInterval(() => {
-        setProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return 90;
-          }
-          return prev + 10;
+      // Simular progresso gradual
+      const updateProgress = (targetProgress: number, duration: number) => {
+        return new Promise<void>((resolve) => {
+          const startProgress = progress;
+          const progressDiff = targetProgress - startProgress;
+          const steps = Math.ceil(duration / 50); // Atualizar a cada 50ms
+          let currentStep = 0;
+
+          const interval = setInterval(() => {
+            currentStep++;
+            const newProgress = startProgress + (progressDiff * currentStep) / steps;
+            setProgress(Math.min(newProgress, targetProgress));
+
+            if (currentStep >= steps) {
+              clearInterval(interval);
+              resolve();
+            }
+          }, 50);
         });
-      }, 100);
+      };
+
+      // Progresso inicial (0-20%)
+      await updateProgress(20, 500);
 
       // Determine which edge function to use
       let functionName: string;
@@ -40,6 +53,9 @@ export const useFileConverter = () => {
 
       console.log(`Using edge function: ${functionName} for conversion type: ${conversionType}`);
 
+      // Progresso de preparação (20-40%)
+      await updateProgress(40, 800);
+
       if (conversionType === 'merge-pdf' && files.length > 1) {
         // Special handling for PDF merge
         const formData = new FormData();
@@ -47,6 +63,9 @@ export const useFileConverter = () => {
         files.forEach((file, index) => {
           formData.append('files', file);
         });
+
+        // Progresso de processamento (40-80%)
+        await updateProgress(80, 1500);
 
         const { data, error } = await supabase.functions.invoke(functionName, {
           body: formData,
@@ -61,9 +80,15 @@ export const useFileConverter = () => {
 
       } else {
         // Process each file individually
-        for (const file of files) {
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
           console.log(`Converting file: ${file.name}`);
           
+          // Progresso por arquivo (40-80%)
+          const fileStartProgress = 40 + (i * 40) / files.length;
+          const fileEndProgress = 40 + ((i + 1) * 40) / files.length;
+          await updateProgress(fileStartProgress + (fileEndProgress - fileStartProgress) * 0.5, 1000);
+
           const formData = new FormData();
           formData.append('file', file);
           formData.append('conversionType', conversionType);
@@ -117,16 +142,14 @@ export const useFileConverter = () => {
           convertedFiles.push({ file: convertedFile, originalName: file.name });
           
           console.log(`File converted successfully: ${newFileName}`);
+          
+          // Finalizar progresso do arquivo
+          await updateProgress(fileEndProgress, 500);
         }
       }
 
-      clearInterval(progressInterval);
-      setProgress(100);
-
-      toast({
-        title: "Conversão concluída!",
-        description: `${files.length} arquivo(s) convertido(s) com sucesso.`,
-      });
+      // Progresso final (80-100%)
+      await updateProgress(100, 800);
 
       return convertedFiles;
 

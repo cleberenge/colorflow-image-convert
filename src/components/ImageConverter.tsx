@@ -111,41 +111,43 @@ const ImageConverter = () => {
 
       {/* Selected File Info */}
       {selectedFile && (
-        <Card className="w-full max-w-2xl p-6 bg-black border border-gray-200">
+        <Card className="w-full max-w-2xl p-6 bg-white border border-gray-200">
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
-              <ImageIcon className="w-6 h-6 text-yellow-600" />
+            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
+              <ImageIcon className="w-6 h-6 text-orange-600" />
             </div>
             <div className="flex-1">
-              <p className="font-medium text-white">{selectedFile.name}</p>
-              <p className="text-sm text-white/80">
-                {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-              </p>
-            </div>
-            <div className="flex items-center space-x-3">
-              <Button
-                onClick={convertToJPG}
-                disabled={isConverting}
-                className="bg-yellow-500 hover:bg-yellow-600 text-black font-medium transition-all duration-300"
-              >
-                {isConverting ? 'Convertendo...' : 'Converter'}
-              </Button>
-              <Button
-                onClick={clearFiles}
-                variant="outline"
-                className="border-white text-white hover:bg-white hover:text-black transition-all duration-300"
-              >
-                Limpar
-              </Button>
-              {convertedImage && (
+              <div className="bg-orange-500 rounded-lg p-3 mb-4">
+                <p className="font-medium text-white">{selectedFile.name}</p>
+                <p className="text-sm text-white/80">
+                  {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
+                </p>
+              </div>
+              <div className="flex items-center space-x-3">
                 <Button
-                  onClick={downloadJPG}
-                  className="bg-green-600 hover:bg-green-700 text-white font-semibold transition-all duration-300 shadow-lg"
+                  onClick={convertToJPG}
+                  disabled={isConverting}
+                  className="bg-orange-500 hover:bg-orange-600 text-white font-medium transition-all duration-300"
                 >
-                  <Download className="w-4 h-4 mr-2" />
-                  Baixar
+                  {isConverting ? 'Convertendo...' : 'Converter para JPG'}
                 </Button>
-              )}
+                <Button
+                  onClick={clearFiles}
+                  variant="outline"
+                  className="bg-orange-500 hover:bg-orange-600 text-white border-orange-500 transition-all duration-300"
+                >
+                  Limpar
+                </Button>
+                {convertedImage && (
+                  <Button
+                    onClick={downloadJPG}
+                    className="bg-orange-600 hover:bg-orange-700 text-white font-semibold transition-all duration-300 shadow-lg"
+                  >
+                    <Download className="w-4 h-4 mr-2" />
+                    Baixar
+                  </Button>
+                )}
+              </div>
             </div>
           </div>
         </Card>
@@ -157,9 +159,9 @@ const ImageConverter = () => {
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-800">Convertendo...</span>
-              <span className="text-sm text-gray-600">{progress}%</span>
+              <span className="text-sm text-orange-600 font-medium">{progress}%</span>
             </div>
-            <Progress value={progress} className="h-2" indicatorColor="#FDEE00" />
+            <Progress value={progress} className="h-2" indicatorColor="#F97316" />
           </div>
         </Card>
       )}
