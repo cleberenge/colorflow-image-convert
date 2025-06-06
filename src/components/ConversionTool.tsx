@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -30,6 +30,12 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
 
   const conversionColor = getConversionColor(conversionType);
   const conversionColorHover = getConversionColorHover(conversionType);
+
+  // Reset state when conversionType changes
+  useEffect(() => {
+    setSelectedFiles([]);
+    setConvertedFiles([]);
+  }, [conversionType]);
 
   // Define accepted file types based on conversion type
   const getAcceptedTypes = () => {
@@ -125,6 +131,10 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     return `${t.uploadText} ${conversionInfo.from}`;
   };
 
+  const getTextColor = () => {
+    return conversionType === 'png-jpg' ? 'text-black' : 'text-white';
+  };
+
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     console.log('handleFileSelect called');
     const files = event.target.files;
@@ -162,10 +172,16 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
   const clearAllFiles = useCallback(() => {
     setSelectedFiles([]);
     setConvertedFiles([]);
-  }, []);
+    // Clean up any blob URLs
+    convertedFiles.forEach(item => {
+      if (item.file instanceof File && item.file.name.includes('blob:')) {
+        URL.revokeObjectURL(item.file.name);
+      }
+    });
+  }, [convertedFiles]);
 
   const handleConvert = useCallback(async (event: React.MouseEvent) => {
-    event.stopPropagation(); // Impede propagação do evento
+    event.stopPropagation();
     if (selectedFiles.length === 0) return;
 
     console.log(`Starting real conversion for ${selectedFiles.length} files, type: ${conversionType}`);
@@ -184,8 +200,11 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
     try {
       console.log('Starting single file download:', convertedItem.file.name, 'Size:', convertedItem.file.size);
       
+      // Create a proper blob URL for the converted file
+      const blob = new Blob([convertedItem.file], { type: convertedItem.file.type });
+      const url = URL.createObjectURL(blob);
+      
       const link = document.createElement('a');
-      const url = URL.createObjectURL(convertedItem.file);
       link.href = url;
       link.download = convertedItem.file.name;
       
@@ -299,13 +318,13 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
             className="cursor-pointer flex flex-col items-center space-y-4"
           >
             <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-              <Upload className="w-8 h-8 text-white" />
+              <Upload className={`w-8 h-8 ${getTextColor()}`} />
             </div>
             <div>
-              <p className="text-lg font-medium mb-2 text-white">
+              <p className={`text-lg font-medium mb-2 ${getTextColor()}`}>
                 {getUploadText()}
               </p>
-              <p className="text-sm text-white/80">
+              <p className={`text-sm ${getTextColor()}/80`}>
                 {t.dragText}
               </p>
             </div>
@@ -315,7 +334,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
               <div className="bg-white/10 rounded-lg p-4 w-full max-w-2xl" onClick={(e) => e.stopPropagation()}>
                 {/* Exibir nomes dos arquivos selecionados */}
                 <div className="mb-4">
-                  <h4 className="text-white font-medium mb-2">
+                  <h4 className={`${getTextColor()} font-medium mb-2`}>
                     {language === 'pt' ? 'Arquivos selecionados:' : 
                      language === 'en' ? 'Selected files:' : 
                      language === 'ru' ? 'Выбранные файлы:' : 
@@ -327,8 +346,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                         <div className="flex items-center space-x-2 flex-1 min-w-0">
                           {getFileIcon()}
                           <div className="min-w-0 flex-1">
-                            <p className="text-white truncate font-medium">{file.name}</p>
-                            <p className="text-white/70 text-xs">
+                            <p className={`${getTextColor()} truncate font-medium`}>{file.name}</p>
+                            <p className={`${getTextColor()}/70 text-xs`}>
                               {(file.size / 1024 / 1024).toFixed(2)} MB
                             </p>
                           </div>
@@ -340,7 +359,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                           }}
                           variant="ghost"
                           size="sm"
-                          className="text-white/70 hover:text-white p-1 h-auto ml-2"
+                          className={`${getTextColor()}/70 hover:${getTextColor()} p-1 h-auto ml-2`}
                         >
                           <X className="w-4 h-4" />
                         </Button>
@@ -349,16 +368,29 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                   </div>
                 </div>
                 
-                {/* Controles alinhados horizontalmente: Converter | Baixar | Limpar */}
+                {/* Controles alinhados horizontalmente: Converter | Limpar | Baixar */}
                 <div className="flex gap-3 justify-center">
                   <Button
                     onClick={handleConvert}
                     disabled={isConverting}
                     variant="ghost"
                     size="sm"
-                    className="text-white hover:bg-white/20 border border-white/30 px-4 py-2"
+                    className={`${getTextColor()} hover:bg-white/20 border border-white/30 px-4 py-2`}
                   >
-                    {isConverting ? t.converting : `${t.convertTo} ${conversionInfo.to}`}
+                    {isConverting ? t.converting : t.convertTo.replace(` ${conversionInfo.to}`, '')}
+                  </Button>
+                  
+                  <Button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      clearAllFiles();
+                    }}
+                    variant="ghost"
+                    size="sm"
+                    className={`${getTextColor()} hover:bg-white/20 border border-white/30 px-4 py-2`}
+                  >
+                    <RotateCcw className="w-4 h-4 mr-2" />
+                    {language === 'pt' ? 'Limpar' : language === 'en' ? 'Clear' : language === 'ru' ? 'Очистить' : '清除'}
                   </Button>
                   
                   {convertedFiles.length > 0 && (
@@ -369,28 +401,12 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                       }}
                       variant="ghost"
                       size="sm"
-                      className="text-white hover:bg-white/20 border border-white/30 px-4 py-2"
+                      className={`${getTextColor()} hover:bg-white/20 border border-white/30 px-4 py-2 font-semibold shadow-lg`}
                     >
                       <Download className="w-4 h-4 mr-2" />
-                      {convertedFiles.length === 1 ? 
-                        (language === 'pt' ? 'Baixar' : language === 'en' ? 'Download' : language === 'ru' ? 'Скачать' : '下载') :
-                        (language === 'pt' ? 'Baixar ZIP' : language === 'en' ? 'Download ZIP' : language === 'ru' ? 'Скачать ZIP' : '下载ZIP')
-                      }
+                      {language === 'pt' ? 'Baixar' : language === 'en' ? 'Download' : language === 'ru' ? 'Скачать' : '下载'}
                     </Button>
                   )}
-                  
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      clearAllFiles();
-                    }}
-                    variant="ghost"
-                    size="sm"
-                    className="text-white hover:bg-white/20 border border-white/30 px-4 py-2"
-                  >
-                    <RotateCcw className="w-4 h-4 mr-2" />
-                    {language === 'pt' ? 'Limpar' : language === 'en' ? 'Clear' : language === 'ru' ? 'Очистить' : '清除'}
-                  </Button>
                 </div>
               </div>
             )}
@@ -411,23 +427,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
               className="h-3" 
               indicatorColor={conversionColor}
             />
-          </div>
-        </div>
-      )}
-
-      {/* Success message */}
-      {convertedFiles.length > 0 && (
-        <div className="w-full p-5 bg-green-50 border-0">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center">
-              <CheckCircle className="w-6 h-6 text-green-600" />
-            </div>
-            <div className="flex-1">
-              <p className="font-medium text-gray-800">{t.conversionComplete}</p>
-              <p className="text-sm text-gray-600">
-                {convertedFiles.length} {language === 'pt' ? 'arquivos prontos para download' : language === 'en' ? 'files ready for download' : language === 'ru' ? 'файлов готово к скачиванию' : '文件准备下载'}
-              </p>
-            </div>
           </div>
         </div>
       )}
