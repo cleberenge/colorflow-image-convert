@@ -261,7 +261,7 @@ const Index = () => {
             </div>
             
             {/* Main tools - top row with tighter spacing */}
-            <div className="flex justify-center mb-1 max-w-2xl mx-auto gap-0 bg-gray-50 rounded-lg shadow-lg">
+            <div className="flex justify-center mb-1 max-w-2xl mx-auto gap-0 bg-gray-50 rounded-lg">
               {mainTools.map((type) => {
                 const conversionColor = getConversionColor(type.id);
                 return (
@@ -274,9 +274,12 @@ const Index = () => {
                   >
                     <ConversionIcon conversionType={type.id} className="w-4 h-4 flex-shrink-0" />
                     <span 
-                      className="text-xs font-medium text-left leading-tight flex-1"
+                      className={`text-xs font-medium text-left leading-tight flex-1 ${
+                        type.id === 'png-jpg' && activeConversion === type.id ? 'text-black' : ''
+                      }`}
                       style={{ 
-                        color: activeConversion === type.id ? conversionColor : '#374151'
+                        color: activeConversion === type.id ? 
+                          (type.id === 'png-jpg' ? '#000000' : conversionColor) : '#374151'
                       }}
                     >
                       {type.label[language]}
@@ -287,7 +290,7 @@ const Index = () => {
             </div>
             
             {/* Other tools - bottom row with very tight spacing and justification */}
-            <div className="flex justify-between mb-6 max-w-lg mx-auto bg-gray-50 rounded-lg shadow-lg">
+            <div className="flex justify-between mb-6 max-w-lg mx-auto bg-gray-50 rounded-lg">
               {otherTools.map((type) => {
                 const conversionColor = getConversionColor(type.id);
                 return (
@@ -313,7 +316,7 @@ const Index = () => {
             </div>
             
             {/* Active conversion tool */}
-            <div className="bg-white rounded-xl shadow-xl p-6">
+            <div className="bg-white rounded-xl p-6">
               <ConversionTool 
                 conversionType={activeConversion} 
                 conversionInfo={conversionTypes.find(t => t.id === activeConversion) || conversionTypes[0]} 
@@ -326,7 +329,7 @@ const Index = () => {
                 <Link
                   key={link.path}
                   to={link.path}
-                  className="text-center bg-gray-50 p-2 animate-fade-in hover:bg-gray-100 transition-all duration-300 block rounded-lg shadow-lg hover:shadow-xl"
+                  className="text-center bg-gray-50 p-2 animate-fade-in hover:bg-gray-100 transition-all duration-300 block rounded-lg hover:shadow-xl"
                 >
                   <h3 className="font-semibold mb-1 text-base text-gray-700">{link.title[language]}</h3>
                   <p className="text-gray-600 text-xs leading-snug">{link.description[language]}</p>
