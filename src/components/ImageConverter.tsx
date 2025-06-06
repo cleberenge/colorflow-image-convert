@@ -5,13 +5,13 @@ import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Upload, Download, Image as ImageIcon, CheckCircle } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
+import { useFileConverter } from '@/hooks/useFileConverter';
 
 const ImageConverter = () => {
   const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [isConverting, setIsConverting] = useState(false);
   const [convertedImage, setConvertedImage] = useState<string | null>(null);
-  const [progress, setProgress] = useState(0);
   const { toast } = useToast();
+  const { convertFiles, isConverting, progress } = useFileConverter();
 
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -36,70 +36,28 @@ const ImageConverter = () => {
   const convertToJPG = useCallback(async () => {
     if (!selectedFile) return;
 
-    setIsConverting(true);
-    setProgress(0);
-
     try {
-      // Simulate progress
-      const progressInterval = setInterval(() => {
-        setProgress(prev => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return 90;
-          }
-          return prev + 10;
-        });
-      }, 100);
-
-      // Create canvas for conversion
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d');
-      const img = new Image();
-
-      await new Promise((resolve, reject) => {
-        img.onload = () => {
-          canvas.width = img.width;
-          canvas.height = img.height;
-          
-          // Fill with white background
-          if (ctx) {
-            ctx.fillStyle = '#FFFFFF';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.drawImage(img, 0, 0);
-          }
-          
-          canvas.toBlob((blob) => {
-            if (blob) {
-              const url = URL.createObjectURL(blob);
-              setConvertedImage(url);
-              setProgress(100);
-              resolve(url);
-            } else {
-              reject(new Error('Falha na conversão'));
-            }
-          }, 'image/jpeg', 0.95);
-        };
+      const convertedFiles = await convertFiles([selectedFile], 'png-jpg');
+      
+      if (convertedFiles && convertedFiles.length > 0) {
+        const convertedFile = convertedFiles[0].file;
+        const url = URL.createObjectURL(convertedFile);
+        setConvertedImage(url);
         
-        img.onerror = reject;
-        img.src = URL.createObjectURL(selectedFile);
-      });
-
-      toast({
-        title: "Conversão concluída!",
-        description: "Seu arquivo PNG foi convertido para JPG com sucesso.",
-      });
-
+        toast({
+          title: "Conversão concluída!",
+          description: "Seu arquivo PNG foi convertido para JPG com sucesso.",
+        });
+      }
     } catch (error) {
       console.error('Erro na conversão:', error);
       toast({
         title: "Erro na conversão",
-        description: "Ocorreu um erro ao converter o arquivo.",
+        description: "Ocorreu um erro ao converter o arquivo. Tente novamente.",
         variant: "destructive",
       });
-    } finally {
-      setIsConverting(false);
     }
-  }, [selectedFile, toast]);
+  }, [selectedFile, convertFiles, toast]);
 
   const downloadJPG = useCallback(() => {
     if (convertedImage && selectedFile) {
@@ -120,7 +78,7 @@ const ImageConverter = () => {
   return (
     <div className="flex flex-col items-center space-y-8 animate-fade-in">
       {/* Upload Area */}
-      <Card className="w-full max-w-2xl p-8 border-2 border-dashed border-brand-blue/30 bg-brand-cream/50 hover:border-brand-blue/50 transition-all duration-300">
+      <Card className="w-full max-w-2xl p-8 border-2 border-dashed border-gray-300 hover:border-gray-400 transition-all duration-300" style={{ backgroundColor: '#FDEE00' }}>
         <div className="text-center">
           <input
             type="file"
@@ -133,14 +91,14 @@ const ImageConverter = () => {
             htmlFor="file-input"
             className="cursor-pointer flex flex-col items-center space-y-4"
           >
-            <div className="w-20 h-20 bg-brand-blue/10 rounded-full flex items-center justify-center">
-              <Upload className="w-10 h-10 text-brand-blue" />
+            <div className="w-20 h-20 bg-black/10 rounded-full flex items-center justify-center">
+              <Upload className="w-10 h-10 text-black" />
             </div>
             <div>
-              <p className="text-lg font-medium text-brand-teal mb-2">
+              <p className="text-lg font-medium text-black mb-2">
                 Clique para selecionar um arquivo PNG
               </p>
-              <p className="text-sm text-gray-600">
+              <p className="text-sm text-black/80">
                 Ou arraste e solte seu arquivo aqui
               </p>
             </div>
@@ -150,13 +108,13 @@ const ImageConverter = () => {
 
       {/* Selected File Info */}
       {selectedFile && (
-        <Card className="w-full max-w-2xl p-6 bg-white border border-brand-blue/20">
+        <Card className="w-full max-w-2xl p-6 bg-white border border-gray-200">
           <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-brand-yellow/20 rounded-lg flex items-center justify-center">
-              <ImageIcon className="w-6 h-6 text-brand-yellow" />
+            <div className="w-12 h-12 bg-yellow-100 rounded-lg flex items-center justify-center">
+              <ImageIcon className="w-6 h-6 text-yellow-600" />
             </div>
             <div className="flex-1">
-              <p className="font-medium text-brand-teal">{selectedFile.name}</p>
+              <p className="font-medium text-gray-800">{selectedFile.name}</p>
               <p className="text-sm text-gray-600">
                 {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
               </p>
@@ -164,7 +122,7 @@ const ImageConverter = () => {
             <Button
               onClick={convertToJPG}
               disabled={isConverting}
-              className="bg-brand-yellow hover:bg-brand-yellow/90 text-brand-teal font-medium transition-all duration-300"
+              className="bg-yellow-500 hover:bg-yellow-600 text-black font-medium transition-all duration-300"
             >
               {isConverting ? 'Convertendo...' : 'Converter para JPG'}
             </Button>
@@ -177,10 +135,10 @@ const ImageConverter = () => {
         <Card className="w-full max-w-2xl p-6 bg-white">
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-brand-teal">Convertendo...</span>
+              <span className="text-sm font-medium text-gray-800">Convertendo...</span>
               <span className="text-sm text-gray-600">{progress}%</span>
             </div>
-            <Progress value={progress} className="h-2" />
+            <Progress value={progress} className="h-2" indicatorColor="#FDEE00" />
           </div>
         </Card>
       )}
@@ -193,7 +151,7 @@ const ImageConverter = () => {
               <CheckCircle className="w-6 h-6 text-green-600" />
             </div>
             <div className="flex-1">
-              <p className="font-medium text-brand-teal">Conversão concluída!</p>
+              <p className="font-medium text-gray-800">Conversão concluída!</p>
               <p className="text-sm text-gray-600">
                 Seu arquivo JPG está pronto para download
               </p>
