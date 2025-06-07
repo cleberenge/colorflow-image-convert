@@ -98,11 +98,11 @@ const ImageConverter = () => {
               <Upload className="w-10 h-10 text-black" />
             </div>
             <div>
-              <p className="text-lg font-medium text-black mb-2">
-                Clique para selecionar um arquivo PNG
+              <p className="text-xl font-medium text-black mb-2">
+                Clique para selecionar até 25 arquivos PNG
               </p>
-              <p className="text-sm text-black/80">
-                Ou arraste e solte seu arquivo aqui
+              <p className="text-base text-black/80">
+                ou arraste e solte aqui
               </p>
             </div>
           </label>
@@ -117,7 +117,7 @@ const ImageConverter = () => {
               <ImageIcon className="w-6 h-6 text-orange-600" />
             </div>
             <div className="flex-1">
-              <div className="bg-orange-500 rounded-lg p-3 mb-4">
+              <div className="bg-orange-600 rounded-lg p-3 mb-4">
                 <p className="font-medium text-white">{selectedFile.name}</p>
                 <p className="text-sm text-white/80">
                   {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
@@ -129,7 +129,7 @@ const ImageConverter = () => {
                   disabled={isConverting}
                   className="bg-orange-500 hover:bg-orange-600 text-white font-medium transition-all duration-300"
                 >
-                  {isConverting ? 'Convertendo...' : 'Converter para JPG'}
+                  {isConverting ? 'Convertendo...' : 'Converter'}
                 </Button>
                 <Button
                   onClick={clearFiles}
@@ -141,7 +141,7 @@ const ImageConverter = () => {
                 {convertedImage && (
                   <Button
                     onClick={downloadJPG}
-                    className="bg-orange-600 hover:bg-orange-700 text-white font-semibold transition-all duration-300 shadow-lg"
+                    className="bg-orange-700 hover:bg-orange-800 text-white font-semibold transition-all duration-300 shadow-lg"
                   >
                     <Download className="w-4 h-4 mr-2" />
                     Baixar

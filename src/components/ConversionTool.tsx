@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -129,6 +128,13 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
              `点击选择最多${maxFiles}个${conversionInfo.from}文件`;
     }
     return `${t.uploadText} ${conversionInfo.from}`;
+  };
+
+  const getUploadSubText = () => {
+    return language === 'pt' ? 'ou arraste e solte aqui' :
+           language === 'en' ? 'or drag and drop here' :
+           language === 'ru' ? 'или перетащите сюда' :
+           '或拖拽到这里';
   };
 
   const getTextColor = () => {
@@ -321,11 +327,11 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
               <Upload className={`w-8 h-8 ${getTextColor()}`} />
             </div>
             <div>
-              <p className={`text-lg font-medium mb-2 ${getTextColor()}`}>
+              <p className={`text-xl font-medium mb-2 ${getTextColor()}`}>
                 {getUploadText()}
               </p>
-              <p className={`text-sm ${getTextColor()}/80`}>
-                {t.dragText}
+              <p className={`text-base ${getTextColor()}/80`}>
+                {getUploadSubText()}
               </p>
             </div>
             
@@ -342,12 +348,12 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                   </h4>
                   <div className="grid grid-cols-1 gap-2 max-h-32 overflow-y-auto">
                     {selectedFiles.map((file, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 bg-white/10 rounded text-sm">
+                      <div key={index} className="flex items-center justify-between p-2 rounded text-sm" style={{ backgroundColor: '#D97706' }}>
                         <div className="flex items-center space-x-2 flex-1 min-w-0">
                           {getFileIcon()}
                           <div className="min-w-0 flex-1">
-                            <p className={`${getTextColor()} truncate font-medium`}>{file.name}</p>
-                            <p className={`${getTextColor()}/70 text-xs`}>
+                            <p className="text-white truncate font-medium">{file.name}</p>
+                            <p className="text-white/70 text-xs">
                               {(file.size / 1024 / 1024).toFixed(2)} MB
                             </p>
                           </div>
@@ -359,7 +365,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                           }}
                           variant="ghost"
                           size="sm"
-                          className={`${getTextColor()}/70 hover:${getTextColor()} p-1 h-auto ml-2`}
+                          className="text-white/70 hover:text-white p-1 h-auto ml-2"
                         >
                           <X className="w-4 h-4" />
                         </Button>
@@ -375,9 +381,10 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                     disabled={isConverting}
                     variant="ghost"
                     size="sm"
-                    className={`${getTextColor()} hover:bg-white/20 border border-white/30 px-4 py-2`}
+                    className="text-white hover:bg-white/20 border border-white/30 px-4 py-2"
+                    style={{ backgroundColor: '#D97706' }}
                   >
-                    {isConverting ? t.converting : t.convertTo.replace(` ${conversionInfo.to}`, '')}
+                    {isConverting ? t.converting : 'Converter'}
                   </Button>
                   
                   <Button
@@ -387,7 +394,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                     }}
                     variant="ghost"
                     size="sm"
-                    className={`${getTextColor()} hover:bg-white/20 border border-white/30 px-4 py-2`}
+                    className="text-white hover:bg-white/20 border border-white/30 px-4 py-2"
+                    style={{ backgroundColor: '#D97706' }}
                   >
                     <RotateCcw className="w-4 h-4 mr-2" />
                     {language === 'pt' ? 'Limpar' : language === 'en' ? 'Clear' : language === 'ru' ? 'Очистить' : '清除'}
@@ -401,7 +409,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                       }}
                       variant="ghost"
                       size="sm"
-                      className={`${getTextColor()} hover:bg-white/20 border border-white/30 px-4 py-2 font-semibold shadow-lg`}
+                      className="text-white hover:bg-white/20 border border-white/30 px-4 py-2 font-semibold shadow-lg"
+                      style={{ backgroundColor: '#B45309' }}
                     >
                       <Download className="w-4 h-4 mr-2" />
                       {language === 'pt' ? 'Baixar' : language === 'en' ? 'Download' : language === 'ru' ? 'Скачать' : '下载'}
