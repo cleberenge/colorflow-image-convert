@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -384,7 +385,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                     className="text-white hover:bg-white/20 border border-white/30 px-4 py-2"
                     style={{ backgroundColor: '#F97316' }}
                   >
-                    {isConverting ? t.converting : 'Converter'}
+                    {isConverting ? t.converting : 'Converter para'}
                   </Button>
                   
                   <Button
