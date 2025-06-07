@@ -3,7 +3,7 @@ import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Upload, Download, Image as ImageIcon, CheckCircle } from 'lucide-react';
+import { Upload, Download, Image as ImageIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { useFileConverter } from '@/hooks/useFileConverter';
 
@@ -129,7 +129,7 @@ const ImageConverter = () => {
                   disabled={isConverting}
                   className="bg-orange-500 hover:bg-orange-600 text-white font-medium transition-all duration-300"
                 >
-                  {isConverting ? 'Convertendo...' : 'Converter'}
+                  {isConverting ? 'Convertendo...' : 'Converter para JPG'}
                 </Button>
                 <Button
                   onClick={clearFiles}
