@@ -14,30 +14,18 @@ export const useFileConverter = () => {
 
     try {
       const convertedFiles: { file: File; originalName: string }[] = [];
+      let currentProgress = 0;
 
-      // Simular progresso gradual
-      const updateProgress = (targetProgress: number, duration: number) => {
-        return new Promise<void>((resolve) => {
-          const startProgress = progress;
-          const progressDiff = targetProgress - startProgress;
-          const steps = Math.ceil(duration / 50); // Atualizar a cada 50ms
-          let currentStep = 0;
-
-          const interval = setInterval(() => {
-            currentStep++;
-            const newProgress = startProgress + (progressDiff * currentStep) / steps;
-            setProgress(Math.min(newProgress, targetProgress));
-
-            if (currentStep >= steps) {
-              clearInterval(interval);
-              resolve();
-            }
-          }, 50);
-        });
+      // Função para atualizar progresso de forma sempre crescente
+      const updateProgress = (newProgress: number) => {
+        if (newProgress > currentProgress) {
+          currentProgress = newProgress;
+          setProgress(currentProgress);
+        }
       };
 
-      // Progresso inicial (0-20%)
-      await updateProgress(20, 500);
+      // Progresso inicial (0-10%)
+      updateProgress(10);
 
       // Determine which edge function to use
       let functionName: string;
@@ -53,8 +41,8 @@ export const useFileConverter = () => {
 
       console.log(`Using edge function: ${functionName} for conversion type: ${conversionType}`);
 
-      // Progresso de preparação (20-40%)
-      await updateProgress(40, 800);
+      // Progresso de preparação (10-20%)
+      updateProgress(20);
 
       if (conversionType === 'merge-pdf' && files.length > 1) {
         // Special handling for PDF merge
@@ -64,14 +52,16 @@ export const useFileConverter = () => {
           formData.append('files', file);
         });
 
-        // Progresso de processamento (40-80%)
-        await updateProgress(80, 1500);
+        // Progresso de processamento (20-80%)
+        updateProgress(50);
 
         const { data, error } = await supabase.functions.invoke(functionName, {
           body: formData,
         });
 
         if (error) throw error;
+
+        updateProgress(80);
 
         // Convert response to file
         const blob = new Blob([data], { type: 'application/pdf' });
@@ -80,14 +70,15 @@ export const useFileConverter = () => {
 
       } else {
         // Process each file individually
+        const progressPerFile = 60 / files.length; // 60% do progresso total dividido pelos arquivos
+        
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
           console.log(`Converting file: ${file.name}`);
           
-          // Progresso por arquivo (40-80%)
-          const fileStartProgress = 40 + (i * 40) / files.length;
-          const fileEndProgress = 40 + ((i + 1) * 40) / files.length;
-          await updateProgress(fileStartProgress + (fileEndProgress - fileStartProgress) * 0.5, 1000);
+          // Progresso por arquivo (20% + progresso do arquivo atual)
+          const fileStartProgress = 20 + (i * progressPerFile);
+          updateProgress(fileStartProgress);
 
           const formData = new FormData();
           formData.append('file', file);
@@ -101,6 +92,9 @@ export const useFileConverter = () => {
             console.error(`Error converting ${file.name}:`, error);
             throw error;
           }
+
+          // Progresso intermediário do arquivo
+          updateProgress(fileStartProgress + (progressPerFile * 0.7));
 
           // Create file from response
           let mimeType: string;
@@ -144,12 +138,13 @@ export const useFileConverter = () => {
           console.log(`File converted successfully: ${newFileName}`);
           
           // Finalizar progresso do arquivo
-          await updateProgress(fileEndProgress, 500);
+          updateProgress(fileStartProgress + progressPerFile);
         }
       }
 
       // Progresso final (80-100%)
-      await updateProgress(100, 800);
+      updateProgress(90);
+      setTimeout(() => updateProgress(100), 200);
 
       return convertedFiles;
 

@@ -380,9 +380,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                   <Button
                     onClick={handleConvert}
                     disabled={isConverting}
-                    variant="outline"
                     size="sm"
-                    className="text-white hover:bg-white/20 border-white/30"
+                    className="bg-black hover:bg-gray-800 text-white border-0"
                   >
                     {isConverting ? t.converting : 'Converter'}
                   </Button>
@@ -392,9 +391,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                       e.stopPropagation();
                       clearAllFiles();
                     }}
-                    variant="outline"
                     size="sm"
-                    className="text-white hover:bg-white/20 border-white/30"
+                    className="bg-black hover:bg-gray-800 text-white border-0"
                   >
                     <RotateCcw className="w-4 h-4 mr-2" />
                     {language === 'pt' ? 'Limpar' : language === 'en' ? 'Clear' : language === 'ru' ? 'Очистить' : '清除'}
@@ -406,7 +404,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                         e.stopPropagation();
                         convertedFiles.length === 1 ? handleDownloadSingle(convertedFiles[0]) : handleDownloadZip();
                       }}
-                      className="bg-orange-600 hover:bg-orange-700 text-white font-semibold shadow-lg"
+                      className="bg-black hover:bg-gray-800 text-white font-semibold shadow-md"
                       size="sm"
                     >
                       <Download className="w-4 h-4 mr-2" />
