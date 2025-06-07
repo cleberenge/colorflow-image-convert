@@ -349,7 +349,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                   </h4>
                   <div className="grid grid-cols-1 gap-2 max-h-32 overflow-y-auto">
                     {selectedFiles.map((file, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 rounded text-sm" style={{ backgroundColor: '#F97316' }}>
+                      <div key={index} className="flex items-center justify-between p-2 rounded text-sm bg-white/10">
                         <div className="flex items-center space-x-2 flex-1 min-w-0">
                           {getFileIcon()}
                           <div className="min-w-0 flex-1">
@@ -380,12 +380,11 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                   <Button
                     onClick={handleConvert}
                     disabled={isConverting}
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
-                    className="text-white hover:bg-white/20 border border-white/30 px-4 py-2"
-                    style={{ backgroundColor: '#F97316' }}
+                    className="text-white hover:bg-white/20 border-white/30"
                   >
-                    {isConverting ? t.converting : 'Converter para'}
+                    {isConverting ? t.converting : 'Converter'}
                   </Button>
                   
                   <Button
@@ -393,10 +392,9 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                       e.stopPropagation();
                       clearAllFiles();
                     }}
-                    variant="ghost"
+                    variant="outline"
                     size="sm"
-                    className="text-white hover:bg-white/20 border border-white/30 px-4 py-2"
-                    style={{ backgroundColor: '#F97316' }}
+                    className="text-white hover:bg-white/20 border-white/30"
                   >
                     <RotateCcw className="w-4 h-4 mr-2" />
                     {language === 'pt' ? 'Limpar' : language === 'en' ? 'Clear' : language === 'ru' ? 'Очистить' : '清除'}
@@ -408,10 +406,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                         e.stopPropagation();
                         convertedFiles.length === 1 ? handleDownloadSingle(convertedFiles[0]) : handleDownloadZip();
                       }}
-                      variant="ghost"
+                      className="bg-orange-600 hover:bg-orange-700 text-white font-semibold shadow-lg"
                       size="sm"
-                      className="text-white hover:bg-white/20 border border-white/30 px-4 py-2 font-semibold shadow-lg"
-                      style={{ backgroundColor: '#DC2626' }}
                     >
                       <Download className="w-4 h-4 mr-2" />
                       {language === 'pt' ? 'Baixar' : language === 'en' ? 'Download' : language === 'ru' ? 'Скачать' : '下载'}
