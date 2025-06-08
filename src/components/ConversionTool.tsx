@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -196,10 +197,10 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   // Determine grid configuration based on file count
   const getGridConfig = (fileCount: number) => {
     if (fileCount <= 5) return "space-y-1";
-    if (fileCount <= 10) return "grid grid-cols-2 gap-x-0.5 gap-y-1";
-    if (fileCount <= 15) return "grid grid-cols-3 gap-x-0.5 gap-y-1";
-    if (fileCount <= 20) return "grid grid-cols-4 gap-x-0.5 gap-y-1";
-    return "grid grid-cols-5 gap-x-0.5 gap-y-1";
+    if (fileCount <= 10) return "grid grid-cols-2 gap-x-0 gap-y-1";
+    if (fileCount <= 15) return "grid grid-cols-3 gap-x-0 gap-y-1";
+    if (fileCount <= 20) return "grid grid-cols-4 gap-x-0 gap-y-1";
+    return "grid grid-cols-5 gap-x-0 gap-y-1";
   };
 
   return (
