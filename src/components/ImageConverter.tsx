@@ -88,9 +88,9 @@ const ImageConverter = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center space-y-2 animate-fade-in">
+    <div className="flex flex-col items-center space-y-3 animate-fade-in">
       {/* Upload Area */}
-      <Card className="w-full max-w-2xl p-8 border-2 border-dashed border-gray-300 hover:border-gray-400 transition-all duration-300" style={{ backgroundColor: '#FDEE00' }}>
+      <Card className="w-full max-w-2xl p-6 border-2 border-dashed border-gray-300 hover:border-gray-400 transition-all duration-300" style={{ backgroundColor: '#FDEE00' }}>
         <div className="text-center">
           <input
             type="file"
@@ -101,16 +101,16 @@ const ImageConverter = () => {
           />
           <label
             htmlFor="file-input"
-            className="cursor-pointer flex flex-col items-center space-y-4"
+            className="cursor-pointer flex flex-col items-center space-y-3"
           >
-            <div className="w-20 h-20 bg-black/10 rounded-full flex items-center justify-center">
-              <Upload className="w-10 h-10 text-black" />
+            <div className="w-16 h-16 bg-black/10 rounded-full flex items-center justify-center">
+              <Upload className="w-8 h-8 text-black" />
             </div>
             <div>
-              <p className="text-xl font-medium text-black mb-2">
+              <p className="text-lg font-medium text-black mb-1">
                 Clique para selecionar arquivo PNG
               </p>
-              <p className="text-base text-black/80">
+              <p className="text-sm text-black/80">
                 ou arraste e solte aqui
               </p>
             </div>
@@ -120,15 +120,15 @@ const ImageConverter = () => {
 
       {/* Selected File Info */}
       {selectedFile && (
-        <Card className="w-full max-w-2xl p-4 bg-white border border-gray-200">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
-              <ImageIcon className="w-6 h-6 text-orange-600" />
+        <Card className="w-full max-w-2xl p-3 bg-white border border-gray-200">
+          <div className="flex items-center space-x-3">
+            <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
+              <ImageIcon className="w-5 h-5 text-orange-600" />
             </div>
             <div className="flex-1">
-              <div className="bg-orange-600 rounded-lg p-3 mb-1">
-                <p className="font-medium text-white">{selectedFile.name}</p>
-                <p className="text-sm text-white/80">
+              <div className="bg-orange-600 rounded-lg p-2 mb-2">
+                <p className="font-medium text-white text-sm">{selectedFile.name}</p>
+                <p className="text-xs text-white/80">
                   {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                 </p>
               </div>
@@ -136,23 +136,23 @@ const ImageConverter = () => {
                 <Button
                   onClick={convertToJPG}
                   disabled={isConverting}
-                  className="bg-orange-500 hover:bg-orange-600 text-white font-medium transition-all duration-300"
+                  className="bg-orange-500 hover:bg-orange-600 text-white text-sm px-3 py-1.5"
                 >
                   {isConverting ? 'Convertendo...' : 'Converter para JPG'}
                 </Button>
                 <Button
                   onClick={clearFiles}
                   variant="outline"
-                  className="bg-orange-500 hover:bg-orange-600 text-white border-orange-500 transition-all duration-300"
+                  className="bg-orange-500 hover:bg-orange-600 text-white border-orange-500 text-sm px-3 py-1.5"
                 >
                   Limpar
                 </Button>
                 {convertedFile && (
                   <Button
                     onClick={downloadJPG}
-                    className="bg-green-600 hover:bg-green-700 text-white font-semibold transition-all duration-300 shadow-lg"
+                    className="bg-green-600 hover:bg-green-700 text-white text-sm px-3 py-1.5"
                   >
-                    <Download className="w-4 h-4 mr-2" />
+                    <Download className="w-3 h-3 mr-1" />
                     Baixar JPG
                   </Button>
                 )}
@@ -170,7 +170,13 @@ const ImageConverter = () => {
               <span className="text-sm font-medium text-gray-800">Convertendo...</span>
               <span className="text-sm text-black font-medium">{progress}%</span>
             </div>
-            <Progress value={progress} indicatorColor="#FDEE00" className="h-2" />
+            <Progress 
+              value={progress} 
+              className="h-2"
+              style={{
+                backgroundColor: '#e5e7eb'
+              }}
+            />
           </div>
         </Card>
       )}
