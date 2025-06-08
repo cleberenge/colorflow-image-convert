@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -250,8 +251,11 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
         
         console.log('Adicionando arquivo ao ZIP:', file.name, 'Tamanho:', file.size);
         
+        // Leia o arquivo como arrayBuffer corretamente para evitar corrupção
         const arrayBuffer = await file.arrayBuffer();
-        zip.file(file.name, arrayBuffer);
+        
+        // Adicione o arquivo ao ZIP sem processamento adicional
+        zip.file(file.name, arrayBuffer, { binary: true });
       }
       
       console.log('Gerando arquivo ZIP...');
@@ -352,8 +356,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                         <div className="flex items-center space-x-2 flex-1 min-w-0">
                           {getFileIcon()}
                           <div className="min-w-0 flex-1">
-                            <p className="text-white truncate font-medium">{file.name}</p>
-                            <p className="text-white/70 text-xs">
+                            <p className="text-black truncate font-medium">{file.name}</p>
+                            <p className="text-black/70 text-xs">
                               {(file.size / 1024 / 1024).toFixed(2)} MB
                             </p>
                           </div>
