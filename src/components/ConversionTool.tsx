@@ -193,9 +193,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   // Get conversion color for styling
   const conversionColor = getConversionColor(selectedConversion);
 
-  // Determine grid configuration based on file count - configuração para 5 arquivos por linha
+  // Determine grid configuration - sempre 5 arquivos por linha
   const getGridConfig = (fileCount: number) => {
-    if (fileCount <= 5) return "flex flex-col space-y-1";
     return "grid grid-cols-5 gap-x-1 gap-y-2";
   };
 
@@ -265,7 +264,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
 
       {/* Selected Files Info */}
       {selectedFiles.length > 0 && (
-        <Card className="w-full max-w-3xl p-3 bg-white border border-gray-200">
+        <Card className="w-full max-w-3xl p-4 bg-white border border-gray-200">
           <div className="space-y-2">
             <h2 className="text-base font-semibold text-gray-800">Arquivos Selecionados</h2>
             <div className={getGridConfig(selectedFiles.length)}>
