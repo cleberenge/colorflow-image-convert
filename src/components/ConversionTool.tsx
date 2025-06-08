@@ -195,8 +195,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
 
   // Determine grid configuration based on file count - configuração para 5 arquivos por linha
   const getGridConfig = (fileCount: number) => {
-    if (fileCount <= 5) return "space-y-1";
-    return "grid grid-cols-5 gap-x-1 gap-y-1";
+    if (fileCount <= 5) return "flex flex-col space-y-1";
+    return "grid grid-cols-5 gap-x-1 gap-y-2";
   };
 
   return (
@@ -265,14 +265,14 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
 
       {/* Selected Files Info */}
       {selectedFiles.length > 0 && (
-        <Card className="w-full max-w-3xl p-2 bg-white border border-gray-200">
+        <Card className="w-full max-w-3xl p-3 bg-white border border-gray-200">
           <div className="space-y-2">
             <h2 className="text-base font-semibold text-gray-800">Arquivos Selecionados</h2>
             <div className={getGridConfig(selectedFiles.length)}>
               {selectedFiles.map((file, index) => (
-                <div key={index} className="flex items-center gap-0.5 min-w-0">
-                  <div className="w-3 h-3 bg-gray-100 rounded flex items-center justify-center flex-shrink-0">
-                    <ImageIcon className="w-2 h-2 text-gray-600" />
+                <div key={index} className="flex items-center gap-1 min-w-0">
+                  <div className="w-4 h-4 bg-gray-100 rounded flex items-center justify-center flex-shrink-0">
+                    <ImageIcon className="w-2.5 h-2.5 text-gray-600" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <p className="font-medium text-gray-800 text-xs truncate">{file.name}</p>
