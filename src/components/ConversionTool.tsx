@@ -30,7 +30,7 @@ interface ConversionToolProps {
 }
 
 const conversionOptions: ConversionOption[] = [
-  { value: 'png-jpg', label: 'PNG para JPG', description: 'Converter imagens PNG para o formato JPG.' },
+  { value: 'png-jpg', label: 'PNG para JPG', description: '' },
   { value: 'jpg-pdf', label: 'JPG para PDF', description: 'Converter imagens JPG para o formato PDF.' },
   { value: 'pdf-word', label: 'PDF para Word', description: 'Converter arquivos PDF para o formato Word (DOCX).' },
   { value: 'word-pdf', label: 'Word para PDF', description: 'Converter arquivos Word (DOCX) para o formato PDF.' },
@@ -195,10 +195,10 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   const conversionColor = getConversionColor(selectedConversion);
 
   return (
-    <div className="flex flex-col items-center space-y-8 animate-fade-in">
+    <div className="flex flex-col items-center space-y-4 animate-fade-in">
       {/* Upload Area */}
       <Card 
-        className="w-full max-w-3xl p-8 border-2 border-dashed hover:border-opacity-60 transition-all duration-300"
+        className="w-full max-w-3xl p-4 border-2 border-dashed hover:border-opacity-60 transition-all duration-300"
         style={{ 
           backgroundColor: conversionColor,
           borderColor: conversionColor,
@@ -214,16 +214,16 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
           />
           <label
             htmlFor="file-input"
-            className="cursor-pointer flex flex-col items-center space-y-4"
+            className="cursor-pointer flex flex-col items-center space-y-3"
           >
-            <div className="w-20 h-20 bg-black/10 rounded-full flex items-center justify-center">
-              <Upload className="w-10 h-10 text-black" />
+            <div className="w-16 h-16 bg-black/10 rounded-full flex items-center justify-center">
+              <Upload className="w-8 h-8 text-black" />
             </div>
             <div>
-              <p className="text-xl font-medium text-black mb-2">
+              <p className="text-lg font-medium text-black mb-1">
                 Clique para selecionar até 25 arquivos
               </p>
-              <p className="text-base text-black/80">
+              <p className="text-sm text-black/80">
                 ou arraste e solte aqui
               </p>
             </div>
@@ -233,8 +233,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
 
       {/* Conversion Options */}
       {selectedFiles.length > 0 && (
-        <Card className="w-full max-w-3xl p-6 bg-white border border-gray-200">
-          <div className="space-y-4">
+        <Card className="w-full max-w-3xl p-4 bg-white border border-gray-200">
+          <div className="space-y-3">
             <h2 className="text-lg font-semibold text-gray-800">Opções de Conversão</h2>
             <Select onValueChange={handleConversionChange} value={selectedConversion}>
               <SelectTrigger className="w-full">
@@ -249,27 +249,29 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
                 ))}
               </SelectContent>
             </Select>
-            <p className="text-sm text-gray-500">
-              {conversionOptions.find(option => option.value === selectedConversion)?.description}
-            </p>
+            {conversionOptions.find(option => option.value === selectedConversion)?.description && (
+              <p className="text-sm text-gray-500">
+                {conversionOptions.find(option => option.value === selectedConversion)?.description}
+              </p>
+            )}
           </div>
         </Card>
       )}
 
       {/* Selected Files Info */}
       {selectedFiles.length > 0 && (
-        <Card className="w-full max-w-3xl p-6 bg-white border border-gray-200">
-          <div className="space-y-4">
+        <Card className="w-full max-w-3xl p-4 bg-white border border-gray-200">
+          <div className="space-y-3">
             <h2 className="text-lg font-semibold text-gray-800">Arquivos Selecionados</h2>
             <ul className="space-y-2">
               {selectedFiles.map((file, index) => (
-                <li key={index} className="flex items-center space-x-4">
-                  <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
-                    <ImageIcon className="w-5 h-5 text-gray-600" />
+                <li key={index} className="flex items-center space-x-3">
+                  <div className="w-8 h-8 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <ImageIcon className="w-4 h-4 text-gray-600" />
                   </div>
                   <div className="flex-1">
-                    <p className="font-medium text-gray-800">{file.name}</p>
-                    <p className="text-sm text-gray-600">
+                    <p className="font-medium text-gray-800 text-sm">{file.name}</p>
+                    <p className="text-xs text-gray-600">
                       {(file.size / 1024 / 1024).toFixed(2)} MB
                     </p>
                   </div>
@@ -290,6 +292,16 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
               >
                 Limpar
               </Button>
+              {convertedFiles.length > 0 && (
+                <Button
+                  onClick={downloadZip}
+                  disabled={isConverting}
+                  className="bg-yellow-400 hover:bg-yellow-500 text-black font-medium transition-all duration-300"
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Baixar ZIP
+                </Button>
+              )}
             </div>
           </div>
         </Card>
@@ -297,35 +309,13 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
 
       {/* Progress */}
       {isConverting && (
-        <Card className="w-full max-w-3xl p-6 bg-white">
-          <div className="space-y-4">
+        <Card className="w-full max-w-3xl p-4 bg-white">
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-800">Convertendo...</span>
               <span className="text-sm font-medium" style={{ color: conversionColor }}>{progress}%</span>
             </div>
             <Progress value={progress} className="h-2" />
-          </div>
-        </Card>
-      )}
-
-      {/* Download */}
-      {convertedFiles.length > 0 && (
-        <Card className="w-full max-w-3xl p-6 bg-white border border-gray-200">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-lg font-semibold text-gray-800">Arquivos Convertidos</h2>
-              <p className="text-sm text-gray-500">
-                Baixe os arquivos convertidos individualmente ou todos juntos em um ZIP.
-              </p>
-            </div>
-            <Button
-              onClick={downloadZip}
-              disabled={isConverting}
-              className="bg-yellow-400 hover:bg-yellow-500 text-black font-medium transition-all duration-300"
-            >
-              <Download className="w-4 h-4 mr-2" />
-              Baixar ZIP
-            </Button>
           </div>
         </Card>
       )}
