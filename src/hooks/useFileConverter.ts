@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { convertPngToJpg } from '@/utils/imageConverter';
 
 export const useFileConverter = () => {
   const [isConverting, setIsConverting] = useState(false);
@@ -25,6 +26,34 @@ export const useFileConverter = () => {
 
       // Progresso inicial (0-10%)
       updateProgress(10);
+
+      // Handle PNG to JPG conversion client-side
+      if (conversionType === 'png-jpg') {
+        updateProgress(20);
+        
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          console.log(`Converting ${file.name} to JPG on client-side`);
+          
+          const fileStartProgress = 20 + (i * 60 / files.length);
+          updateProgress(fileStartProgress);
+
+          try {
+            const jpgFile = await convertPngToJpg(file, 0.9);
+            convertedFiles.push({ file: jpgFile, originalName: file.name });
+            updateProgress(fileStartProgress + (60 / files.length));
+            
+            console.log(`Successfully converted ${file.name} to ${jpgFile.name}`);
+          } catch (error) {
+            console.error(`Error converting ${file.name}:`, error);
+            throw error;
+          }
+        }
+        
+        updateProgress(90);
+        setTimeout(() => updateProgress(100), 200);
+        return convertedFiles;
+      }
 
       // Determine which edge function to use
       let functionName: string;
@@ -100,13 +129,7 @@ export const useFileConverter = () => {
           let extension: string;
           let newFileName: string;
           
-          if (conversionType === 'png-jpg') {
-            // For PNG to JPEG conversion
-            mimeType = 'image/jpeg';
-            extension = 'jpg';
-            const originalName = file.name.split('.')[0];
-            newFileName = `${originalName}.${extension}`;
-          } else if (conversionType === 'jpg-pdf') {
+          if (conversionType === 'jpg-pdf') {
             mimeType = 'application/pdf';
             extension = 'pdf';
             const originalName = file.name.split('.')[0];
