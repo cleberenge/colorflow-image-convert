@@ -1,444 +1,303 @@
-
-import React, { useState, useCallback, useEffect } from 'react';
+import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Upload, Download, CheckCircle, X, RotateCcw } from 'lucide-react';
+import { Upload, Download, File as ImageIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
-import { useLanguage } from '@/hooks/useLanguage';
-import { getConversionColor, getConversionColorHover } from '@/utils/conversionColors';
 import { useFileConverter } from '@/hooks/useFileConverter';
-import JSZip from 'jszip';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import ConversionIcon from '@/components/ConversionIcon';
 
-interface ConversionToolProps {
-  conversionType: string;
-  conversionInfo: {
-    id: string;
-    label: { pt: string; en: string; zh: string; es: string; fr: string; de: string; hi: string; ar: string; ko: string; ja: string; ru: string; };
-    from: string;
-    to: string;
-    icon?: string;
-  };
+interface ConversionOption {
+  value: string;
+  label: string;
+  description: string;
 }
 
-const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, conversionInfo }) => {
+const conversionOptions: ConversionOption[] = [
+  { value: 'png-jpg', label: 'PNG para JPG', description: 'Converter imagens PNG para o formato JPG.' },
+  { value: 'jpg-pdf', label: 'JPG para PDF', description: 'Converter imagens JPG para o formato PDF.' },
+  { value: 'pdf-word', label: 'PDF para Word', description: 'Converter arquivos PDF para o formato Word (DOCX).' },
+  { value: 'word-pdf', label: 'Word para PDF', description: 'Converter arquivos Word (DOCX) para o formato PDF.' },
+  { value: 'video-mp3', label: 'Vídeo para MP3', description: 'Extrair o áudio de arquivos de vídeo para o formato MP3.' },
+  { value: 'compress-video', label: 'Comprimir Vídeo', description: 'Reduzir o tamanho de arquivos de vídeo para facilitar o compartilhamento.' },
+  { value: 'split-pdf', label: 'Dividir PDF', description: 'Dividir um arquivo PDF em várias páginas ou intervalos de páginas.' },
+  { value: 'merge-pdf', label: 'Juntar PDF', description: 'Combinar vários arquivos PDF em um único documento.' },
+  { value: 'reduce-pdf', label: 'Reduzir PDF', description: 'Diminuir o tamanho de arquivos PDF, otimizando imagens e removendo dados desnecessários.' },
+];
+
+interface ConvertedFile {
+  file: File;
+  originalName: string;
+}
+
+const ConversionTool = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
-  const [convertedFiles, setConvertedFiles] = useState<{ file: File; originalName: string }[]>([]);
+  const [convertedFiles, setConvertedFiles] = useState<ConvertedFile[]>([]);
+  const [selectedConversion, setSelectedConversion] = useState<string>('png-jpg');
   const { toast } = useToast();
-  const { language, t } = useLanguage();
   const { convertFiles, isConverting, progress } = useFileConverter();
 
-  const conversionColor = getConversionColor(conversionType);
-  const conversionColorHover = getConversionColorHover(conversionType);
-
-  // Reset state when conversionType changes
-  useEffect(() => {
-    setSelectedFiles([]);
-    setConvertedFiles([]);
-  }, [conversionType]);
-
-  // Define accepted file types based on conversion type
-  const getAcceptedTypes = () => {
-    switch (conversionType) {
-      case 'png-jpg':
-        return '.png';
-      case 'jpg-pdf':
-        return '.jpg,.jpeg';
-      case 'pdf-word':
-      case 'split-pdf':
-      case 'reduce-pdf':
-        return '.pdf';
-      case 'word-pdf':
-        return '.doc,.docx';
-      case 'video-mp3':
-      case 'compress-video':
-        return '.mp4,.mov,.avi,.webm';
-      case 'merge-pdf':
-        return '.pdf';
-      default:
-        return '*';
-    }
-  };
-
-  const getMaxFiles = () => {
-    if (['png-jpg', 'jpg-pdf', 'merge-pdf'].includes(conversionType)) {
-      return 25;
-    }
-    return 10;
-  };
-
-  const getFileIcon = () => {
-    const iconSize = "w-6 h-6";
-    const iconColor = conversionColor;
-    
-    if (conversionType.includes('video') || conversionType === 'compress-video') {
-      return (
-        <div className={`${iconSize} rounded-full flex items-center justify-center`} style={{ backgroundColor: iconColor }}>
-          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M8 5v10l8-5-8-5z"/>
-          </svg>
-        </div>
-      );
-    } else if (conversionType === 'video-mp3') {
-      return (
-        <div className={`${iconSize} rounded-full flex items-center justify-center`} style={{ backgroundColor: iconColor }}>
-          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-            <path d="M18 3a1 1 0 00-1.196-.98l-10 2A1 1 0 006 5v9.114A4.369 4.369 0 005 14c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V7.82l8-1.6v5.894A4.37 4.37 0 0015 12c-1.657 0-3 .895-3 2s1.343 2 3 2 3-.895 3-2V3z"/>
-          </svg>
-        </div>
-      );
-    } else if (conversionType.includes('pdf')) {
-      return (
-        <div className={`${iconSize} rounded-full flex items-center justify-center`} style={{ backgroundColor: iconColor }}>
-          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 01-1-1V9a1 1 0 112 0v4a1 1 0 01-1 1zm-4-1a1 1 0 001 1h6a1 1 0 100-2H7a1 1 0 00-1 1z" clipRule="evenodd"/>
-          </svg>
-        </div>
-      );
-    } else if (conversionType.includes('word')) {
-      return (
-        <div className={`${iconSize} rounded-full flex items-center justify-center`} style={{ backgroundColor: iconColor }}>
-          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm6 10a1 1 0 01-1-1V9a1 1 0 112 0v4a1 1 0 01-1 1zm-4-1a1 1 0 001 1h6a1 1 0 100-2H7a1 1 0 00-1 1z" clipRule="evenodd"/>
-          </svg>
-        </div>
-      );
-    } else {
-      return (
-        <div className={`${iconSize} rounded-full flex items-center justify-center`} style={{ backgroundColor: iconColor }}>
-          <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 20 20">
-            <path fillRule="evenodd" d="M4 3a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V5a2 2 0 00-2-2H4zm12 12H4l4-8 3 6 2-4 3 6z" clipRule="evenodd"/>
-          </svg>
-        </div>
-      );
-    }
-  };
-
-  const getUploadText = () => {
-    const maxFiles = getMaxFiles();
-    if (conversionType === 'merge-pdf') {
-      return language === 'pt' ? `Clique para selecionar até ${maxFiles} arquivos PDF` :
-             language === 'en' ? `Click to select up to ${maxFiles} PDF files` :
-             language === 'ru' ? `Нажмите, чтобы выбрать до ${maxFiles} PDF файлов` :
-             `点击选择最多${maxFiles}个PDF文件`;
-    }
-    if (['png-jpg', 'jpg-pdf'].includes(conversionType)) {
-      return language === 'pt' ? `Clique para selecionar até ${maxFiles} arquivos ${conversionInfo.from}` :
-             language === 'en' ? `Click to select up to ${maxFiles} ${conversionInfo.from} files` :
-             language === 'ru' ? `Нажмите, чтобы выбрать до ${maxFiles} ${conversionInfo.from} файлов` :
-             `点击选择最多${maxFiles}个${conversionInfo.from}文件`;
-    }
-    return `${t.uploadText} ${conversionInfo.from}`;
-  };
-
-  const getUploadSubText = () => {
-    return language === 'pt' ? 'ou arraste e solte aqui' :
-           language === 'en' ? 'or drag and drop here' :
-           language === 'ru' ? 'или перетащите сюда' :
-           '或拖拽到这里';
-  };
-
-  const getTextColor = () => {
-    return conversionType === 'png-jpg' ? 'text-black' : 'text-white';
-  };
-
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    console.log('handleFileSelect called');
-    const files = event.target.files;
-    if (files && files.length > 0) {
-      console.log('Files found:', files.length);
-      const fileArray = Array.from(files);
-      const maxFiles = getMaxFiles();
-      
-      if (fileArray.length > maxFiles) {
-        toast({
-          title: language === 'pt' ? "Muitos arquivos" : 
-                 language === 'en' ? "Too many files" : 
-                 language === 'ru' ? "Слишком много файлов" :
-                 "文件过多",
-          description: language === 'pt' ? `Máximo de ${maxFiles} arquivos permitidos` : 
-                      language === 'en' ? `Maximum ${maxFiles} files allowed` :
-                      language === 'ru' ? `Максимально разрешено ${maxFiles} файлов` :
-                      `最多允许${maxFiles}个文件`,
-          variant: "destructive",
-        });
-        return;
-      }
-      
-      setSelectedFiles(fileArray);
-      setConvertedFiles([]);
-      console.log('Files set to state');
-    }
-    event.target.value = '';
-  }, [language, toast]);
-
-  const removeFile = useCallback((index: number) => {
-    setSelectedFiles(prev => prev.filter((_, i) => i !== index));
-  }, []);
-
-  const clearAllFiles = useCallback(() => {
-    setSelectedFiles([]);
-    setConvertedFiles([]);
-    // Clean up any blob URLs
-    convertedFiles.forEach(item => {
-      if (item.file instanceof File && item.file.name.includes('blob:')) {
-        URL.revokeObjectURL(item.file.name);
-      }
-    });
-  }, [convertedFiles]);
-
-  const handleConvert = useCallback(async (event: React.MouseEvent) => {
-    event.stopPropagation();
-    if (selectedFiles.length === 0) return;
-
-    console.log(`Starting real conversion for ${selectedFiles.length} files, type: ${conversionType}`);
-
-    try {
-      const converted = await convertFiles(selectedFiles, conversionType);
-      setConvertedFiles(converted);
-      
-      console.log('Real conversion completed successfully');
-    } catch (error) {
-      console.error('Real conversion failed:', error);
-    }
-  }, [selectedFiles, conversionType, convertFiles]);
-
-  const handleDownloadSingle = useCallback((convertedItem: { file: File; originalName: string }) => {
-    try {
-      console.log('Starting single file download:', convertedItem.file.name, 'Size:', convertedItem.file.size);
-      
-      // Create a proper blob URL for the converted file
-      const blob = new Blob([convertedItem.file], { type: convertedItem.file.type });
-      const url = URL.createObjectURL(blob);
-      
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = convertedItem.file.name;
-      
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-      
-      setTimeout(() => URL.revokeObjectURL(url), 100);
-      
-      console.log('Single file download completed successfully');
-      
+    const files = Array.from(event.target.files || []);
+    if (files.length > 25) {
       toast({
-        title: language === 'pt' ? "Download iniciado" : language === 'en' ? "Download started" : language === 'ru' ? "Загрузка начата" : "下载开始",
-        description: language === 'pt' ? "Arquivo baixado com sucesso" : language === 'en' ? "File downloaded successfully" : language === 'ru' ? "Файл успешно загружен" : "文件下载成功",
+        title: "Limite excedido",
+        description: "Selecione no máximo 25 arquivos.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    setSelectedFiles(files);
+    setConvertedFiles([]);
+    toast({
+      title: `${files.length} arquivo(s) selecionado(s)`,
+      description: `Pronto(s) para conversão.`,
+    });
+  }, [toast]);
+
+  const handleConversionChange = (value: string) => {
+    setSelectedConversion(value);
+    setConvertedFiles([]);
+  };
+
+  const convertSelectedFiles = useCallback(async () => {
+    if (selectedFiles.length === 0) {
+      toast({
+        title: "Nenhum arquivo selecionado",
+        description: "Por favor, selecione os arquivos para converter.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
+      const results = await convertFiles(selectedFiles, selectedConversion);
+      setConvertedFiles(results);
+      toast({
+        title: "Conversão concluída",
+        description: `${results.length} arquivo(s) convertido(s) com sucesso.`,
       });
     } catch (error) {
-      console.error('Error in single file download:', error);
+      console.error('Erro na conversão:', error);
       toast({
-        title: language === 'pt' ? "Erro no download" : language === 'en' ? "Download error" : language === 'ru' ? "Ошибка загрузки" : "下载错误",
-        description: language === 'pt' ? "Ocorreu um erro ao baixar o arquivo." : language === 'en' ? "An error occurred while downloading the file." : language === 'ru' ? "Произошла ошибка при загрузке файла." : "下载文件时出错。",
+        title: "Erro na conversão",
+        description: "Ocorreu um erro ao converter os arquivos. Tente novamente.",
         variant: "destructive",
       });
     }
-  }, [toast, language]);
+  }, [selectedFiles, selectedConversion, convertFiles, toast]);
 
-  const handleDownloadZip = useCallback(async () => {
+  const clearFiles = useCallback(() => {
+    setSelectedFiles([]);
+    setConvertedFiles([]);
+  }, []);
+
+  const downloadZip = useCallback(async () => {
     if (convertedFiles.length === 0) return;
 
     try {
+      console.log('Iniciando criação do ZIP...');
+      const JSZip = (await import('jszip')).default;
       const zip = new JSZip();
       
-      console.log('Iniciando criação do ZIP com', convertedFiles.length, 'arquivos');
-      
-      for (let index = 0; index < convertedFiles.length; index++) {
-        const convertedItem = convertedFiles[index];
-        const file = convertedItem.file;
+      for (const { file } of convertedFiles) {
+        console.log('Adicionando arquivo ao ZIP:', file.name, 'Tamanho:', file.size, 'Tipo:', file.type);
         
-        console.log('Adicionando arquivo ao ZIP:', file.name, 'Tamanho:', file.size);
+        // Verificar se o arquivo é válido
+        if (file.size === 0) {
+          console.warn('Arquivo vazio detectado:', file.name);
+          continue;
+        }
         
-        // Leia o arquivo como arrayBuffer corretamente para evitar corrupção
-        const arrayBuffer = await file.arrayBuffer();
-        
-        // Adicione o arquivo ao ZIP sem processamento adicional
-        zip.file(file.name, arrayBuffer, { binary: true });
+        try {
+          // Ler o arquivo como blob primeiro para garantir integridade
+          const blob = new Blob([file], { type: file.type });
+          const arrayBuffer = await blob.arrayBuffer();
+          
+          console.log('Arquivo lido com sucesso:', file.name, 'Tamanho do buffer:', arrayBuffer.byteLength);
+          
+          // Adicionar ao ZIP sem compressão para evitar corrupção
+          zip.file(file.name, arrayBuffer, { 
+            binary: true,
+            compression: 'STORE' // Sem compressão para manter integridade
+          });
+        } catch (fileError) {
+          console.error('Erro ao processar arquivo:', file.name, fileError);
+          // Adicionar arquivo de erro em vez de falhar completamente
+          const errorContent = `Erro ao processar o arquivo: ${file.name}`;
+          zip.file(`ERROR_${file.name}.txt`, errorContent);
+        }
       }
       
       console.log('Gerando arquivo ZIP...');
       
+      // Gerar ZIP com configurações otimizadas
       const zipBlob = await zip.generateAsync({ 
         type: 'blob',
-        compression: 'DEFLATE',
-        compressionOptions: { level: 6 }
+        compression: 'STORE', // Sem compressão
+        compressionOptions: {
+          level: 0 // Nível 0 = sem compressão
+        }
       });
       
       console.log('ZIP gerado com sucesso. Tamanho:', zipBlob.size);
       
+      // Criar URL e fazer download
+      const url = URL.createObjectURL(zipBlob);
       const link = document.createElement('a');
-      link.href = URL.createObjectURL(zipBlob);
-      link.download = `converted_files_${conversionType}.zip`;
+      link.href = url;
+      link.download = 'converted-files.zip';
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
-      
-      URL.revokeObjectURL(link.href);
+      URL.revokeObjectURL(url);
       
       toast({
-        title: language === 'pt' ? "Download ZIP iniciado" : language === 'en' ? "ZIP download started" : language === 'ru' ? "Загрузка ZIP начата" : "ZIP下载开始",
-        description: `${convertedFiles.length} ${language === 'pt' ? 'arquivos baixados em ZIP' : language === 'en' ? 'files downloaded in ZIP' : language === 'ru' ? 'файлов загружено в ZIP' : '文件已打包下载'}`,
+        title: "Download concluído",
+        description: `ZIP com ${convertedFiles.length} arquivo(s) baixado com sucesso.`,
       });
+      
     } catch (error) {
       console.error('Erro ao criar ZIP:', error);
       toast({
-        title: language === 'pt' ? "Erro no download" : language === 'en' ? "Download error" : language === 'ru' ? "Ошибка загрузки" : "下载错误",
-        description: language === 'pt' ? "Ocorreu um erro ao criar o arquivo ZIP." : language === 'en' ? "An error occurred while creating the ZIP file." : language === 'ru' ? "Произошла ошибка при создании ZIP файла." : "创建ZIP文件时出错。",
+        title: "Erro no download",
+        description: "Ocorreu um erro ao criar o arquivo ZIP.",
         variant: "destructive",
       });
     }
-  }, [convertedFiles, conversionType, toast, language]);
-
-  const handleLabelClick = useCallback((event: React.MouseEvent) => {
-    console.log('Label clicked');
-    event.preventDefault();
-    const input = document.getElementById('file-input') as HTMLInputElement;
-    if (input) {
-      console.log('Input found, triggering click');
-      input.click();
-    } else {
-      console.log('Input not found');
-    }
-  }, []);
+  }, [convertedFiles, toast]);
 
   return (
-    <div className="flex flex-col items-center space-y-6 animate-fade-in mx-auto" style={{ maxWidth: '800px', margin: '0 auto', padding: '0 10px' }}>
+    <div className="flex flex-col items-center space-y-8 animate-fade-in">
       {/* Upload Area */}
-      <div 
-        className="w-full p-6 border-2 border-dashed transition-all duration-300"
-        style={{
-          backgroundColor: conversionColor,
-          borderColor: conversionColor,
-          borderRadius: '0px'
-        }}
-      >
+      <Card className="w-full max-w-3xl p-8 border-2 border-dashed border-gray-300 hover:border-gray-400 transition-all duration-300">
         <div className="text-center">
           <input
             type="file"
-            accept={getAcceptedTypes()}
+            multiple
             onChange={handleFileSelect}
             className="hidden"
             id="file-input"
-            multiple
           />
-          <div
-            onClick={handleLabelClick}
+          <label
+            htmlFor="file-input"
             className="cursor-pointer flex flex-col items-center space-y-4"
           >
-            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-              <Upload className={`w-8 h-8 ${getTextColor()}`} />
+            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
+              <Upload className="w-10 h-10 text-gray-600" />
             </div>
             <div>
-              <p className={`text-xl font-medium mb-2 ${getTextColor()}`}>
-                {getUploadText()}
+              <p className="text-xl font-medium text-gray-800 mb-2">
+                Clique para selecionar até 25 arquivos
               </p>
-              <p className={`text-base ${getTextColor()}/80`}>
-                {getUploadSubText()}
+              <p className="text-base text-gray-600">
+                ou arraste e solte aqui
               </p>
             </div>
-            
-            {/* Nova área integrada para controles e arquivos selecionados */}
-            {selectedFiles.length > 0 && (
-              <div className="bg-white/10 rounded-lg p-4 w-full max-w-2xl" onClick={(e) => e.stopPropagation()}>
-                {/* Exibir nomes dos arquivos selecionados */}
-                <div className="mb-4">
-                  <h4 className={`${getTextColor()} font-medium mb-2`}>
-                    {language === 'pt' ? 'Arquivos selecionados:' : 
-                     language === 'en' ? 'Selected files:' : 
-                     language === 'ru' ? 'Выбранные файлы:' : 
-                     '已选择文件:'}
-                  </h4>
-                  <div className="grid grid-cols-1 gap-2 max-h-32 overflow-y-auto">
-                    {selectedFiles.map((file, index) => (
-                      <div key={index} className="flex items-center justify-between p-2 rounded text-sm bg-white/10">
-                        <div className="flex items-center space-x-2 flex-1 min-w-0">
-                          {getFileIcon()}
-                          <div className="min-w-0 flex-1">
-                            <p className="text-black truncate font-medium">{file.name}</p>
-                            <p className="text-black/70 text-xs">
-                              {(file.size / 1024 / 1024).toFixed(2)} MB
-                            </p>
-                          </div>
-                        </div>
-                        <Button
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            removeFile(index);
-                          }}
-                          variant="ghost"
-                          size="sm"
-                          className="text-white/70 hover:text-white p-1 h-auto ml-2"
-                        >
-                          <X className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-                
-                {/* Controles alinhados horizontalmente: Converter | Limpar | Baixar */}
-                <div className="flex gap-3 justify-center">
-                  <Button
-                    onClick={handleConvert}
-                    disabled={isConverting}
-                    size="sm"
-                    className="text-black border-0"
-                    style={{ backgroundColor: conversionColor }}
-                  >
-                    {isConverting ? t.converting : 'Converter'}
-                  </Button>
-                  
-                  <Button
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      clearAllFiles();
-                    }}
-                    size="sm"
-                    className="text-black border-0"
-                    style={{ backgroundColor: conversionColor }}
-                  >
-                    <RotateCcw className="w-4 h-4 mr-2" />
-                    {language === 'pt' ? 'Limpar' : language === 'en' ? 'Clear' : language === 'ru' ? 'Очистить' : '清除'}
-                  </Button>
-                  
-                  {convertedFiles.length > 0 && (
-                    <Button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        convertedFiles.length === 1 ? handleDownloadSingle(convertedFiles[0]) : handleDownloadZip();
-                      }}
-                      className="text-black font-semibold shadow-md border-0"
-                      style={{ backgroundColor: conversionColor }}
-                      size="sm"
-                    >
-                      <Download className="w-4 h-4 mr-2" />
-                      {language === 'pt' ? 'Baixar' : language === 'en' ? 'Download' : language === 'ru' ? 'Скачать' : '下载'}
-                    </Button>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
+          </label>
         </div>
-      </div>
+      </Card>
+
+      {/* Conversion Options */}
+      {selectedFiles.length > 0 && (
+        <Card className="w-full max-w-3xl p-6 bg-white border border-gray-200">
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-gray-800">Opções de Conversão</h2>
+            <Select onValueChange={handleConversionChange}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Selecione o tipo de conversão" />
+              </SelectTrigger>
+              <SelectContent>
+                {conversionOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value} className="flex items-center space-x-2">
+                    <ConversionIcon conversionType={option.value} className="w-5 h-5" />
+                    <span>{option.label}</span>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <p className="text-sm text-gray-500">
+              {conversionOptions.find(option => option.value === selectedConversion)?.description}
+            </p>
+          </div>
+        </Card>
+      )}
+
+      {/* Selected Files Info */}
+      {selectedFiles.length > 0 && (
+        <Card className="w-full max-w-3xl p-6 bg-white border border-gray-200">
+          <div className="space-y-4">
+            <h2 className="text-lg font-semibold text-gray-800">Arquivos Selecionados</h2>
+            <ul className="space-y-2">
+              {selectedFiles.map((file, index) => (
+                <li key={index} className="flex items-center space-x-4">
+                  <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center">
+                    <ImageIcon className="w-5 h-5 text-gray-600" />
+                  </div>
+                  <div className="flex-1">
+                    <p className="font-medium text-gray-800">{file.name}</p>
+                    <p className="text-sm text-gray-600">
+                      {(file.size / 1024 / 1024).toFixed(2)} MB
+                    </p>
+                  </div>
+                </li>
+              ))}
+            </ul>
+            <div className="flex items-center space-x-3">
+              <Button
+                onClick={convertSelectedFiles}
+                disabled={isConverting}
+                className="bg-blue-500 hover:bg-blue-600 text-white font-medium transition-all duration-300"
+              >
+                {isConverting ? 'Convertendo...' : 'Converter Arquivos'}
+              </Button>
+              <Button
+                onClick={clearFiles}
+                variant="outline"
+                className="text-gray-600 border-gray-300 hover:bg-gray-50 transition-all duration-300"
+              >
+                Limpar
+              </Button>
+            </div>
+          </div>
+        </Card>
+      )}
 
       {/* Progress */}
       {isConverting && (
-        <div className="w-full p-5 bg-white border-0">
-          <div className="space-y-3">
+        <Card className="w-full max-w-3xl p-6 bg-white">
+          <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-800">{t.converting}</span>
-              <span className="text-sm font-medium" style={{ color: conversionColor }}>{progress}%</span>
+              <span className="text-sm font-medium text-gray-800">Convertendo...</span>
+              <span className="text-sm text-blue-600 font-medium">{progress}%</span>
             </div>
-            <Progress 
-              value={progress} 
-              className="h-3" 
-              indicatorColor={conversionColor}
-            />
+            <Progress value={progress} className="h-2" />
           </div>
-        </div>
+        </Card>
+      )}
+
+      {/* Download */}
+      {convertedFiles.length > 0 && (
+        <Card className="w-full max-w-3xl p-6 bg-white border border-gray-200">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-lg font-semibold text-gray-800">Arquivos Convertidos</h2>
+              <p className="text-sm text-gray-500">
+                Baixe os arquivos convertidos individualmente ou todos juntos em um ZIP.
+              </p>
+            </div>
+            <Button
+              onClick={downloadZip}
+              disabled={isConverting}
+              className="bg-green-500 hover:bg-green-600 text-white font-medium transition-all duration-300"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Baixar ZIP
+            </Button>
+          </div>
+        </Card>
       )}
     </div>
   );
