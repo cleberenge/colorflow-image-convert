@@ -26,11 +26,11 @@ serve(async (req) => {
     console.log(`Converting ${file.name} from ${conversionType}`);
 
     if (conversionType === 'png-jpg') {
-      // Para PNG para JPG, vamos usar uma abordagem simples mas efetiva
+      // Read the PNG file
       const arrayBuffer = await file.arrayBuffer();
       const uint8Array = new Uint8Array(arrayBuffer);
       
-      // Verificar se é realmente um PNG
+      // Verify it's a PNG file
       const pngHeader = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
       const isPng = pngHeader.every((byte, index) => uint8Array[index] === byte);
       
@@ -38,48 +38,58 @@ serve(async (req) => {
         throw new Error('File is not a valid PNG');
       }
 
-      // Criar um JPEG válido básico
-      // Para uma conversão real, precisaríamos de uma biblioteca de processamento de imagem
-      // Como workaround, vamos criar um JPEG header válido e manter os dados da imagem
-      const jpegHeader = new Uint8Array([
-        0xFF, 0xD8, // SOI (Start of Image)
-        0xFF, 0xE0, // APP0
-        0x00, 0x10, // Length
-        0x4A, 0x46, 0x49, 0x46, 0x00, // "JFIF\0"
-        0x01, 0x01, // Version
-        0x01, // Units
-        0x00, 0x48, // X density
-        0x00, 0x48, // Y density
-        0x00, 0x00, // Thumbnail width/height
-      ]);
+      // Convert PNG to JPEG using Canvas API
+      // Create a canvas element
+      const canvas = new OffscreenCanvas(1, 1);
+      const ctx = canvas.getContext('2d');
+      
+      if (!ctx) {
+        throw new Error('Could not get canvas context');
+      }
 
-      // Por simplicidade, vamos retornar o PNG original mas com headers JPEG
-      // Em produção, seria necessário usar uma biblioteca de conversão real
+      // Create an image from the PNG data
+      const blob = new Blob([arrayBuffer], { type: 'image/png' });
+      const imageBitmap = await createImageBitmap(blob);
+      
+      // Set canvas size to match image
+      canvas.width = imageBitmap.width;
+      canvas.height = imageBitmap.height;
+      
+      // Draw the image on canvas with white background (JPEG doesn't support transparency)
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      ctx.drawImage(imageBitmap, 0, 0);
+      
+      // Convert to JPEG
+      const jpegBlob = await canvas.convertToBlob({
+        type: 'image/jpeg',
+        quality: 0.9
+      });
+      
+      const jpegArrayBuffer = await jpegBlob.arrayBuffer();
       const originalName = file.name.split('.')[0];
       const newFileName = `${originalName}.jpg`;
 
       console.log(`Image conversion completed: ${newFileName}`);
 
-      // Retornar o arquivo original (PNG) com headers JPEG para download
-      // Isso é um workaround - idealmente usaríamos uma biblioteca de conversão real
-      return new Response(arrayBuffer, {
+      return new Response(jpegArrayBuffer, {
         headers: {
           ...corsHeaders,
-          'Content-Type': 'image/png', // Manter PNG para evitar corrupção
+          'Content-Type': 'image/jpeg',
           'Content-Disposition': `attachment; filename="${newFileName}"`,
-          'Content-Length': arrayBuffer.byteLength.toString(),
+          'Content-Length': jpegArrayBuffer.byteLength.toString(),
         },
       });
     }
 
-    // Para outros tipos de conversão, retornar o arquivo original
+    // For other conversion types, return the original file
     const arrayBuffer = await file.arrayBuffer();
     const originalName = file.name.split('.')[0];
     const outputFormat = conversionType === 'png-jpg' ? 'jpg' : 'png';
-    const mimeType = conversionType === 'png-jpg' ? 'image/png' : 'image/png';
+    const mimeType = conversionType === 'png-jpg' ? 'image/jpeg' : file.type;
     const newFileName = `${originalName}.${outputFormat}`;
 
-    console.log(`Image conversion completed: ${newFileName}`);
+    console.log(`Image processing completed: ${newFileName}`);
 
     return new Response(arrayBuffer, {
       headers: {
