@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -8,6 +7,7 @@ import { useToast } from '@/hooks/use-toast';
 import { useFileConverter } from '@/hooks/useFileConverter';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import ConversionIcon from '@/components/ConversionIcon';
+import { getConversionColor } from '@/utils/conversionColors';
 
 interface ConversionOption {
   value: string;
@@ -190,10 +190,19 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     }
   }, [convertedFiles, toast]);
 
+  // Get conversion color for styling
+  const conversionColor = getConversionColor(selectedConversion);
+
   return (
     <div className="flex flex-col items-center space-y-8 animate-fade-in">
       {/* Upload Area */}
-      <Card className="w-full max-w-3xl p-8 border-2 border-dashed border-gray-300 hover:border-gray-400 transition-all duration-300">
+      <Card 
+        className="w-full max-w-3xl p-8 border-2 border-dashed hover:border-opacity-60 transition-all duration-300"
+        style={{ 
+          backgroundColor: conversionColor,
+          borderColor: conversionColor,
+        }}
+      >
         <div className="text-center">
           <input
             type="file"
@@ -206,14 +215,14 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
             htmlFor="file-input"
             className="cursor-pointer flex flex-col items-center space-y-4"
           >
-            <div className="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center">
-              <Upload className="w-10 h-10 text-gray-600" />
+            <div className="w-20 h-20 bg-black/10 rounded-full flex items-center justify-center">
+              <Upload className="w-10 h-10 text-black" />
             </div>
             <div>
-              <p className="text-xl font-medium text-gray-800 mb-2">
+              <p className="text-xl font-medium text-black mb-2">
                 Clique para selecionar até 25 arquivos
               </p>
-              <p className="text-base text-gray-600">
+              <p className="text-base text-black/80">
                 ou arraste e solte aqui
               </p>
             </div>
@@ -270,7 +279,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
               <Button
                 onClick={convertSelectedFiles}
                 disabled={isConverting}
-                className="bg-blue-500 hover:bg-blue-600 text-white font-medium transition-all duration-300"
+                className="text-white font-medium transition-all duration-300"
+                style={{ backgroundColor: conversionColor }}
               >
                 {isConverting ? 'Convertendo...' : 'Converter Arquivos'}
               </Button>
@@ -292,7 +302,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
           <div className="space-y-4">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-800">Convertendo...</span>
-              <span className="text-sm text-blue-600 font-medium">{progress}%</span>
+              <span className="text-sm font-medium" style={{ color: conversionColor }}>{progress}%</span>
             </div>
             <Progress value={progress} className="h-2" />
           </div>
@@ -312,7 +322,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
             <Button
               onClick={downloadZip}
               disabled={isConverting}
-              className="bg-green-500 hover:bg-green-600 text-white font-medium transition-all duration-300"
+              className="text-white font-medium transition-all duration-300"
+              style={{ backgroundColor: conversionColor }}
             >
               <Download className="w-4 h-4 mr-2" />
               Baixar ZIP
