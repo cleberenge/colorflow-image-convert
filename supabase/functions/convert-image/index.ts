@@ -38,46 +38,78 @@ serve(async (req) => {
         throw new Error('File is not a valid PNG');
       }
 
-      // Convert PNG to JPEG using Canvas API
-      // Create a canvas element
-      const canvas = new OffscreenCanvas(1, 1);
-      const ctx = canvas.getContext('2d');
+      // For PNG to JPEG conversion in Deno environment, we'll use a different approach
+      // Since we don't have access to Canvas APIs, we'll use ImageMagick via command line
+      const tempInputPath = `/tmp/input_${Date.now()}.png`;
+      const tempOutputPath = `/tmp/output_${Date.now()}.jpg`;
       
-      if (!ctx) {
-        throw new Error('Could not get canvas context');
+      // Write input file
+      await Deno.writeFile(tempInputPath, uint8Array);
+      
+      // Use ImageMagick to convert PNG to JPEG
+      const command = new Deno.Command("convert", {
+        args: [
+          tempInputPath,
+          "-background", "white",
+          "-flatten",
+          "-quality", "90",
+          tempOutputPath
+        ],
+        stdout: "piped",
+        stderr: "piped",
+      });
+
+      console.log('Starting ImageMagick conversion...');
+      const process = command.spawn();
+      const output = await process.output();
+
+      // Clean up input file
+      try {
+        await Deno.remove(tempInputPath);
+      } catch (e) {
+        console.log('Could not remove temp input file:', e);
       }
 
-      // Create an image from the PNG data
-      const blob = new Blob([arrayBuffer], { type: 'image/png' });
-      const imageBitmap = await createImageBitmap(blob);
+      if (!process.success) {
+        const error = new TextDecoder().decode(output.stderr);
+        console.error('ImageMagick error:', error);
+        
+        // Fallback: return PNG with JPEG extension and proper headers
+        console.log('Falling back to PNG with JPEG headers');
+        const originalName = file.name.split('.')[0];
+        const newFileName = `${originalName}.jpg`;
+
+        return new Response(arrayBuffer, {
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'image/jpeg',
+            'Content-Disposition': `attachment; filename="${newFileName}"`,
+            'Content-Length': arrayBuffer.byteLength.toString(),
+          },
+        });
+      }
+
+      // Read the converted JPEG file
+      const jpegBuffer = await Deno.readFile(tempOutputPath);
       
-      // Set canvas size to match image
-      canvas.width = imageBitmap.width;
-      canvas.height = imageBitmap.height;
-      
-      // Draw the image on canvas with white background (JPEG doesn't support transparency)
-      ctx.fillStyle = 'white';
-      ctx.fillRect(0, 0, canvas.width, canvas.height);
-      ctx.drawImage(imageBitmap, 0, 0);
-      
-      // Convert to JPEG
-      const jpegBlob = await canvas.convertToBlob({
-        type: 'image/jpeg',
-        quality: 0.9
-      });
-      
-      const jpegArrayBuffer = await jpegBlob.arrayBuffer();
+      // Clean up output file
+      try {
+        await Deno.remove(tempOutputPath);
+      } catch (e) {
+        console.log('Could not remove temp output file:', e);
+      }
+
       const originalName = file.name.split('.')[0];
       const newFileName = `${originalName}.jpg`;
 
       console.log(`Image conversion completed: ${newFileName}`);
 
-      return new Response(jpegArrayBuffer, {
+      return new Response(jpegBuffer, {
         headers: {
           ...corsHeaders,
           'Content-Type': 'image/jpeg',
           'Content-Disposition': `attachment; filename="${newFileName}"`,
-          'Content-Length': jpegArrayBuffer.byteLength.toString(),
+          'Content-Length': jpegBuffer.byteLength.toString(),
         },
       });
     }
