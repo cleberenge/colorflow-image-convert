@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -193,9 +194,16 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   // Get conversion color for styling
   const conversionColor = getConversionColor(selectedConversion);
 
-  // Determine grid configuration - sempre 5 arquivos por linha
-  const getGridConfig = (fileCount: number) => {
-    return "grid grid-cols-5 gap-x-1 gap-y-2";
+  // Organizar arquivos em colunas verticais de 5 arquivos cada
+  const organizeFilesInColumns = (files: File[]) => {
+    const columns = [];
+    const filesPerColumn = 5;
+    
+    for (let i = 0; i < files.length; i += filesPerColumn) {
+      columns.push(files.slice(i, i + filesPerColumn));
+    }
+    
+    return columns;
   };
 
   return (
@@ -267,18 +275,22 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
         <Card className="w-full max-w-3xl p-4 bg-white border border-gray-200">
           <div className="space-y-2">
             <h2 className="text-base font-semibold text-gray-800">Arquivos Selecionados</h2>
-            <div className={getGridConfig(selectedFiles.length)}>
-              {selectedFiles.map((file, index) => (
-                <div key={index} className="flex items-center gap-1 min-w-0">
-                  <div className="w-4 h-4 bg-gray-100 rounded flex items-center justify-center flex-shrink-0">
-                    <ImageIcon className="w-2.5 h-2.5 text-gray-600" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-800 text-xs truncate">{file.name}</p>
-                    <p className="text-xs text-gray-600">
-                      {(file.size / 1024 / 1024).toFixed(2)} MB
-                    </p>
-                  </div>
+            <div className="flex gap-4 overflow-x-auto">
+              {organizeFilesInColumns(selectedFiles).map((column, columnIndex) => (
+                <div key={columnIndex} className="flex flex-col gap-2 min-w-0">
+                  {column.map((file, fileIndex) => (
+                    <div key={columnIndex * 5 + fileIndex} className="flex items-center gap-1 min-w-0">
+                      <div className="w-4 h-4 bg-gray-100 rounded flex items-center justify-center flex-shrink-0">
+                        <ImageIcon className="w-2.5 h-2.5 text-gray-600" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-gray-800 text-xs truncate">{file.name}</p>
+                        <p className="text-xs text-gray-600">
+                          {(file.size / 1024 / 1024).toFixed(2)} MB
+                        </p>
+                      </div>
+                    </div>
+                  ))}
                 </div>
               ))}
             </div>
@@ -286,13 +298,21 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
               <Button
                 onClick={convertSelectedFiles}
                 disabled={isConverting}
-                className="bg-yellow-400 hover:bg-yellow-500 text-black font-medium transition-all duration-300"
+                className="text-black font-medium transition-all duration-300"
+                style={{ 
+                  backgroundColor: conversionColor,
+                  borderColor: conversionColor
+                }}
               >
                 {isConverting ? 'Convertendo...' : 'Converter'}
               </Button>
               <Button
                 onClick={clearFiles}
-                className="bg-yellow-400 hover:bg-yellow-500 text-black font-medium transition-all duration-300"
+                className="text-black font-medium transition-all duration-300"
+                style={{ 
+                  backgroundColor: conversionColor,
+                  borderColor: conversionColor
+                }}
               >
                 Limpar
               </Button>
@@ -300,7 +320,11 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
                 <Button
                   onClick={downloadZip}
                   disabled={isConverting}
-                  className="bg-yellow-400 hover:bg-yellow-500 text-black font-medium transition-all duration-300"
+                  className="text-black font-medium transition-all duration-300"
+                  style={{ 
+                    backgroundColor: conversionColor,
+                    borderColor: conversionColor
+                  }}
                 >
                   <Download className="w-4 h-4 mr-2" />
                   Baixar
