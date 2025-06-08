@@ -42,7 +42,6 @@ const ImageConverter = () => {
       setIsConverting(true);
       setProgress(20);
 
-      // Conversão client-side
       const jpgFile = await convertPngToJpg(selectedFile, 0.9);
       setProgress(80);
 
