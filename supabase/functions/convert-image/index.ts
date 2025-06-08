@@ -23,7 +23,7 @@ serve(async (req) => {
       throw new Error('No file provided');
     }
 
-    console.log(`Converting ${file.name} from ${conversionType}`);
+    console.log(`Processing ${file.name} for ${conversionType}`);
 
     if (conversionType === 'png-jpg') {
       // Read the PNG file
@@ -38,78 +38,36 @@ serve(async (req) => {
         throw new Error('File is not a valid PNG');
       }
 
-      // Since we can't use ImageMagick in Supabase Edge Runtime,
-      // we'll use a basic approach that works with the available APIs
-      
-      // For now, we'll convert the PNG to a "JPEG" by creating a proper JPEG structure
-      // This is a simplified approach that works in the Edge Runtime environment
-      
-      // Create a minimal JPEG structure with the PNG data
-      // This creates a valid JPEG file that most image viewers can handle
+      // Since true PNG to JPEG conversion requires image processing libraries
+      // not available in Edge Runtime, we'll return the original PNG file
+      // with a clear message to the user
       const originalName = file.name.split('.')[0];
-      const newFileName = `${originalName}.jpg`;
+      const newFileName = `${originalName}_original.png`;
 
-      // Since direct pixel manipulation isn't available in Edge Runtime,
-      // we'll use the Web APIs available to create a valid image conversion
-      
-      try {
-        // Use the ImageData and Canvas APIs available in the edge runtime
-        const blob = new Blob([arrayBuffer], { type: 'image/png' });
-        
-        // Convert to ArrayBuffer for processing
-        const buffer = await blob.arrayBuffer();
-        
-        // For a proper conversion, we need to decode PNG and encode as JPEG
-        // Since we don't have access to full image processing libraries,
-        // we'll create a response that browsers can handle
-        
-        // Create a JPEG-like response with proper headers
-        // The browser will handle the actual display
-        const jpegResponse = new Uint8Array(buffer);
+      console.log(`Returning original PNG file: ${newFileName}`);
 
-        console.log(`Image conversion completed: ${newFileName}`);
-
-        return new Response(jpegResponse, {
-          headers: {
-            ...corsHeaders,
-            'Content-Type': 'image/jpeg',
-            'Content-Disposition': `attachment; filename="${newFileName}"`,
-            'Content-Length': jpegResponse.byteLength.toString(),
-          },
-        });
-        
-      } catch (conversionError) {
-        console.error('Conversion error:', conversionError);
-        
-        // Fallback: return the original PNG with JPEG headers
-        // This allows the download to work even if perfect conversion isn't possible
-        const originalName = file.name.split('.')[0];
-        const newFileName = `${originalName}.jpg`;
-
-        return new Response(arrayBuffer, {
-          headers: {
-            ...corsHeaders,
-            'Content-Type': 'image/jpeg',
-            'Content-Disposition': `attachment; filename="${newFileName}"`,
-            'Content-Length': arrayBuffer.byteLength.toString(),
-          },
-        });
-      }
+      return new Response(arrayBuffer, {
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'image/png',
+          'Content-Disposition': `attachment; filename="${newFileName}"`,
+          'Content-Length': arrayBuffer.byteLength.toString(),
+          'X-Conversion-Note': 'True PNG to JPEG conversion requires image processing libraries not available in this environment. Original PNG file returned.',
+        },
+      });
     }
 
     // For other conversion types, return the original file
     const arrayBuffer = await file.arrayBuffer();
     const originalName = file.name.split('.')[0];
-    const outputFormat = conversionType === 'png-jpg' ? 'jpg' : 'png';
-    const mimeType = conversionType === 'png-jpg' ? 'image/jpeg' : file.type;
-    const newFileName = `${originalName}.${outputFormat}`;
+    const newFileName = `${originalName}_processed.${file.name.split('.').pop()}`;
 
-    console.log(`Image processing completed: ${newFileName}`);
+    console.log(`File processing completed: ${newFileName}`);
 
     return new Response(arrayBuffer, {
       headers: {
         ...corsHeaders,
-        'Content-Type': mimeType,
+        'Content-Type': file.type,
         'Content-Disposition': `attachment; filename="${newFileName}"`,
         'Content-Length': arrayBuffer.byteLength.toString(),
       },
