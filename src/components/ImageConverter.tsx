@@ -89,7 +89,7 @@ const ImageConverter = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center space-y-4 animate-fade-in">
+    <div className="flex flex-col items-center space-y-2 animate-fade-in">
       {/* Upload Area */}
       <Card className="w-full max-w-2xl p-8 border-2 border-dashed border-gray-300 hover:border-gray-400 transition-all duration-300" style={{ backgroundColor: '#FDEE00' }}>
         <div className="text-center">
@@ -121,19 +121,19 @@ const ImageConverter = () => {
 
       {/* Selected File Info */}
       {selectedFile && (
-        <Card className="w-full max-w-2xl p-6 bg-white border border-gray-200">
+        <Card className="w-full max-w-2xl p-4 bg-white border border-gray-200">
           <div className="flex items-center space-x-4">
             <div className="w-12 h-12 bg-orange-100 rounded-lg flex items-center justify-center">
               <ImageIcon className="w-6 h-6 text-orange-600" />
             </div>
             <div className="flex-1">
-              <div className="bg-orange-600 rounded-lg p-3 mb-2">
+              <div className="bg-orange-600 rounded-lg p-3 mb-1">
                 <p className="font-medium text-white">{selectedFile.name}</p>
                 <p className="text-sm text-white/80">
                   {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                 </p>
               </div>
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-2">
                 <Button
                   onClick={convertToJPG}
                   disabled={isConverting}
@@ -165,8 +165,8 @@ const ImageConverter = () => {
 
       {/* Progress */}
       {isConverting && (
-        <Card className="w-full max-w-2xl p-4 bg-white">
-          <div className="space-y-3">
+        <Card className="w-full max-w-2xl p-3 bg-white">
+          <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-800">Convertendo...</span>
               <span className="text-sm text-black font-medium">{progress}%</span>
