@@ -89,7 +89,7 @@ const ImageConverter = () => {
   }, []);
 
   return (
-    <div className="flex flex-col items-center space-y-8 animate-fade-in">
+    <div className="flex flex-col items-center space-y-6 animate-fade-in">
       {/* Upload Area */}
       <Card className="w-full max-w-2xl p-8 border-2 border-dashed border-gray-300 hover:border-gray-400 transition-all duration-300" style={{ backgroundColor: '#FDEE00' }}>
         <div className="text-center">
@@ -127,13 +127,13 @@ const ImageConverter = () => {
               <ImageIcon className="w-6 h-6 text-orange-600" />
             </div>
             <div className="flex-1">
-              <div className="bg-orange-600 rounded-lg p-3 mb-4">
+              <div className="bg-orange-600 rounded-lg p-3 mb-3">
                 <p className="font-medium text-white">{selectedFile.name}</p>
                 <p className="text-sm text-white/80">
                   {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
                 </p>
               </div>
-              <div className="flex items-center space-x-3">
+              <div className="flex items-center space-x-3 mb-2">
                 <Button
                   onClick={convertToJPG}
                   disabled={isConverting}
@@ -150,6 +150,19 @@ const ImageConverter = () => {
                 </Button>
               </div>
             </div>
+          </div>
+        </Card>
+      )}
+
+      {/* Progress */}
+      {isConverting && (
+        <Card className="w-full max-w-2xl p-4 bg-white">
+          <div className="space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium text-gray-800">Convertendo...</span>
+              <span className="text-sm text-black font-medium">{progress}%</span>
+            </div>
+            <Progress value={progress} indicatorColor="#FDEE00" className="h-2" />
           </div>
         </Card>
       )}
@@ -176,19 +189,6 @@ const ImageConverter = () => {
               <Download className="w-4 h-4 mr-2" />
               Baixar JPG
             </Button>
-          </div>
-        </Card>
-      )}
-
-      {/* Progress */}
-      {isConverting && (
-        <Card className="w-full max-w-2xl p-6 bg-white">
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-800">Convertendo...</span>
-              <span className="text-sm text-orange-600 font-medium">{progress}%</span>
-            </div>
-            <Progress value={progress} className="h-2" />
           </div>
         </Card>
       )}
