@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -381,7 +380,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                     onClick={handleConvert}
                     disabled={isConverting}
                     size="sm"
-                    className="bg-black hover:bg-gray-800 text-white border-0"
+                    className="text-black border-0"
+                    style={{ backgroundColor: conversionColor }}
                   >
                     {isConverting ? t.converting : 'Converter'}
                   </Button>
@@ -392,7 +392,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                       clearAllFiles();
                     }}
                     size="sm"
-                    className="bg-black hover:bg-gray-800 text-white border-0"
+                    className="text-black border-0"
+                    style={{ backgroundColor: conversionColor }}
                   >
                     <RotateCcw className="w-4 h-4 mr-2" />
                     {language === 'pt' ? 'Limpar' : language === 'en' ? 'Clear' : language === 'ru' ? 'Очистить' : '清除'}
@@ -404,7 +405,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType, convers
                         e.stopPropagation();
                         convertedFiles.length === 1 ? handleDownloadSingle(convertedFiles[0]) : handleDownloadZip();
                       }}
-                      className="bg-black hover:bg-gray-800 text-white font-semibold shadow-md"
+                      className="text-black font-semibold shadow-md border-0"
+                      style={{ backgroundColor: conversionColor }}
                       size="sm"
                     >
                       <Download className="w-4 h-4 mr-2" />
