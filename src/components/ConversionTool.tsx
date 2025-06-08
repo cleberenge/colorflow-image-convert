@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -279,15 +280,13 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
               <Button
                 onClick={convertSelectedFiles}
                 disabled={isConverting}
-                className="text-white font-medium transition-all duration-300"
-                style={{ backgroundColor: conversionColor }}
+                className="bg-yellow-400 hover:bg-yellow-500 text-black font-medium transition-all duration-300"
               >
                 {isConverting ? 'Convertendo...' : 'Converter Arquivos'}
               </Button>
               <Button
                 onClick={clearFiles}
-                variant="outline"
-                className="text-gray-600 border-gray-300 hover:bg-gray-50 transition-all duration-300"
+                className="bg-yellow-400 hover:bg-yellow-500 text-black font-medium transition-all duration-300"
               >
                 Limpar
               </Button>
@@ -322,8 +321,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
             <Button
               onClick={downloadZip}
               disabled={isConverting}
-              className="text-white font-medium transition-all duration-300"
-              style={{ backgroundColor: conversionColor }}
+              className="bg-yellow-400 hover:bg-yellow-500 text-black font-medium transition-all duration-300"
             >
               <Download className="w-4 h-4 mr-2" />
               Baixar ZIP
