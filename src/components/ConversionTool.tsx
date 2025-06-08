@@ -194,6 +194,15 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   // Get conversion color for styling
   const conversionColor = getConversionColor(selectedConversion);
 
+  // Determine grid configuration based on file count
+  const getGridConfig = (fileCount: number) => {
+    if (fileCount <= 5) return "space-y-1";
+    if (fileCount <= 10) return "grid grid-cols-2 gap-x-1 gap-y-1";
+    if (fileCount <= 15) return "grid grid-cols-3 gap-x-1 gap-y-1";
+    if (fileCount <= 20) return "grid grid-cols-4 gap-x-1 gap-y-1";
+    return "grid grid-cols-5 gap-x-1 gap-y-1";
+  };
+
   return (
     <div className="flex flex-col items-center space-y-2 animate-fade-in">
       {/* Upload Area */}
@@ -263,7 +272,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
         <Card className="w-full max-w-3xl p-2 bg-white border border-gray-200">
           <div className="space-y-2">
             <h2 className="text-base font-semibold text-gray-800">Arquivos Selecionados</h2>
-            <div className={selectedFiles.length > 5 ? "grid grid-cols-2 gap-1" : "space-y-1"}>
+            <div className={getGridConfig(selectedFiles.length)}>
               {selectedFiles.map((file, index) => (
                 <div key={index} className="flex items-center space-x-2">
                   <div className="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center">
