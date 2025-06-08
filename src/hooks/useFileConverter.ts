@@ -26,15 +26,6 @@ export const useFileConverter = () => {
       // Progresso inicial (0-10%)
       updateProgress(10);
 
-      // Special message for PNG to JPG conversion
-      if (conversionType === 'png-jpg') {
-        toast({
-          title: "Limitação de Conversão",
-          description: "PNG→JPEG requer bibliotecas de processamento de imagem não disponíveis. Retornando arquivos PNG originais.",
-          variant: "destructive",
-        });
-      }
-
       // Determine which edge function to use
       let functionName: string;
       if (conversionType.includes('video') || conversionType === 'compress-video') {
@@ -104,17 +95,17 @@ export const useFileConverter = () => {
           // Progresso intermediário do arquivo
           updateProgress(fileStartProgress + (progressPerFile * 0.7));
 
-          // Create file from response
+          // Create file from response with correct MIME types
           let mimeType: string;
           let extension: string;
           let newFileName: string;
           
           if (conversionType === 'png-jpg') {
-            // For PNG files, keep as PNG since true conversion isn't available
-            mimeType = 'image/png';
-            extension = 'png';
+            // For PNG to JPEG conversion
+            mimeType = 'image/jpeg';
+            extension = 'jpg';
             const originalName = file.name.split('.')[0];
-            newFileName = `${originalName}_original.${extension}`;
+            newFileName = `${originalName}.${extension}`;
           } else if (conversionType === 'jpg-pdf') {
             mimeType = 'application/pdf';
             extension = 'pdf';
@@ -142,11 +133,12 @@ export const useFileConverter = () => {
             newFileName = `${originalName}.${extension}`;
           }
 
+          // Ensure data is treated as binary
           const blob = new Blob([data], { type: mimeType });
           const convertedFile = new File([blob], newFileName, { type: mimeType });
           convertedFiles.push({ file: convertedFile, originalName: file.name });
           
-          console.log(`File processed successfully: ${newFileName}`);
+          console.log(`File processed successfully: ${newFileName}, MIME type: ${mimeType}`);
           
           // Finalizar progresso do arquivo
           updateProgress(fileStartProgress + progressPerFile);

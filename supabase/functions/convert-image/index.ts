@@ -26,35 +26,66 @@ serve(async (req) => {
     console.log(`Processing ${file.name} for ${conversionType}`);
 
     if (conversionType === 'png-jpg') {
-      // Read the PNG file
+      // Read the PNG file as buffer
       const arrayBuffer = await file.arrayBuffer();
-      const uint8Array = new Uint8Array(arrayBuffer);
+      const inputBuffer = new Uint8Array(arrayBuffer);
       
       // Verify it's a PNG file
       const pngHeader = [0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A];
-      const isPng = pngHeader.every((byte, index) => uint8Array[index] === byte);
+      const isPng = pngHeader.every((byte, index) => inputBuffer[index] === byte);
       
       if (!isPng) {
         throw new Error('File is not a valid PNG');
       }
 
-      // Since true PNG to JPEG conversion requires image processing libraries
-      // not available in Edge Runtime, we'll return the original PNG file
-      // with a clear message to the user
-      const originalName = file.name.split('.')[0];
-      const newFileName = `${originalName}_original.png`;
+      console.log('Converting PNG to JPEG using Sharp...');
 
-      console.log(`Returning original PNG file: ${newFileName}`);
+      try {
+        // Import Sharp dynamically
+        const { default: sharp } = await import('https://deno.land/x/sharp@0.32.6/mod.ts');
+        
+        // Convert PNG to JPEG using Sharp
+        const jpegBuffer = await sharp(inputBuffer)
+          .jpeg({ 
+            quality: 90,
+            progressive: true,
+            mozjpeg: true
+          })
+          .toBuffer();
 
-      return new Response(arrayBuffer, {
-        headers: {
-          ...corsHeaders,
-          'Content-Type': 'image/png',
-          'Content-Disposition': `attachment; filename="${newFileName}"`,
-          'Content-Length': arrayBuffer.byteLength.toString(),
-          'X-Conversion-Note': 'True PNG to JPEG conversion requires image processing libraries not available in this environment. Original PNG file returned.',
-        },
-      });
+        const originalName = file.name.split('.')[0];
+        const newFileName = `${originalName}.jpg`;
+
+        console.log(`PNG to JPEG conversion completed: ${newFileName}`);
+
+        return new Response(jpegBuffer, {
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'image/jpeg',
+            'Content-Disposition': `attachment; filename="${newFileName}"`,
+            'Content-Length': jpegBuffer.byteLength.toString(),
+          },
+        });
+
+      } catch (sharpError) {
+        console.error('Sharp conversion failed:', sharpError);
+        
+        // Fallback: return original PNG with warning
+        const originalName = file.name.split('.')[0];
+        const newFileName = `${originalName}_original.png`;
+
+        console.log(`Fallback: Returning original PNG file: ${newFileName}`);
+
+        return new Response(arrayBuffer, {
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'image/png',
+            'Content-Disposition': `attachment; filename="${newFileName}"`,
+            'Content-Length': arrayBuffer.byteLength.toString(),
+            'X-Conversion-Note': 'Sharp library not available. Original PNG file returned.',
+          },
+        });
+      }
     }
 
     // For other conversion types, return the original file
