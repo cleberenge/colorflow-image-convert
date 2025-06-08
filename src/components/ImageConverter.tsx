@@ -6,70 +6,97 @@ import { Progress } from '@/components/ui/progress';
 import { Upload, Download, Image as ImageIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { convertPngToJpg } from '@/utils/imageConverter';
+import { getConversionColor } from '@/utils/conversionColors';
 
 const ImageConverter = () => {
-  const [selectedFile, setSelectedFile] = useState<File | null>(null);
-  const [convertedFile, setConvertedFile] = useState<File | null>(null);
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
+  const [convertedFiles, setConvertedFiles] = useState<File[]>([]);
   const [isConverting, setIsConverting] = useState(false);
   const [progress, setProgress] = useState(0);
   const { toast } = useToast();
 
+  // Get conversion color for PNG to JPG
+  const conversionColor = getConversionColor('png-jpg');
+
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      if (file.type === 'image/png') {
-        setSelectedFile(file);
-        setConvertedFile(null);
-        setProgress(0);
-        toast({
-          title: "PNG arquivo selecionado",
-          description: `${file.name} está pronto para conversão.`,
-        });
-      } else {
-        toast({
-          title: "Formato inválido",
-          description: "Por favor, selecione um arquivo PNG.",
-          variant: "destructive",
-        });
-      }
+    const files = Array.from(event.target.files || []);
+    if (files.length > 25) {
+      toast({
+        title: "Limite excedido",
+        description: "Selecione no máximo 25 arquivos.",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const validFiles = files.filter(file => file.type === 'image/png');
+    if (validFiles.length !== files.length) {
+      toast({
+        title: "Formato inválido",
+        description: "Por favor, selecione apenas arquivos PNG.",
+        variant: "destructive",
+      });
+    }
+
+    if (validFiles.length > 0) {
+      setSelectedFiles(validFiles);
+      setConvertedFiles([]);
+      setProgress(0);
+      toast({
+        title: `${validFiles.length} arquivo(s) PNG selecionado(s)`,
+        description: `Pronto(s) para conversão.`,
+      });
     }
   }, [toast]);
 
   const convertToJPG = useCallback(async () => {
-    if (!selectedFile) return;
+    if (selectedFiles.length === 0) return;
 
     try {
       setIsConverting(true);
       setProgress(20);
 
-      const jpgFile = await convertPngToJpg(selectedFile, 0.9);
-      setProgress(80);
+      const convertedResults: File[] = [];
+      
+      for (let i = 0; i < selectedFiles.length; i++) {
+        const file = selectedFiles[i];
+        const jpgFile = await convertPngToJpg(file, 0.9);
+        convertedResults.push(jpgFile);
+        
+        // Update progress
+        const progressPercent = Math.round(((i + 1) / selectedFiles.length) * 80) + 20;
+        setProgress(progressPercent);
+      }
 
-      setConvertedFile(jpgFile);
+      setConvertedFiles(convertedResults);
       setProgress(100);
 
       toast({
         title: "Conversão concluída!",
-        description: `${selectedFile.name} foi convertido para JPG com sucesso.`,
+        description: `${selectedFiles.length} arquivo(s) convertido(s) para JPG com sucesso.`,
       });
     } catch (error) {
       console.error('Erro na conversão:', error);
       toast({
         title: "Erro na conversão",
-        description: "Ocorreu um erro ao converter o arquivo. Tente novamente.",
+        description: "Ocorreu um erro ao converter os arquivos. Tente novamente.",
         variant: "destructive",
       });
     } finally {
       setIsConverting(false);
       setTimeout(() => setProgress(0), 1000);
     }
-  }, [selectedFile, toast]);
+  }, [selectedFiles, toast]);
 
-  const downloadJPG = useCallback(() => {
-    if (convertedFile) {
+  const downloadFiles = useCallback(async () => {
+    if (convertedFiles.length === 0) return;
+
+    if (convertedFiles.length === 1) {
+      // Download single file
+      const file = convertedFiles[0];
       const link = document.createElement('a');
-      link.href = URL.createObjectURL(convertedFile);
-      link.download = convertedFile.name;
+      link.href = URL.createObjectURL(file);
+      link.download = file.name;
       document.body.appendChild(link);
       link.click();
       document.body.removeChild(link);
@@ -78,37 +105,89 @@ const ImageConverter = () => {
         title: "Download iniciado",
         description: "Seu arquivo JPG está sendo baixado.",
       });
+    } else {
+      // Download multiple files as ZIP
+      try {
+        const JSZip = (await import('jszip')).default;
+        const zip = new JSZip();
+        
+        for (const file of convertedFiles) {
+          const arrayBuffer = await file.arrayBuffer();
+          zip.file(file.name, arrayBuffer, { binary: true });
+        }
+        
+        const zipBlob = await zip.generateAsync({ type: 'blob' });
+        const url = URL.createObjectURL(zipBlob);
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = 'converted-images.zip';
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(url);
+        
+        toast({
+          title: "Download concluído",
+          description: `ZIP com ${convertedFiles.length} arquivo(s) baixado com sucesso.`,
+        });
+      } catch (error) {
+        console.error('Erro ao criar ZIP:', error);
+        toast({
+          title: "Erro no download",
+          description: "Ocorreu um erro ao criar o arquivo ZIP.",
+          variant: "destructive",
+        });
+      }
     }
-  }, [convertedFile, toast]);
+  }, [convertedFiles, toast]);
 
   const clearFiles = useCallback(() => {
-    setSelectedFile(null);
-    setConvertedFile(null);
+    setSelectedFiles([]);
+    setConvertedFiles([]);
     setProgress(0);
   }, []);
 
+  // Organizar arquivos em colunas verticais de 5 arquivos cada
+  const organizeFilesInColumns = (files: File[]) => {
+    const columns = [];
+    const filesPerColumn = 5;
+    
+    for (let i = 0; i < files.length; i += filesPerColumn) {
+      columns.push(files.slice(i, i + filesPerColumn));
+    }
+    
+    return columns;
+  };
+
   return (
-    <div className="flex flex-col items-center space-y-3 animate-fade-in">
+    <div className="flex flex-col items-center space-y-2 animate-fade-in">
       {/* Upload Area */}
-      <Card className="w-full max-w-2xl p-6 border-2 border-dashed border-gray-300 hover:border-gray-400 transition-all duration-300" style={{ backgroundColor: '#FDEE00' }}>
+      <Card 
+        className="w-full max-w-3xl p-2 border-2 border-dashed hover:border-opacity-60 transition-all duration-300"
+        style={{ 
+          backgroundColor: conversionColor,
+          borderColor: conversionColor,
+        }}
+      >
         <div className="text-center">
           <input
             type="file"
             accept=".png"
+            multiple
             onChange={handleFileSelect}
             className="hidden"
             id="file-input"
           />
           <label
             htmlFor="file-input"
-            className="cursor-pointer flex flex-col items-center space-y-3"
+            className="cursor-pointer flex flex-col items-center space-y-2"
           >
-            <div className="w-16 h-16 bg-black/10 rounded-full flex items-center justify-center">
-              <Upload className="w-8 h-8 text-black" />
+            <div className="w-12 h-12 bg-black/10 rounded-full flex items-center justify-center">
+              <Upload className="w-6 h-6 text-black" />
             </div>
             <div>
-              <p className="text-lg font-medium text-black mb-1">
-                Clique para selecionar arquivo PNG
+              <p className="text-base font-medium text-black mb-1">
+                Clique para selecionar até 25 arquivos PNG
               </p>
               <p className="text-sm text-black/80">
                 ou arraste e solte aqui
@@ -118,45 +197,66 @@ const ImageConverter = () => {
         </div>
       </Card>
 
-      {/* Selected File Info */}
-      {selectedFile && (
-        <Card className="w-full max-w-2xl p-3 bg-white border border-gray-200">
-          <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 bg-orange-100 rounded-lg flex items-center justify-center">
-              <ImageIcon className="w-5 h-5 text-orange-600" />
+      {/* Selected Files Info */}
+      {selectedFiles.length > 0 && (
+        <Card className="w-full max-w-3xl p-4 bg-white border border-gray-200">
+          <div className="space-y-2">
+            <h2 className="text-base font-semibold text-gray-800">Arquivos Selecionados</h2>
+            <div className="flex gap-4 overflow-x-auto">
+              {organizeFilesInColumns(selectedFiles).map((column, columnIndex) => (
+                <div key={columnIndex} className="flex flex-col gap-2 min-w-0">
+                  {column.map((file, fileIndex) => (
+                    <div key={columnIndex * 5 + fileIndex} className="flex items-center gap-1 min-w-0">
+                      <div className="w-4 h-4 bg-gray-100 rounded flex items-center justify-center flex-shrink-0">
+                        <ImageIcon className="w-2.5 h-2.5 text-gray-600" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="font-medium text-gray-800 text-xs truncate">{file.name}</p>
+                        <p className="text-xs text-gray-600">
+                          {(file.size / 1024 / 1024).toFixed(2)} MB
+                        </p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ))}
             </div>
-            <div className="flex-1">
-              <div className="bg-orange-600 rounded-lg p-2 mb-2">
-                <p className="font-medium text-white text-sm">{selectedFile.name}</p>
-                <p className="text-xs text-white/80">
-                  {(selectedFile.size / 1024 / 1024).toFixed(2)} MB
-                </p>
-              </div>
-              <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2">
+              <Button
+                onClick={convertToJPG}
+                disabled={isConverting}
+                className="text-black font-medium transition-all duration-300"
+                style={{ 
+                  backgroundColor: conversionColor,
+                  borderColor: conversionColor
+                }}
+              >
+                {isConverting ? 'Convertendo...' : 'Converter para JPG'}
+              </Button>
+              <Button
+                onClick={clearFiles}
+                className="text-black font-medium transition-all duration-300"
+                style={{ 
+                  backgroundColor: conversionColor,
+                  borderColor: conversionColor
+                }}
+              >
+                Limpar
+              </Button>
+              {convertedFiles.length > 0 && (
                 <Button
-                  onClick={convertToJPG}
+                  onClick={downloadFiles}
                   disabled={isConverting}
-                  className="bg-orange-500 hover:bg-orange-600 text-white text-sm px-3 py-1.5"
+                  className="text-black font-medium transition-all duration-300"
+                  style={{ 
+                    backgroundColor: conversionColor,
+                    borderColor: conversionColor
+                  }}
                 >
-                  {isConverting ? 'Convertendo...' : 'Converter para JPG'}
+                  <Download className="w-4 h-4 mr-2" />
+                  Baixar {convertedFiles.length === 1 ? 'JPG' : 'ZIP'}
                 </Button>
-                <Button
-                  onClick={clearFiles}
-                  variant="outline"
-                  className="bg-orange-500 hover:bg-orange-600 text-white border-orange-500 text-sm px-3 py-1.5"
-                >
-                  Limpar
-                </Button>
-                {convertedFile && (
-                  <Button
-                    onClick={downloadJPG}
-                    className="bg-green-600 hover:bg-green-700 text-white text-sm px-3 py-1.5"
-                  >
-                    <Download className="w-3 h-3 mr-1" />
-                    Baixar JPG
-                  </Button>
-                )}
-              </div>
+              )}
             </div>
           </div>
         </Card>
@@ -164,19 +264,13 @@ const ImageConverter = () => {
 
       {/* Progress */}
       {isConverting && (
-        <Card className="w-full max-w-2xl p-3 bg-white">
+        <Card className="w-full max-w-3xl p-2 bg-white">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-800">Convertendo...</span>
-              <span className="text-sm text-black font-medium">{progress}%</span>
+              <span className="text-sm font-medium" style={{ color: conversionColor }}>{progress}%</span>
             </div>
-            <Progress 
-              value={progress} 
-              className="h-2"
-              style={{
-                backgroundColor: '#e5e7eb'
-              }}
-            />
+            <Progress value={progress} className="h-2" />
           </div>
         </Card>
       )}
