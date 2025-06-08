@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -30,8 +31,8 @@ interface ConversionToolProps {
 const conversionOptions: ConversionOption[] = [
   { value: 'png-jpg', label: 'PNG para JPG', description: 'Converter imagens PNG para o formato JPG.' },
   { value: 'jpg-pdf', label: 'JPG para PDF', description: 'Converter imagens JPG para o formato PDF.' },
-  { value: 'pdf-word', label: 'Converter arquivos PDF para o formato Word (DOCX).' },
-  { value: 'word-pdf', label: 'Converter arquivos Word (DOCX) para o formato PDF.' },
+  { value: 'pdf-word', label: 'PDF para Word', description: 'Converter arquivos PDF para o formato Word (DOCX).' },
+  { value: 'word-pdf', label: 'Word para PDF', description: 'Converter arquivos Word (DOCX) para o formato PDF.' },
   { value: 'video-mp3', label: 'Vídeo para MP3', description: 'Extrair o áudio de arquivos de vídeo para o formato MP3.' },
   { value: 'compress-video', label: 'Comprimir Vídeo', description: 'Reduzir o tamanho de arquivos de vídeo para facilitar o compartilhamento.' },
   { value: 'split-pdf', label: 'Dividir PDF', description: 'Dividir um arquivo PDF em várias páginas ou intervalos de páginas.' },
