@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
@@ -14,11 +14,24 @@ interface ConversionOption {
   description: string;
 }
 
+interface ConversionInfo {
+  id: string;
+  label: { [key: string]: string };
+  from: string;
+  to: string;
+  icon: string;
+}
+
+interface ConversionToolProps {
+  conversionType?: string;
+  conversionInfo?: ConversionInfo;
+}
+
 const conversionOptions: ConversionOption[] = [
   { value: 'png-jpg', label: 'PNG para JPG', description: 'Converter imagens PNG para o formato JPG.' },
   { value: 'jpg-pdf', label: 'JPG para PDF', description: 'Converter imagens JPG para o formato PDF.' },
-  { value: 'pdf-word', label: 'PDF para Word', description: 'Converter arquivos PDF para o formato Word (DOCX).' },
-  { value: 'word-pdf', label: 'Word para PDF', description: 'Converter arquivos Word (DOCX) para o formato PDF.' },
+  { value: 'pdf-word', label: 'Converter arquivos PDF para o formato Word (DOCX).' },
+  { value: 'word-pdf', label: 'Converter arquivos Word (DOCX) para o formato PDF.' },
   { value: 'video-mp3', label: 'Vídeo para MP3', description: 'Extrair o áudio de arquivos de vídeo para o formato MP3.' },
   { value: 'compress-video', label: 'Comprimir Vídeo', description: 'Reduzir o tamanho de arquivos de vídeo para facilitar o compartilhamento.' },
   { value: 'split-pdf', label: 'Dividir PDF', description: 'Dividir um arquivo PDF em várias páginas ou intervalos de páginas.' },
@@ -31,12 +44,19 @@ interface ConvertedFile {
   originalName: string;
 }
 
-const ConversionTool = () => {
+const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propConversionType, conversionInfo }) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [convertedFiles, setConvertedFiles] = useState<ConvertedFile[]>([]);
-  const [selectedConversion, setSelectedConversion] = useState<string>('png-jpg');
+  const [selectedConversion, setSelectedConversion] = useState<string>(propConversionType || 'png-jpg');
   const { toast } = useToast();
   const { convertFiles, isConverting, progress } = useFileConverter();
+
+  // Update selectedConversion when propConversionType changes
+  useEffect(() => {
+    if (propConversionType) {
+      setSelectedConversion(propConversionType);
+    }
+  }, [propConversionType]);
 
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
@@ -205,7 +225,7 @@ const ConversionTool = () => {
         <Card className="w-full max-w-3xl p-6 bg-white border border-gray-200">
           <div className="space-y-4">
             <h2 className="text-lg font-semibold text-gray-800">Opções de Conversão</h2>
-            <Select onValueChange={handleConversionChange}>
+            <Select onValueChange={handleConversionChange} value={selectedConversion}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Selecione o tipo de conversão" />
               </SelectTrigger>
