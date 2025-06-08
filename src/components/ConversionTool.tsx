@@ -194,13 +194,13 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   // Get conversion color for styling
   const conversionColor = getConversionColor(selectedConversion);
 
-  // Determine grid configuration based on file count
+  // Determine grid configuration based on file count - configuração para 5 arquivos por linha
   const getGridConfig = (fileCount: number) => {
     if (fileCount <= 5) return "space-y-1";
-    if (fileCount <= 10) return "grid grid-cols-2 gap-x-0 gap-y-1";
-    if (fileCount <= 15) return "grid grid-cols-3 gap-x-0 gap-y-1";
-    if (fileCount <= 20) return "grid grid-cols-4 gap-x-0 gap-y-1";
-    return "grid grid-cols-5 gap-x-0 gap-y-1";
+    if (fileCount <= 10) return "grid grid-cols-5 gap-1";
+    if (fileCount <= 15) return "grid grid-cols-5 gap-1";
+    if (fileCount <= 20) return "grid grid-cols-5 gap-1";
+    return "grid grid-cols-5 gap-1";
   };
 
   return (
@@ -274,8 +274,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
             <h2 className="text-base font-semibold text-gray-800">Arquivos Selecionados</h2>
             <div className={getGridConfig(selectedFiles.length)}>
               {selectedFiles.map((file, index) => (
-                <div key={index} className="flex items-center space-x-2">
-                  <div className="w-6 h-6 bg-gray-100 rounded-lg flex items-center justify-center">
+                <div key={index} className="flex items-center space-x-1 min-w-0">
+                  <div className="w-5 h-5 bg-gray-100 rounded-lg flex items-center justify-center flex-shrink-0">
                     <ImageIcon className="w-3 h-3 text-gray-600" />
                   </div>
                   <div className="flex-1 min-w-0">
