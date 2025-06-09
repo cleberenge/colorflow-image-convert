@@ -4,6 +4,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { convertPngToJpg } from '@/utils/imageConverter';
 import { convertJpgToPdf } from '@/utils/pdfConverter';
+import { convertWordToPdf } from '@/utils/wordToPdfConverter';
 
 export const useFileConverter = () => {
   const [isConverting, setIsConverting] = useState(false);
@@ -70,6 +71,34 @@ export const useFileConverter = () => {
 
           try {
             const pdfFile = await convertJpgToPdf(file);
+            convertedFiles.push({ file: pdfFile, originalName: file.name });
+            updateProgress(fileStartProgress + (60 / files.length));
+            
+            console.log(`Successfully converted ${file.name} to ${pdfFile.name}`);
+          } catch (error) {
+            console.error(`Error converting ${file.name}:`, error);
+            throw error;
+          }
+        }
+        
+        updateProgress(90);
+        setTimeout(() => updateProgress(100), 200);
+        return convertedFiles;
+      }
+
+      // Handle Word to PDF conversion client-side
+      if (conversionType === 'word-pdf') {
+        updateProgress(20);
+        
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          console.log(`Converting ${file.name} to PDF on client-side`);
+          
+          const fileStartProgress = 20 + (i * 60 / files.length);
+          updateProgress(fileStartProgress);
+
+          try {
+            const pdfFile = await convertWordToPdf(file);
             convertedFiles.push({ file: pdfFile, originalName: file.name });
             updateProgress(fileStartProgress + (60 / files.length));
             
