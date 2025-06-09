@@ -7,7 +7,7 @@ export const convertWordToPdf = async (file: File): Promise<File> => {
     
     // Convert Word to HTML using mammoth with correct API
     const arrayBuffer = await file.arrayBuffer();
-    const result = await mammoth.convertToHtml(arrayBuffer);
+    const result = await mammoth.convertToHtml({ arrayBuffer: arrayBuffer });
     
     const html = result.value;
     console.log('Mammoth conversion completed, processing HTML...');
