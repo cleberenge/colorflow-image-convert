@@ -1,4 +1,3 @@
-
 import mammoth from 'mammoth';
 import { PDFDocument, rgb, StandardFonts } from 'pdf-lib';
 
@@ -6,21 +5,19 @@ export const convertWordToPdf = async (file: File): Promise<File> => {
   try {
     console.log(`Converting ${file.name} to PDF with better formatting preservation`);
     
-    // Convert Word to HTML using mammoth with better options
+    // Convert Word to HTML using mammoth with correct API
     const arrayBuffer = await file.arrayBuffer();
     const result = await mammoth.convertToHtml({ 
       arrayBuffer,
-      options: {
-        includeDefaultStyleMap: true,
-        includeEmbeddedStyleMap: true,
-        convertImage: mammoth.images.imgElement(function(image) {
-          return image.read("base64").then(function(imageBuffer) {
-            return {
-              src: "data:" + image.contentType + ";base64," + imageBuffer
-            };
-          });
-        })
-      }
+      includeDefaultStyleMap: true,
+      includeEmbeddedStyleMap: true,
+      convertImage: mammoth.images.imgElement(function(image) {
+        return image.read("base64").then(function(imageBuffer) {
+          return {
+            src: "data:" + image.contentType + ";base64," + imageBuffer
+          };
+        });
+      })
     });
     
     const html = result.value;
