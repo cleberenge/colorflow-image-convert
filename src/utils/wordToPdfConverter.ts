@@ -22,7 +22,6 @@ export const convertWordToPdf = async (file: File): Promise<File> => {
     }
     
     console.log('Reading file as array buffer...');
-    // Ler o arquivo Word usando mammoth
     let arrayBuffer;
     try {
       arrayBuffer = await file.arrayBuffer();
@@ -32,9 +31,10 @@ export const convertWordToPdf = async (file: File): Promise<File> => {
       throw new Error('Erro ao ler o arquivo. Verifique se o arquivo não está corrompido.');
     }
     
-    console.log('Extracting text with mammoth...');
+    console.log('Extracting HTML with mammoth...');
     let result;
     try {
+      // Usar extractRawText para ter melhor controle sobre a formatação
       result = await mammoth.extractRawText({ arrayBuffer });
       console.log('Mammoth extraction completed successfully');
     } catch (error) {
@@ -54,14 +54,12 @@ export const convertWordToPdf = async (file: File): Promise<File> => {
     
     const text = result.value;
     console.log(`Extracted text length: ${text.length} characters`);
-    console.log('First 100 characters of text:', text.substring(0, 100));
     
     if (!text || text.trim().length === 0) {
       throw new Error('Não foi possível extrair texto do documento. O arquivo pode estar vazio ou corrompido.');
     }
     
     console.log('Creating PDF with jsPDF...');
-    // Criar PDF usando jsPDF
     let pdf;
     try {
       pdf = new jsPDF({
@@ -75,13 +73,14 @@ export const convertWordToPdf = async (file: File): Promise<File> => {
       throw new Error('Erro ao inicializar gerador de PDF');
     }
     
-    // Configurações de texto
+    // Configurações de texto melhoradas
     const pageWidth = pdf.internal.pageSize.getWidth();
     const pageHeight = pdf.internal.pageSize.getHeight();
     const margin = 20;
     const maxLineWidth = pageWidth - (margin * 2);
-    const lineHeight = 7;
-    const fontSize = 12;
+    const lineHeight = 6;
+    const paragraphSpacing = 12;
+    const fontSize = 11;
     
     console.log(`PDF settings - Width: ${pageWidth}, Height: ${pageHeight}, Max line width: ${maxLineWidth}`);
     
@@ -94,50 +93,76 @@ export const convertWordToPdf = async (file: File): Promise<File> => {
       throw new Error('Erro ao configurar fonte do PDF');
     }
     
-    console.log('Splitting text into lines...');
-    // Dividir o texto em linhas que cabem na página
-    let lines;
-    try {
-      lines = pdf.splitTextToSize(text, maxLineWidth);
-      console.log(`Generated ${lines.length} lines`);
-    } catch (error) {
-      console.error('Error splitting text to lines:', error);
-      throw new Error('Erro ao processar texto para PDF');
-    }
+    console.log('Processing text for better formatting...');
+    
+    // Processar o texto para melhor formatação
+    // Dividir por parágrafos (quebras de linha duplas ou simples)
+    const paragraphs = text
+      .split(/\n\s*\n|\r\n\s*\r\n/) // Quebras duplas
+      .map(p => p.trim())
+      .filter(p => p.length > 0);
+    
+    // Se não há quebras duplas, usar quebras simples
+    const finalParagraphs = paragraphs.length > 1 ? paragraphs : 
+      text.split(/\n|\r\n/)
+        .map(p => p.trim())
+        .filter(p => p.length > 0);
+    
+    console.log(`Found ${finalParagraphs.length} paragraphs`);
     
     let currentY = margin;
     let pageNumber = 1;
     
-    console.log('Adding text to PDF pages...');
+    console.log('Adding formatted text to PDF...');
     try {
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i];
+      for (let i = 0; i < finalParagraphs.length; i++) {
+        const paragraph = finalParagraphs[i];
         
-        // Verificar se precisa de nova página
-        if (currentY + lineHeight > pageHeight - margin) {
+        // Pular parágrafos vazios
+        if (!paragraph.trim()) continue;
+        
+        // Dividir o parágrafo em linhas que cabem na página
+        const lines = pdf.splitTextToSize(paragraph, maxLineWidth);
+        
+        // Verificar se o parágrafo cabe na página atual
+        const paragraphHeight = lines.length * lineHeight + (i > 0 ? paragraphSpacing : 0);
+        
+        if (currentY + paragraphHeight > pageHeight - margin) {
           pdf.addPage();
           currentY = margin;
           pageNumber++;
           console.log(`Added page ${pageNumber}`);
+        } else if (i > 0) {
+          // Adicionar espaçamento entre parágrafos
+          currentY += paragraphSpacing;
         }
         
-        // Adicionar linha ao PDF
-        pdf.text(line, margin, currentY);
-        currentY += lineHeight;
+        // Adicionar as linhas do parágrafo
+        for (const line of lines) {
+          if (currentY + lineHeight > pageHeight - margin) {
+            pdf.addPage();
+            currentY = margin;
+            pageNumber++;
+            console.log(`Added page ${pageNumber}`);
+          }
+          
+          pdf.text(line, margin, currentY);
+          currentY += lineHeight;
+        }
         
-        // Log de progresso a cada 100 linhas
-        if (i % 100 === 0) {
-          console.log(`Processed ${i + 1}/${lines.length} lines`);
+        // Log de progresso
+        if (i % 10 === 0) {
+          console.log(`Processed ${i + 1}/${finalParagraphs.length} paragraphs`);
         }
       }
-      console.log(`All ${lines.length} lines added to PDF`);
+      
+      console.log(`All ${finalParagraphs.length} paragraphs added to PDF`);
     } catch (error) {
       console.error('Error adding text to PDF:', error);
       throw new Error('Erro ao adicionar texto ao PDF');
     }
     
     console.log('Generating PDF blob...');
-    // Gerar o blob do PDF
     let pdfBlob;
     try {
       pdfBlob = pdf.output('blob');
