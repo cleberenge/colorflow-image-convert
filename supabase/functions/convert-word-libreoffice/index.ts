@@ -13,7 +13,7 @@ serve(async (req: Request) => {
   }
 
   try {
-    console.log('Starting LibreOffice Word to PDF conversion...');
+    console.log('Starting Word to PDF conversion...');
     
     const formData = await req.formData();
     const file = formData.get('file') as File;
@@ -31,41 +31,96 @@ serve(async (req: Request) => {
 
     // Convert file to array buffer
     const arrayBuffer = await file.arrayBuffer();
-    const uint8Array = new Uint8Array(arrayBuffer);
 
-    console.log('Converting using LibreOffice Online API...');
+    console.log('Converting using ConvertAPI free service...');
 
-    // Use LibreOffice Online conversion service
-    // This is a free service that converts documents while preserving formatting
+    // Use ConvertAPI free service (no API key required for basic usage)
     const conversionFormData = new FormData();
-    conversionFormData.append('file', new Blob([uint8Array], { type: file.type }), file.name);
-    conversionFormData.append('format', 'pdf');
+    conversionFormData.append('File', new Blob([arrayBuffer], { type: file.type }), file.name);
+    conversionFormData.append('StoreFile', 'true');
 
-    const response = await fetch('https://api.cloudconvert.com/v2/convert', {
+    const response = await fetch('https://v2.convertapi.com/convert/docx/to/pdf', {
       method: 'POST',
       body: conversionFormData,
-      headers: {
-        'Accept': 'application/json',
-      },
     });
 
     if (!response.ok) {
-      console.error('LibreOffice conversion failed:', response.status, response.statusText);
+      console.error('ConvertAPI conversion failed:', response.status, response.statusText);
       
-      // Fallback to a simpler conversion service
-      console.log('Trying alternative conversion service...');
+      // Fallback to ILovePDF free API
+      console.log('Trying ILovePDF free conversion...');
       
-      const alternativeResponse = await fetch('https://api.ilovepdf.com/v1/process', {
+      const ilovePdfData = new FormData();
+      ilovePdfData.append('task', 'office_pdf');
+      ilovePdfData.append('file', new Blob([arrayBuffer], { type: file.type }), file.name);
+
+      const ilovePdfResponse = await fetch('https://api.ilovepdf.com/v1/process', {
         method: 'POST',
-        body: conversionFormData,
+        body: ilovePdfData,
+        headers: {
+          'Accept': 'application/json',
+        },
       });
 
-      if (!alternativeResponse.ok) {
-        throw new Error('Falha na conversão. Serviço temporariamente indisponível.');
+      if (!ilovePdfResponse.ok) {
+        console.error('ILovePDF conversion failed:', ilovePdfResponse.status);
+        
+        // Final fallback - use a different free service
+        console.log('Trying PDF24 free conversion...');
+        
+        const pdf24Data = new FormData();
+        pdf24Data.append('file', new Blob([arrayBuffer], { type: file.type }), file.name);
+        
+        const pdf24Response = await fetch('https://tools.pdf24.org/api/convert/office-to-pdf', {
+          method: 'POST',
+          body: pdf24Data,
+        });
+
+        if (!pdf24Response.ok) {
+          throw new Error('Todos os serviços de conversão estão temporariamente indisponíveis. Tente novamente em alguns minutos.');
+        }
+
+        const pdfBuffer = await pdf24Response.arrayBuffer();
+        
+        return new Response(pdfBuffer, {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': `attachment; filename="${file.name.replace(/\.(docx?|doc)$/i, '.pdf')}"`,
+            ...corsHeaders,
+          },
+        });
       }
 
-      const pdfBuffer = await alternativeResponse.arrayBuffer();
+      const ilovePdfResult = await ilovePdfResponse.json();
       
+      if (ilovePdfResult.download_url) {
+        const pdfResponse = await fetch(ilovePdfResult.download_url);
+        const pdfBuffer = await pdfResponse.arrayBuffer();
+        
+        return new Response(pdfBuffer, {
+          status: 200,
+          headers: {
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': `attachment; filename="${file.name.replace(/\.(docx?|doc)$/i, '.pdf')}"`,
+            ...corsHeaders,
+          },
+        });
+      }
+      
+      throw new Error('Falha na conversão usando ILovePDF');
+    }
+
+    // Handle ConvertAPI response
+    const result = await response.json();
+    
+    if (result.Files && result.Files.length > 0) {
+      const pdfUrl = result.Files[0].Url;
+      const pdfResponse = await fetch(pdfUrl);
+      const pdfBuffer = await pdfResponse.arrayBuffer();
+      
+      console.log(`Conversion successful. PDF size: ${pdfBuffer.byteLength} bytes`);
+
       return new Response(pdfBuffer, {
         status: 200,
         headers: {
@@ -76,26 +131,15 @@ serve(async (req: Request) => {
       });
     }
 
-    const pdfBuffer = await response.arrayBuffer();
-    
-    console.log(`Conversion successful. PDF size: ${pdfBuffer.byteLength} bytes`);
-
-    return new Response(pdfBuffer, {
-      status: 200,
-      headers: {
-        'Content-Type': 'application/pdf',
-        'Content-Disposition': `attachment; filename="${file.name.replace(/\.(docx?|doc)$/i, '.pdf')}"`,
-        ...corsHeaders,
-      },
-    });
+    throw new Error('Resposta inválida do serviço de conversão');
 
   } catch (error) {
-    console.error('Error in LibreOffice conversion:', error);
+    console.error('Error in Word to PDF conversion:', error);
     
     return new Response(
       JSON.stringify({ 
         error: error instanceof Error ? error.message : 'Erro desconhecido na conversão',
-        details: 'Falha ao converter documento usando LibreOffice Online API'
+        details: 'Falha ao converter documento Word para PDF'
       }), 
       {
         status: 500,
