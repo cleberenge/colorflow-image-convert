@@ -39,11 +39,13 @@ const ImageConverter = () => {
     }
 
     if (validFiles.length > 0) {
-      setSelectedFiles(validFiles);
+      // Ordenar arquivos por nome em ordem crescente
+      const sortedFiles = validFiles.sort((a, b) => a.name.localeCompare(b.name));
+      setSelectedFiles(sortedFiles);
       setConvertedFiles([]);
       setProgress(0);
       toast({
-        title: `${validFiles.length} arquivo(s) PNG selecionado(s)`,
+        title: `${sortedFiles.length} arquivo(s) PNG selecionado(s)`,
         description: `Pronto(s) para conversão.`,
       });
     }
@@ -147,16 +149,16 @@ const ImageConverter = () => {
     setProgress(0);
   }, []);
 
-  // Organizar arquivos em colunas verticais de 5 arquivos cada
-  const organizeFilesInColumns = (files: File[]) => {
-    const columns = [];
-    const filesPerColumn = 5;
+  // Organizar arquivos em linhas horizontais de 5 arquivos cada
+  const organizeFilesInRows = (files: File[]) => {
+    const rows = [];
+    const filesPerRow = 5;
     
-    for (let i = 0; i < files.length; i += filesPerColumn) {
-      columns.push(files.slice(i, i + filesPerColumn));
+    for (let i = 0; i < files.length; i += filesPerRow) {
+      rows.push(files.slice(i, i + filesPerRow));
     }
     
-    return columns;
+    return rows;
   };
 
   return (
@@ -202,11 +204,11 @@ const ImageConverter = () => {
         <Card className="w-full max-w-3xl p-4 bg-white border border-gray-200">
           <div className="space-y-2">
             <h2 className="text-base font-semibold text-gray-800">Arquivos Selecionados</h2>
-            <div className="flex gap-4 overflow-x-auto">
-              {organizeFilesInColumns(selectedFiles).map((column, columnIndex) => (
-                <div key={columnIndex} className="flex flex-col gap-2 min-w-0">
-                  {column.map((file, fileIndex) => (
-                    <div key={columnIndex * 5 + fileIndex} className="flex items-center gap-1 min-w-0">
+            <div className="space-y-2">
+              {organizeFilesInRows(selectedFiles).map((row, rowIndex) => (
+                <div key={rowIndex} className="flex gap-4 overflow-x-auto">
+                  {row.map((file, fileIndex) => (
+                    <div key={rowIndex * 5 + fileIndex} className="flex items-center gap-1 min-w-0 flex-1">
                       <div className="w-4 h-4 bg-gray-100 rounded flex items-center justify-center flex-shrink-0">
                         <ImageIcon className="w-2.5 h-2.5 text-gray-600" />
                       </div>
@@ -270,7 +272,7 @@ const ImageConverter = () => {
               <span className="text-sm font-medium text-gray-800">Convertendo...</span>
               <span className="text-sm font-medium" style={{ color: conversionColor }}>{progress}%</span>
             </div>
-            <Progress value={progress} className="h-2" />
+            <Progress value={progress} className="h-2" indicatorColor={conversionColor} />
           </div>
         </Card>
       )}
