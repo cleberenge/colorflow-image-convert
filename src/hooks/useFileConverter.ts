@@ -3,6 +3,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { convertPngToJpg } from '@/utils/imageConverter';
 import { convertJpgToPdf } from '@/utils/pdfConverter';
+import { convertWordToPdf } from '@/utils/wordToPdfConverter';
 
 export const useFileConverter = () => {
   const [isConverting, setIsConverting] = useState(false);
@@ -84,40 +85,23 @@ export const useFileConverter = () => {
         return convertedFiles;
       }
 
-      // Handle Word to PDF conversion using LibreOffice Online API
+      // Handle Word to PDF conversion client-side
       if (conversionType === 'word-pdf') {
         updateProgress(20);
         
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
-          console.log(`Converting ${file.name} to PDF using LibreOffice Online API`);
+          console.log(`Converting ${file.name} to PDF on client-side using mammoth + jsPDF`);
           
           const fileStartProgress = 20 + (i * 60 / files.length);
           updateProgress(fileStartProgress);
 
           try {
-            const formData = new FormData();
-            formData.append('file', file);
-
-            const { data, error } = await supabase.functions.invoke('convert-word-libreoffice', {
-              body: formData,
-            });
-
-            if (error) {
-              console.error(`Error processing ${file.name}:`, error);
-              throw error;
-            }
-
-            // Create PDF file from response
-            const originalName = file.name.split('.')[0];
-            const pdfFileName = `${originalName}.pdf`;
-            const blob = new Blob([data], { type: 'application/pdf' });
-            const pdfFile = new File([blob], pdfFileName, { type: 'application/pdf' });
-            
+            const pdfFile = await convertWordToPdf(file);
             convertedFiles.push({ file: pdfFile, originalName: file.name });
             updateProgress(fileStartProgress + (60 / files.length));
             
-            console.log(`Successfully converted ${file.name} to ${pdfFileName} using LibreOffice`);
+            console.log(`Successfully converted ${file.name} to ${pdfFile.name}`);
           } catch (error) {
             console.error(`Error converting ${file.name}:`, error);
             throw error;
