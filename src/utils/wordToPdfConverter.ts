@@ -23,11 +23,30 @@ export const convertWordToPdf = async (file: File): Promise<File> => {
     
     console.log('Reading file as array buffer...');
     // Ler o arquivo Word usando mammoth
-    const arrayBuffer = await file.arrayBuffer();
-    console.log(`Array buffer size: ${arrayBuffer.byteLength} bytes`);
+    let arrayBuffer;
+    try {
+      arrayBuffer = await file.arrayBuffer();
+      console.log(`Array buffer size: ${arrayBuffer.byteLength} bytes`);
+    } catch (error) {
+      console.error('Error reading file as array buffer:', error);
+      throw new Error('Erro ao ler o arquivo. Verifique se o arquivo não está corrompido.');
+    }
     
     console.log('Extracting text with mammoth...');
-    const result = await mammoth.extractRawText({ arrayBuffer });
+    let result;
+    try {
+      result = await mammoth.extractRawText({ arrayBuffer });
+      console.log('Mammoth extraction completed successfully');
+    } catch (error) {
+      console.error('Mammoth extraction error:', error);
+      if (error instanceof Error) {
+        if (error.message.includes('not a valid zip file') || error.message.includes('Invalid file format')) {
+          throw new Error('Arquivo Word inválido ou corrompido. Apenas arquivos .docx são suportados.');
+        }
+        throw new Error(`Erro ao processar arquivo Word: ${error.message}`);
+      }
+      throw new Error('Erro desconhecido ao processar arquivo Word');
+    }
     
     if (result.messages && result.messages.length > 0) {
       console.warn('Mammoth conversion warnings:', result.messages);
@@ -35,18 +54,26 @@ export const convertWordToPdf = async (file: File): Promise<File> => {
     
     const text = result.value;
     console.log(`Extracted text length: ${text.length} characters`);
+    console.log('First 100 characters of text:', text.substring(0, 100));
     
     if (!text || text.trim().length === 0) {
-      throw new Error('Não foi possível extrair texto do documento');
+      throw new Error('Não foi possível extrair texto do documento. O arquivo pode estar vazio ou corrompido.');
     }
     
     console.log('Creating PDF with jsPDF...');
     // Criar PDF usando jsPDF
-    const pdf = new jsPDF({
-      orientation: 'portrait',
-      unit: 'mm',
-      format: 'a4'
-    });
+    let pdf;
+    try {
+      pdf = new jsPDF({
+        orientation: 'portrait',
+        unit: 'mm',
+        format: 'a4'
+      });
+      console.log('jsPDF instance created successfully');
+    } catch (error) {
+      console.error('Error creating jsPDF instance:', error);
+      throw new Error('Erro ao inicializar gerador de PDF');
+    }
     
     // Configurações de texto
     const pageWidth = pdf.internal.pageSize.getWidth();
@@ -56,38 +83,69 @@ export const convertWordToPdf = async (file: File): Promise<File> => {
     const lineHeight = 7;
     const fontSize = 12;
     
-    pdf.setFontSize(fontSize);
-    pdf.setFont('helvetica', 'normal');
+    console.log(`PDF settings - Width: ${pageWidth}, Height: ${pageHeight}, Max line width: ${maxLineWidth}`);
+    
+    try {
+      pdf.setFontSize(fontSize);
+      pdf.setFont('helvetica', 'normal');
+      console.log('PDF font settings applied');
+    } catch (error) {
+      console.error('Error setting PDF font:', error);
+      throw new Error('Erro ao configurar fonte do PDF');
+    }
     
     console.log('Splitting text into lines...');
     // Dividir o texto em linhas que cabem na página
-    const lines = pdf.splitTextToSize(text, maxLineWidth);
-    console.log(`Generated ${lines.length} lines`);
+    let lines;
+    try {
+      lines = pdf.splitTextToSize(text, maxLineWidth);
+      console.log(`Generated ${lines.length} lines`);
+    } catch (error) {
+      console.error('Error splitting text to lines:', error);
+      throw new Error('Erro ao processar texto para PDF');
+    }
     
     let currentY = margin;
     let pageNumber = 1;
     
     console.log('Adding text to PDF pages...');
-    for (let i = 0; i < lines.length; i++) {
-      const line = lines[i];
-      
-      // Verificar se precisa de nova página
-      if (currentY + lineHeight > pageHeight - margin) {
-        pdf.addPage();
-        currentY = margin;
-        pageNumber++;
-        console.log(`Added page ${pageNumber}`);
+    try {
+      for (let i = 0; i < lines.length; i++) {
+        const line = lines[i];
+        
+        // Verificar se precisa de nova página
+        if (currentY + lineHeight > pageHeight - margin) {
+          pdf.addPage();
+          currentY = margin;
+          pageNumber++;
+          console.log(`Added page ${pageNumber}`);
+        }
+        
+        // Adicionar linha ao PDF
+        pdf.text(line, margin, currentY);
+        currentY += lineHeight;
+        
+        // Log de progresso a cada 100 linhas
+        if (i % 100 === 0) {
+          console.log(`Processed ${i + 1}/${lines.length} lines`);
+        }
       }
-      
-      // Adicionar linha ao PDF
-      pdf.text(line, margin, currentY);
-      currentY += lineHeight;
+      console.log(`All ${lines.length} lines added to PDF`);
+    } catch (error) {
+      console.error('Error adding text to PDF:', error);
+      throw new Error('Erro ao adicionar texto ao PDF');
     }
     
     console.log('Generating PDF blob...');
     // Gerar o blob do PDF
-    const pdfBlob = pdf.output('blob');
-    console.log(`PDF blob size: ${pdfBlob.size} bytes`);
+    let pdfBlob;
+    try {
+      pdfBlob = pdf.output('blob');
+      console.log(`PDF blob size: ${pdfBlob.size} bytes`);
+    } catch (error) {
+      console.error('Error generating PDF blob:', error);
+      throw new Error('Erro ao finalizar PDF');
+    }
     
     // Criar nome do arquivo
     const originalName = file.name.replace(/\.(docx?|doc)$/i, '');
@@ -105,6 +163,7 @@ export const convertWordToPdf = async (file: File): Promise<File> => {
     
   } catch (error) {
     console.error(`Error converting Word file ${file.name}:`, error);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
     
     // Verificar tipos específicos de erro
     if (error instanceof Error) {
