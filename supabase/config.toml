@@ -1,1 +1,14 @@
+
 project_id = "atzepfeyncuypbfzzuda"
+
+[functions.convert-image]
+verify_jwt = false
+
+[functions.convert-pdf]
+verify_jwt = false
+
+[functions.convert-video]
+verify_jwt = false
+
+[functions.convert-word-libreoffice]
+verify_jwt = false
