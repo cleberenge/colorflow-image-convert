@@ -197,16 +197,24 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   // Get conversion color for styling
   const conversionColor = getConversionColor(selectedConversion);
 
-  // Organizar arquivos em ordem crescente (já feito no handleFileSelect)
-  const organizeFilesInRows = (files: File[]) => {
-    const rows = [];
-    const filesPerRow = 5;
+  // Organizar arquivos em colunas verticais
+  const organizeFilesInColumns = (files: File[]) => {
+    const filesPerColumn = 5;
+    const numColumns = Math.ceil(files.length / filesPerColumn);
+    const columns = [];
     
-    for (let i = 0; i < files.length; i += filesPerRow) {
-      rows.push(files.slice(i, i + filesPerRow));
+    for (let col = 0; col < numColumns; col++) {
+      const columnFiles = [];
+      for (let row = 0; row < filesPerColumn; row++) {
+        const fileIndex = col * filesPerColumn + row;
+        if (fileIndex < files.length) {
+          columnFiles.push(files[fileIndex]);
+        }
+      }
+      columns.push(columnFiles);
     }
     
-    return rows;
+    return columns;
   };
 
   return (
@@ -273,11 +281,11 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
         <Card className="w-full max-w-3xl p-4 bg-white border border-gray-200">
           <div className="space-y-2">
             <h2 className="text-base font-semibold text-gray-800">Arquivos Selecionados</h2>
-            <div className="space-y-2">
-              {organizeFilesInRows(selectedFiles).map((row, rowIndex) => (
-                <div key={rowIndex} className="flex gap-4 overflow-x-auto">
-                  {row.map((file, fileIndex) => (
-                    <div key={rowIndex * 5 + fileIndex} className="flex items-center gap-1 min-w-0 flex-1">
+            <div className="flex gap-4 overflow-x-auto">
+              {organizeFilesInColumns(selectedFiles).map((column, columnIndex) => (
+                <div key={columnIndex} className="flex flex-col gap-2 min-w-0 flex-1">
+                  {column.map((file, fileIndex) => (
+                    <div key={columnIndex * 5 + fileIndex} className="flex items-center gap-1 min-w-0">
                       <div className="w-4 h-4 bg-gray-100 rounded flex items-center justify-center flex-shrink-0">
                         <ImageIcon className="w-2.5 h-2.5 text-gray-600" />
                       </div>
