@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -9,9 +8,10 @@ import { useFileConverter } from '@/hooks/useFileConverter';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import ConversionIcon from '@/components/ConversionIcon';
 import { getConversionColor } from '@/utils/conversionColors';
+import { ConversionType, ConvertedFile } from '@/types/fileConverter';
 
 interface ConversionOption {
-  value: string;
+  value: ConversionType;
   label: string;
   description: string;
 }
@@ -25,7 +25,7 @@ interface ConversionInfo {
 }
 
 interface ConversionToolProps {
-  conversionType?: string;
+  conversionType?: ConversionType;
   conversionInfo?: ConversionInfo;
 }
 
@@ -41,15 +41,10 @@ const conversionOptions: ConversionOption[] = [
   { value: 'reduce-pdf', label: 'Reduzir PDF', description: '' },
 ];
 
-interface ConvertedFile {
-  file: File;
-  originalName: string;
-}
-
 const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propConversionType, conversionInfo }) => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [convertedFiles, setConvertedFiles] = useState<ConvertedFile[]>([]);
-  const [selectedConversion, setSelectedConversion] = useState<string>(propConversionType || 'png-jpg');
+  const [selectedConversion, setSelectedConversion] = useState<ConversionType>(propConversionType || 'png-jpg');
   const { toast } = useToast();
   const { convertFiles, isConverting, progress } = useFileConverter();
 
@@ -83,7 +78,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   }, [toast]);
 
   const handleConversionChange = (value: string) => {
-    setSelectedConversion(value);
+    setSelectedConversion(value as ConversionType);
     setConvertedFiles([]);
   };
 
