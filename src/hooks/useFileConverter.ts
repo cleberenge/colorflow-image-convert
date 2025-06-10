@@ -1,21 +1,15 @@
 
 import { useState } from 'react';
-import { useToast } from '@/hooks/use-toast';
 import { ConvertedFile, ConversionType } from '@/types/fileConverter';
 import { validateFileCount } from '@/utils/fileValidation';
 import { useClientSideConverter } from '@/hooks/useClientSideConverter';
-import { useVideoConverter } from '@/hooks/useVideoConverter';
-import { useServerSideConverter } from '@/hooks/useServerSideConverter';
 
 export const useFileConverter = () => {
   const [progress, setProgress] = useState(0);
-  const { toast } = useToast();
   
   const { convertClientSide, isConverting: isClientConverting } = useClientSideConverter();
-  const { convertVideoFiles, isConverting: isVideoConverting } = useVideoConverter();
-  const { convertServerSide, isConverting: isServerConverting } = useServerSideConverter();
 
-  const isConverting = isClientConverting || isVideoConverting || isServerConverting;
+  const isConverting = isClientConverting;
 
   // Progress update function that ensures always increasing values
   let currentProgress = 0;
@@ -40,24 +34,18 @@ export const useFileConverter = () => {
 
       let convertedFiles: ConvertedFile[];
 
-      // Determine conversion method based on type - moved reduce-pdf to client-side
-      if (['png-jpg', 'jpg-pdf', 'word-pdf', 'split-pdf', 'merge-pdf', 'reduce-pdf'].includes(conversionType)) {
+      // All conversions now handled client-side only
+      if (['png-jpg', 'jpg-pdf', 'split-pdf', 'merge-pdf', 'reduce-pdf'].includes(conversionType)) {
         convertedFiles = await convertClientSide(files, conversionType, updateProgress);
-      } else if (['video-mp3', 'compress-video'].includes(conversionType)) {
-        convertedFiles = await convertVideoFiles(files, conversionType, updateProgress);
       } else {
-        convertedFiles = await convertServerSide(files, conversionType, updateProgress);
+        throw new Error(`Tipo de conversão não suportado: ${conversionType}`);
       }
 
       return convertedFiles;
 
     } catch (error) {
       console.error('Conversion error:', error);
-      toast({
-        title: "Erro no processamento",
-        description: error instanceof Error ? error.message : "Ocorreu um erro ao processar os arquivos.",
-        variant: "destructive",
-      });
+      // Remove toast notification for errors
       throw error;
     }
   };

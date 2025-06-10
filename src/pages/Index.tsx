@@ -8,7 +8,7 @@ import { useLanguage } from '@/hooks/useLanguage';
 import { getConversionColor } from '@/utils/conversionColors';
 import { ConversionType } from '@/types/fileConverter';
 
-// Conversion types with SmallPDF-inspired design
+// Conversion types with only image and PDF tools
 const conversionTypes = [
   { 
     id: 'png-jpg', 
@@ -29,46 +29,6 @@ const conversionTypes = [
     }, 
     from: 'JPG', to: 'PDF', 
     icon: '📸' 
-  },
-  { 
-    id: 'pdf-word', 
-    label: { 
-      pt: 'PDF para Word', en: 'PDF to Word', zh: 'PDF转Word', es: 'PDF a Word', 
-      fr: 'PDF vers Word', de: 'PDF zu Word', hi: 'PDF से Word', ar: 'PDF إلى Word', 
-      ko: 'PDF를 Word로', ja: 'PDFをWordへ', ru: 'PDF в Word'
-    }, 
-    from: 'PDF', to: 'Word', 
-    icon: '📄' 
-  },
-  { 
-    id: 'word-pdf', 
-    label: { 
-      pt: 'Word para PDF', en: 'Word to PDF', zh: 'Word转PDF', es: 'Word a PDF', 
-      fr: 'Word vers PDF', de: 'Word zu PDF', hi: 'Word से PDF', ar: 'Word إلى PDF', 
-      ko: 'Word를 PDF로', ja: 'WordをPDFへ', ru: 'Word в PDF'
-    }, 
-    from: 'Word', to: 'PDF', 
-    icon: '📝' 
-  },
-  { 
-    id: 'video-mp3', 
-    label: { 
-      pt: 'Extrair MP3', en: 'Extract MP3', zh: '提取MP3', es: 'Extraer MP3', 
-      fr: 'Extraire MP3', de: 'MP3 extrahieren', hi: 'MP3 निकालें', ar: 'استخراج MP3', 
-      ko: 'MP3 추출', ja: 'MP3を抽出', ru: 'Извлечь MP3'
-    }, 
-    from: 'Vídeo', to: 'MP3', 
-    icon: '🎵' 
-  },
-  { 
-    id: 'compress-video', 
-    label: { 
-      pt: 'Comprimir Vídeo', en: 'Compress Video', zh: '压缩视频', es: 'Comprimir Video', 
-      fr: 'Compresser Vidéo', de: 'Video komprimieren', hi: 'वीडियो संपीड़ित करें', ar: 'ضغط الفيديو', 
-      ko: '동영상 압축', ja: '動画を圧縮', ru: 'Сжать видео'
-    }, 
-    from: 'Vídeo', to: 'Vídeo Comprimido', 
-    icon: '🎬' 
   },
   { 
     id: 'split-pdf', 
@@ -224,16 +184,17 @@ const Index = () => {
   const [activeConversion, setActiveConversion] = useState<ConversionType>('png-jpg');
   const { language, t } = useLanguage();
 
-  // Separate main tools (top row) and other tools (bottom)
-  const mainTools = conversionTypes.slice(0, 5); // PNG->JPG, JPG->PDF, PDF->Word, Word->PDF, Extract MP3
-  const otherTools = conversionTypes.slice(5); // Compress Video, Split PDF, Merge PDF, Reduce PDF
+  // Main tools - top row (image conversions)
+  const mainTools = conversionTypes.slice(0, 2); // PNG->JPG, JPG->PDF
+  // PDF tools - bottom row
+  const pdfTools = conversionTypes.slice(2); // Split, Merge, Reduce PDF
 
   return (
     <>
       <Helmet>
         <title>ChoicePDF - O melhor e mais rápido conversor</title>
-        <meta name="description" content="O melhor e mais rápido conversor de arquivos PNG para JPG, JPG para PDF, PDF para Word, Word para PDF, extraia MP3 de vídeos e muito mais. Ferramenta online gratuita e segura." />
-        <meta name="keywords" content="converter PDF, PNG para JPG, JPG para PDF, PDF para Word, Word para PDF, extrair MP3, comprimir vídeo, dividir PDF, juntar PDF" />
+        <meta name="description" content="O melhor e mais rápido conversor de arquivos PNG para JPG, JPG para PDF, dividir PDF, juntar PDF e reduzir PDF. Ferramenta online gratuita e segura." />
+        <meta name="keywords" content="converter PDF, PNG para JPG, JPG para PDF, dividir PDF, juntar PDF, reduzir PDF" />
         <meta property="og:title" content="ChoicePDF - O melhor e mais rápido conversor" />
         <meta property="og:description" content="O melhor e mais rápido conversor de arquivos online de forma gratuita e segura" />
         <meta property="og:type" content="website" />
@@ -262,7 +223,7 @@ const Index = () => {
             </div>
             
             {/* Main tools - top row with tighter spacing */}
-            <div className="flex justify-center mb-1 max-w-2xl mx-auto gap-0 bg-gray-50 rounded-lg">
+            <div className="flex justify-center mb-1 max-w-lg mx-auto gap-0 bg-gray-50 rounded-lg">
               {mainTools.map((type) => {
                 const conversionColor = getConversionColor(type.id);
                 return (
@@ -290,9 +251,9 @@ const Index = () => {
               })}
             </div>
             
-            {/* Other tools - bottom row with very tight spacing and justification */}
+            {/* PDF tools - bottom row with very tight spacing and justification */}
             <div className="flex justify-between mb-6 max-w-lg mx-auto bg-gray-50 rounded-lg">
-              {otherTools.map((type) => {
+              {pdfTools.map((type) => {
                 const conversionColor = getConversionColor(type.id);
                 return (
                   <button

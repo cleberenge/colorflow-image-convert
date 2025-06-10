@@ -3,7 +3,6 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Upload, Download, File as ImageIcon } from 'lucide-react';
-import { useToast } from '@/hooks/use-toast';
 import { useFileConverter } from '@/hooks/useFileConverter';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import ConversionIcon from '@/components/ConversionIcon';
@@ -32,10 +31,6 @@ interface ConversionToolProps {
 const conversionOptions: ConversionOption[] = [
   { value: 'png-jpg', label: 'PNG para JPG', description: '' },
   { value: 'jpg-pdf', label: 'JPG para PDF', description: '' },
-  { value: 'pdf-word', label: 'PDF para Word', description: '' },
-  { value: 'word-pdf', label: 'Word para PDF', description: '' },
-  { value: 'video-mp3', label: 'Vídeo para MP3', description: '' },
-  { value: 'compress-video', label: 'Comprimir Vídeo', description: '' },
   { value: 'split-pdf', label: 'Dividir PDF', description: '' },
   { value: 'merge-pdf', label: 'Juntar PDF', description: '' },
   { value: 'reduce-pdf', label: 'Reduzir PDF', description: '' },
@@ -45,7 +40,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [convertedFiles, setConvertedFiles] = useState<ConvertedFile[]>([]);
   const [selectedConversion, setSelectedConversion] = useState<ConversionType>(propConversionType || 'png-jpg');
-  const { toast } = useToast();
   const { convertFiles, isConverting, progress } = useFileConverter();
 
   // Update selectedConversion when propConversionType changes
@@ -58,11 +52,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     if (files.length > 25) {
-      toast({
-        title: "Limite excedido",
-        description: "Selecione no máximo 25 arquivos.",
-        variant: "destructive",
-      });
+      // Silent validation, no popup
       return;
     }
 
@@ -71,11 +61,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     
     setSelectedFiles(sortedFiles);
     setConvertedFiles([]);
-    toast({
-      title: `${sortedFiles.length} arquivo(s) selecionado(s)`,
-      description: `Pronto(s) para conversão.`,
-    });
-  }, [toast]);
+    // Remove toast notification
+  }, []);
 
   const handleConversionChange = (value: string) => {
     setSelectedConversion(value as ConversionType);
@@ -84,30 +71,19 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
 
   const convertSelectedFiles = useCallback(async () => {
     if (selectedFiles.length === 0) {
-      toast({
-        title: "Nenhum arquivo selecionado",
-        description: "Por favor, selecione os arquivos para converter.",
-        variant: "destructive",
-      });
+      // Silent validation, no popup
       return;
     }
 
     try {
       const results = await convertFiles(selectedFiles, selectedConversion);
       setConvertedFiles(results);
-      toast({
-        title: "Conversão concluída",
-        description: `${results.length} arquivo(s) convertido(s) com sucesso.`,
-      });
+      // Remove success toast notification
     } catch (error) {
       console.error('Erro na conversão:', error);
-      toast({
-        title: "Erro na conversão",
-        description: "Ocorreu um erro ao converter os arquivos. Tente novamente.",
-        variant: "destructive",
-      });
+      // Remove error toast notification
     }
-  }, [selectedFiles, selectedConversion, convertFiles, toast]);
+  }, [selectedFiles, selectedConversion, convertFiles]);
 
   const clearFiles = useCallback(() => {
     setSelectedFiles([]);
@@ -174,20 +150,13 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
       
-      toast({
-        title: "Download concluído",
-        description: `ZIP com ${convertedFiles.length} arquivo(s) baixado com sucesso.`,
-      });
+      // Remove download success toast notification
       
     } catch (error) {
       console.error('Erro ao criar ZIP:', error);
-      toast({
-        title: "Erro no download",
-        description: "Ocorreu um erro ao criar o arquivo ZIP.",
-        variant: "destructive",
-      });
+      // Remove download error toast notification
     }
-  }, [convertedFiles, toast]);
+  }, [convertedFiles]);
 
   // Get conversion color for styling
   const conversionColor = getConversionColor(selectedConversion);
