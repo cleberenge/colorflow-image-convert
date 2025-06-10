@@ -41,7 +41,7 @@ export const useFileConverter = () => {
       let convertedFiles: ConvertedFile[];
 
       // Determine conversion method based on type
-      if (['png-jpg', 'jpg-pdf', 'word-pdf', 'split-pdf'].includes(conversionType)) {
+      if (['png-jpg', 'jpg-pdf', 'word-pdf', 'split-pdf', 'merge-pdf'].includes(conversionType)) {
         convertedFiles = await convertClientSide(files, conversionType, updateProgress);
       } else if (['video-mp3', 'compress-video'].includes(conversionType)) {
         convertedFiles = await convertVideoFiles(files, conversionType, updateProgress);
