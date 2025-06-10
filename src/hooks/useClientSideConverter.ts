@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { ConvertedFile } from '@/types/fileConverter';
 import { convertPngToJpg } from '@/utils/imageConverter';
@@ -45,7 +44,7 @@ export const useClientSideConverter = () => {
           const baseProgress = 20 + (i * 60 / files.length);
           const progressPerFile = 60 / files.length;
           
-          updateProgress(baseProgress);
+          updateProgress(Math.min(baseProgress, 95));
           await new Promise(resolve => setTimeout(resolve, 300));
           
           try {
@@ -60,7 +59,7 @@ export const useClientSideConverter = () => {
             });
             
             convertedFiles.push(...results);
-            updateProgress(baseProgress + progressPerFile);
+            updateProgress(Math.min(baseProgress + progressPerFile, 95));
             await new Promise(resolve => setTimeout(resolve, 200));
             
             console.log(`${file.name} comprimido com sucesso`);
@@ -164,13 +163,12 @@ const compressPdfClientSide = async (
     
     console.log(`PDF carregado, ${pdfDoc.getPageCount()} páginas`);
     
-    // Estratégia de compressão mais eficaz
+    // Estratégia de compressão simplificada sem propriedades inválidas
     const compressedPdfBytes = await pdfDoc.save({
-      useObjectStreams: false, // Desabilitar para reduzir tamanho
+      useObjectStreams: false,
       addDefaultPage: false,
-      objectsPerTick: 10, // Reduzir para processar mais eficientemente
+      objectsPerTick: 10,
       updateFieldAppearances: false,
-      subset: true, // Importante: criar subset das fontes
     });
     
     onProgress(80);
