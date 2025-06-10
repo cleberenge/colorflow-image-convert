@@ -26,6 +26,29 @@ export const useVideoConverter = () => {
         const fileStartProgress = 20 + (i * progressPerFile);
         updateProgress(fileStartProgress);
 
+        // Para conversão de vídeo, mostrar mensagem explicativa
+        if (conversionType === 'video-mp3') {
+          throw new Error(
+            'Conversão de vídeo para MP3 não está disponível no momento devido às limitações do Supabase Edge Runtime. ' +
+            'Recomendações: ' +
+            '1. Use VLC Media Player (gratuito) para converter localmente ' +
+            '2. Use sites como CloudConvert.com ou Online-Convert.com ' +
+            '3. Use apps móveis como "Video to MP3 Converter" ' +
+            'Desculpe pelo inconveniente!'
+          );
+        }
+
+        if (conversionType === 'compress-video') {
+          throw new Error(
+            'Compressão de vídeo não está disponível no momento devido às limitações do Supabase Edge Runtime. ' +
+            'Recomendações: ' +
+            '1. Use HandBrake (gratuito) para compressão local ' +
+            '2. Use sites como TinyWow.com ou Clideo.com ' +
+            '3. Use apps móveis como "Video Compressor" ' +
+            'Desculpe pelo inconveniente!'
+          );
+        }
+
         const formData = new FormData();
         formData.append('file', file);
         formData.append('conversionType', conversionType);

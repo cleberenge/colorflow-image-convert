@@ -25,180 +25,61 @@ serve(async (req) => {
 
     console.log(`Processing video: ${file.name}, type: ${conversionType}, size: ${file.size} bytes`);
 
-    // Check file size limit (50MB for memory efficiency)
-    const maxSize = 50 * 1024 * 1024; // 50MB
+    // Check file size limit (25MB for Edge Runtime efficiency)
+    const maxSize = 25 * 1024 * 1024; // 25MB
     if (file.size > maxSize) {
-      throw new Error('Arquivo muito grande. Máximo permitido: 50MB');
+      throw new Error('Arquivo muito grande. Máximo permitido: 25MB para conversão de vídeo.');
     }
 
-    // Create temporary files with unique names
-    const timestamp = Date.now();
-    const inputExtension = file.name.split('.').pop() || 'mp4';
-    const tempInputPath = `/tmp/input_${timestamp}.${inputExtension}`;
-    
-    console.log(`Creating temporary input file: ${tempInputPath}`);
-    const arrayBuffer = await file.arrayBuffer();
-    await Deno.writeFile(tempInputPath, new Uint8Array(arrayBuffer));
-
-    let command: Deno.Command;
-    let outputPath: string;
-    let outputMimeType: string;
-
     if (conversionType === 'video-mp3') {
-      // Extract audio to MP3 with memory-optimized settings
-      outputPath = `/tmp/output_${timestamp}.mp3`;
-      outputMimeType = 'audio/mpeg';
+      // For video to MP3, we'll use a workaround by calling an external API
+      // since Edge Runtime doesn't support FFmpeg
       
-      command = new Deno.Command("ffmpeg", {
-        args: [
-          "-i", tempInputPath,
-          "-vn", // No video
-          "-acodec", "libmp3lame",
-          "-ab", "128k", // Reduced bitrate for memory efficiency
-          "-ar", "44100",
-          "-ac", "2", // Stereo
-          "-map_metadata", "-1", // Remove metadata to save space
-          "-y", // Overwrite output
-          outputPath
-        ],
-        stdout: "piped",
-        stderr: "piped",
+      console.log('Converting video to MP3 using external service...');
+      
+      // Create a FormData for the external API call
+      const apiFormData = new FormData();
+      apiFormData.append('file', file);
+      apiFormData.append('format', 'mp3');
+      
+      // Use CloudConvert API (free tier available)
+      const cloudConvertResponse = await fetch('https://api.cloudconvert.com/v2/convert', {
+        method: 'POST',
+        headers: {
+          'Authorization': 'Bearer ' + Deno.env.get('CLOUDCONVERT_API_KEY'),
+        },
+        body: apiFormData,
       });
+      
+      if (!cloudConvertResponse.ok) {
+        // Fallback: Return error message explaining the limitation
+        throw new Error('Conversão de vídeo para MP3 não está disponível no momento. O Supabase Edge Runtime não suporta processamento de vídeo com FFmpeg. Considere usar uma ferramenta de conversão local ou um serviço dedicado.');
+      }
+      
+      const convertedBuffer = await cloudConvertResponse.arrayBuffer();
+      const originalName = file.name.split('.')[0];
+      const newFileName = `${originalName}.mp3`;
+      
+      console.log(`Video conversion completed successfully: ${newFileName}`);
+      
+      return new Response(convertedBuffer, {
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'audio/mpeg',
+          'Content-Disposition': `attachment; filename="${newFileName}"`,
+          'Content-Length': convertedBuffer.byteLength.toString(),
+        },
+      });
+      
     } else if (conversionType === 'compress-video') {
-      // Compress video with memory-optimized settings
-      const extension = file.name.split('.').pop();
-      outputPath = `/tmp/compressed_${timestamp}.${extension}`;
-      outputMimeType = file.type;
-      
-      command = new Deno.Command("ffmpeg", {
-        args: [
-          "-i", tempInputPath,
-          "-vcodec", "libx264",
-          "-crf", "28", // Higher CRF = more compression
-          "-preset", "ultrafast", // Faster processing, less memory
-          "-vf", "scale=iw*0.8:ih*0.8", // Reduce resolution by 20%
-          "-acodec", "aac",
-          "-ab", "96k", // Reduced audio bitrate
-          "-map_metadata", "-1", // Remove metadata
-          "-y",
-          outputPath
-        ],
-        stdout: "piped",
-        stderr: "piped",
-      });
+      // For video compression, we also need external processing
+      throw new Error('Compressão de vídeo não está disponível no Supabase Edge Runtime. Use uma ferramenta local ou serviço dedicado para esta funcionalidade.');
     } else {
-      throw new Error(`Unsupported conversion type: ${conversionType}`);
+      throw new Error(`Tipo de conversão não suportado: ${conversionType}`);
     }
-
-    console.log('Starting FFmpeg processing with memory-optimized settings...');
-    
-    // Set resource limits for FFmpeg
-    const process = command.spawn();
-    
-    // Set a timeout for the process (2 minutes max)
-    const timeout = setTimeout(() => {
-      try {
-        process.kill("SIGTERM");
-      } catch (e) {
-        console.log('Could not kill process:', e);
-      }
-    }, 120000); // 2 minutes
-
-    const output = await process.output();
-    clearTimeout(timeout);
-
-    // Clean up input file immediately
-    try {
-      await Deno.remove(tempInputPath);
-      console.log('Input file cleaned up');
-    } catch (e) {
-      console.log('Could not remove temp input file:', e);
-    }
-
-    if (!process.success) {
-      const error = new TextDecoder().decode(output.stderr);
-      console.error('FFmpeg error:', error);
-      
-      // More specific error messages
-      if (error.includes('No space left')) {
-        throw new Error('Espaço insuficiente no servidor. Tente com um arquivo menor.');
-      } else if (error.includes('memory')) {
-        throw new Error('Arquivo muito complexo para processar. Tente com um arquivo menor ou de menor qualidade.');
-      } else if (error.includes('Invalid data')) {
-        throw new Error('Arquivo de vídeo corrompido ou formato inválido.');
-      } else {
-        throw new Error(`Erro no processamento do vídeo: ${error.substring(0, 200)}`);
-      }
-    }
-
-    console.log('FFmpeg processing completed successfully');
-
-    // Check if output file exists and has content
-    let outputBuffer: Uint8Array;
-    try {
-      const stat = await Deno.stat(outputPath);
-      if (stat.size === 0) {
-        throw new Error('Arquivo de saída está vazio. Possível erro na conversão.');
-      }
-      outputBuffer = await Deno.readFile(outputPath);
-      console.log(`Output file size: ${outputBuffer.length} bytes`);
-    } catch (e) {
-      console.error('Error reading output file:', e);
-      throw new Error('Falha ao ler arquivo convertido.');
-    }
-    
-    // Clean up output file
-    try {
-      await Deno.remove(outputPath);
-      console.log('Output file cleaned up');
-    } catch (e) {
-      console.log('Could not remove temp output file:', e);
-    }
-
-    // Generate filename
-    const originalName = file.name.split('.')[0];
-    let newFileName: string;
-    
-    if (conversionType === 'video-mp3') {
-      newFileName = `${originalName}.mp3`;
-    } else {
-      const extension = file.name.split('.').pop();
-      newFileName = `${originalName}_compressed.${extension}`;
-    }
-
-    console.log(`Video processing completed successfully: ${newFileName}`);
-
-    return new Response(outputBuffer, {
-      headers: {
-        ...corsHeaders,
-        'Content-Type': outputMimeType,
-        'Content-Disposition': `attachment; filename="${newFileName}"`,
-        'Content-Length': outputBuffer.length.toString(),
-      },
-    });
 
   } catch (error) {
     console.error('Error in video conversion:', error);
-    
-    // Clean up any remaining temp files
-    try {
-      const tempFiles = [];
-      for await (const dirEntry of Deno.readDir('/tmp')) {
-        if (dirEntry.name.startsWith('input_') || dirEntry.name.startsWith('output_') || dirEntry.name.startsWith('compressed_')) {
-          tempFiles.push(`/tmp/${dirEntry.name}`);
-        }
-      }
-      
-      for (const tempFile of tempFiles) {
-        try {
-          await Deno.remove(tempFile);
-        } catch (e) {
-          // Ignore cleanup errors
-        }
-      }
-    } catch (e) {
-      // Ignore cleanup errors
-    }
     
     return new Response(
       JSON.stringify({ error: error.message }), 
