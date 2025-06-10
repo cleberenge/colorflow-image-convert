@@ -1,78 +1,66 @@
 
-import mammoth from 'mammoth';
-import jsPDF from 'jspdf';
+import { supabase } from '@/integrations/supabase/client';
 
 export const convertWordToPdf = async (file: File): Promise<File> => {
   try {
-    console.log(`Converting ${file.name} to PDF using mammoth + jsPDF`);
+    console.log(`Converting ${file.name} to PDF using professional conversion service`);
     
-    // Validate file type
+    // Validar tipo de arquivo
     if (!file.name.match(/\.(docx|doc)$/i)) {
       throw new Error('Arquivo deve ser um documento Word (.doc ou .docx)');
     }
 
-    // Convert file to array buffer
-    const arrayBuffer = await file.arrayBuffer();
+    // Criar FormData para enviar o arquivo
+    const formData = new FormData();
+    formData.append('file', file);
+
+    console.log('Sending file to conversion service...');
     
-    console.log('Extracting text from Word document...');
-    
-    // Extract text from Word document using mammoth
-    const result = await mammoth.extractRawText({ arrayBuffer });
-    const text = result.value;
-    
-    if (!text || text.trim().length === 0) {
-      throw new Error('Não foi possível extrair texto do documento Word');
+    // Chamar o edge function
+    const { data, error } = await supabase.functions.invoke('convert-word-libreoffice', {
+      body: formData,
+    });
+
+    if (error) {
+      console.error('Conversion service error:', error);
+      throw new Error('Falha na conversão do documento. Verifique se o arquivo não está corrompido.');
     }
-    
-    console.log('Text extracted successfully, creating PDF...');
-    
-    // Create PDF using jsPDF
-    const pdf = new jsPDF();
-    
-    // Set font
-    pdf.setFont('helvetica');
-    pdf.setFontSize(12);
-    
-    // Split text into lines that fit the page width
-    const pageWidth = pdf.internal.pageSize.getWidth();
-    const margins = 20;
-    const maxLineWidth = pageWidth - (margins * 2);
-    
-    const lines = pdf.splitTextToSize(text, maxLineWidth);
-    
-    // Add text to PDF with pagination
-    const lineHeight = 7;
-    const pageHeight = pdf.internal.pageSize.getHeight();
-    const maxLinesPerPage = Math.floor((pageHeight - margins * 2) / lineHeight);
-    
-    let currentPage = 1;
-    let currentLine = 0;
-    
-    for (let i = 0; i < lines.length; i++) {
-      if (currentLine >= maxLinesPerPage) {
-        pdf.addPage();
-        currentPage++;
-        currentLine = 0;
-      }
-      
-      const yPosition = margins + (currentLine * lineHeight);
-      pdf.text(lines[i], margins, yPosition);
-      currentLine++;
+
+    if (!data) {
+      throw new Error('Nenhum dado retornado do serviço de conversão');
     }
+
+    console.log('Conversion successful, creating PDF file...');
+
+    // Criar arquivo PDF a partir dos dados retornados
+    const pdfBlob = new Blob([data], { type: 'application/pdf' });
     
-    // Generate PDF blob
-    const pdfBlob = pdf.output('blob');
-    
-    // Create file
+    // Verificar se o blob tem conteúdo
+    if (pdfBlob.size === 0) {
+      throw new Error('Arquivo PDF gerado está vazio');
+    }
+
     const originalName = file.name.split('.')[0];
     const pdfFileName = `${originalName}.pdf`;
     
-    console.log(`Successfully converted ${file.name} to ${pdfFileName}`);
+    console.log(`Successfully converted ${file.name} to ${pdfFileName} (${pdfBlob.size} bytes)`);
     
     return new File([pdfBlob], pdfFileName, { type: 'application/pdf' });
     
   } catch (error) {
     console.error('Error converting Word to PDF:', error);
+    
+    // Mensagens de erro mais específicas
+    if (error instanceof Error) {
+      if (error.message.includes('API key')) {
+        throw new Error('Serviço de conversão não configurado. Tente novamente mais tarde.');
+      } else if (error.message.includes('timeout')) {
+        throw new Error('Conversão demorou muito para completar. Tente com um arquivo menor.');
+      } else if (error.message.includes('format')) {
+        throw new Error('Formato de arquivo não suportado. Use apenas arquivos .doc ou .docx.');
+      }
+    }
+    
     throw new Error('Falha na conversão do documento Word para PDF. Verifique se o arquivo não está corrompido.');
   }
 };
