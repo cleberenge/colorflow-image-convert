@@ -212,6 +212,29 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     return columns;
   };
 
+  // Definir accept baseado no tipo de conversão
+  const getAcceptedFileTypes = () => {
+    switch (selectedConversion) {
+      case 'png-jpg':
+        return '.png';
+      case 'jpg-pdf':
+        return '.jpg,.jpeg';
+      case 'pdf-word':
+      case 'split-pdf':
+      case 'reduce-pdf':
+        return '.pdf';
+      case 'word-pdf':
+        return '.doc,.docx';
+      case 'video-mp3':
+      case 'compress-video':
+        return '.mp4,.avi,.mov,.mkv,.wmv,.flv,.webm';
+      case 'merge-pdf':
+        return '.pdf';
+      default:
+        return '*';
+    }
+  };
+
   return (
     <div className="flex flex-col items-center space-y-2 animate-fade-in">
       {/* Upload Area */}
@@ -225,7 +248,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
         <div className="text-center">
           <input
             type="file"
-            multiple
+            multiple={selectedConversion !== 'reduce-pdf' && selectedConversion !== 'split-pdf'}
+            accept={getAcceptedFileTypes()}
             onChange={handleFileSelect}
             className="hidden"
             id="file-input"
@@ -239,7 +263,9 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
             </div>
             <div>
               <p className="text-base font-medium text-black mb-1">
-                Clique para selecionar até 25 arquivos
+                Clique para selecionar {selectedConversion === 'merge-pdf' ? 'PDFs para mesclar' : 
+                selectedConversion === 'reduce-pdf' ? 'PDF para reduzir' : 
+                selectedConversion === 'split-pdf' ? 'PDF para dividir' : 'até 25 arquivos'}
               </p>
               <p className="text-sm text-black/80">
                 ou arraste e solte aqui
