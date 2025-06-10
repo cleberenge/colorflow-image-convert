@@ -1,11 +1,12 @@
 
 import { useState } from 'react';
-import { supabase } from '@/integrations/supabase/client';
 import { ConvertedFile } from '@/types/fileConverter';
 import { validateVideoFile } from '@/utils/fileValidation';
+import { useFFmpegConverter } from '@/hooks/useFFmpegConverter';
 
 export const useVideoConverter = () => {
   const [isConverting, setIsConverting] = useState(false);
+  const { convertVideoToMp3, compressVideo, isConverting: isFFmpegConverting } = useFFmpegConverter();
 
   const convertVideoFiles = async (
     files: File[], 
@@ -13,79 +14,30 @@ export const useVideoConverter = () => {
     updateProgress: (progress: number) => void
   ): Promise<ConvertedFile[]> => {
     setIsConverting(true);
-    const convertedFiles: ConvertedFile[] = [];
-    const progressPerFile = 60 / files.length;
-
+    
     try {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        
-        // Validação específica para vídeo
+      for (const file of files) {
         validateVideoFile(file, conversionType);
-        
-        const fileStartProgress = 20 + (i * progressPerFile);
-        updateProgress(fileStartProgress);
-
-        console.log(`Converting video file: ${file.name}`);
-
-        const formData = new FormData();
-        formData.append('file', file);
-        formData.append('conversionType', conversionType);
-
-        console.log(`Calling edge function convert-video for ${file.name}`);
-
-        const { data, error } = await supabase.functions.invoke('convert-video', {
-          body: formData,
-        });
-
-        if (error) {
-          console.error(`Error processing ${file.name}:`, error);
-          throw new Error(error.message || `Erro ao processar ${file.name}`);
-        }
-
-        updateProgress(fileStartProgress + (progressPerFile * 0.7));
-
-        // Create file from response with correct MIME types
-        let mimeType: string;
-        let extension: string;
-        let newFileName: string;
-        
-        if (conversionType === 'video-mp3') {
-          mimeType = 'audio/mpeg';
-          extension = 'mp3';
-          const originalName = file.name.split('.')[0];
-          newFileName = `${originalName}.${extension}`;
-        } else if (conversionType === 'compress-video') {
-          mimeType = file.type;
-          extension = file.name.split('.').pop() || 'mp4';
-          const originalName = file.name.split('.')[0];
-          newFileName = `${originalName}_compressed.${extension}`;
-        } else {
-          mimeType = file.type;
-          extension = file.name.split('.').pop() || 'file';
-          const originalName = file.name.split('.')[0];
-          newFileName = `${originalName}.${extension}`;
-        }
-
-        const blob = new Blob([data], { type: mimeType });
-        
-        if (blob.size === 0) {
-          throw new Error(`Arquivo convertido está vazio: ${file.name}`);
-        }
-        
-        const convertedFile = new File([blob], newFileName, { type: mimeType });
-        convertedFiles.push({ file: convertedFile, originalName: file.name });
-        
-        console.log(`File processed successfully: ${newFileName}, MIME type: ${mimeType}, size: ${convertedFile.size}`);
-        
-        updateProgress(fileStartProgress + progressPerFile);
       }
 
-      return convertedFiles;
+      updateProgress(5);
+
+      if (conversionType === 'video-mp3') {
+        console.log('Iniciando conversão de vídeo para MP3 usando FFmpeg.wasm...');
+        return await convertVideoToMp3(files, updateProgress);
+      } else if (conversionType === 'compress-video') {
+        console.log('Iniciando compressão de vídeo usando FFmpeg.wasm...');
+        return await compressVideo(files, updateProgress);
+      } else {
+        throw new Error(`Tipo de conversão não suportado: ${conversionType}`);
+      }
     } finally {
       setIsConverting(false);
     }
   };
 
-  return { convertVideoFiles, isConverting };
+  return { 
+    convertVideoFiles, 
+    isConverting: isConverting || isFFmpegConverting 
+  };
 };

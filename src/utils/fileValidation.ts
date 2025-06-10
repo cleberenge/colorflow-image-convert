@@ -3,10 +3,10 @@ export const validateVideoFile = (file: File, conversionType: string): void => {
   if (conversionType === 'video-mp3' || conversionType === 'compress-video') {
     console.log(`Validating video file: ${file.name}, type: ${file.type}, size: ${file.size}`);
     
-    // Verificar tamanho do arquivo (máximo 25MB)
-    const maxSize = 25 * 1024 * 1024; // 25MB
+    // Verificar tamanho do arquivo (máximo 100MB para FFmpeg.wasm)
+    const maxSize = 100 * 1024 * 1024; // 100MB
     if (file.size > maxSize) {
-      throw new Error(`Arquivo muito grande: ${file.name}. Máximo permitido: 25MB.`);
+      throw new Error(`Arquivo muito grande: ${file.name}. Máximo permitido: 100MB para conversão local.`);
     }
     
     // Verificar tipo de arquivo
