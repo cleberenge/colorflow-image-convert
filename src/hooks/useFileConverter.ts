@@ -162,6 +162,14 @@ export const useFileConverter = () => {
           const file = files[i];
           console.log(`Processing file: ${file.name}`);
           
+          // Validar tipo de arquivo para video-mp3
+          if (conversionType === 'video-mp3') {
+            const validVideoTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/wmv', 'video/flv', 'video/webm'];
+            if (!validVideoTypes.includes(file.type) && !file.name.match(/\.(mp4|avi|mov|wmv|flv|webm|mkv)$/i)) {
+              throw new Error(`Formato de vídeo não suportado: ${file.name}. Use MP4, AVI, MOV, WMV, FLV, WebM ou MKV.`);
+            }
+          }
+          
           // Progresso por arquivo (20% + progresso do arquivo atual)
           const fileStartProgress = 20 + (i * progressPerFile);
           updateProgress(fileStartProgress);
@@ -236,7 +244,7 @@ export const useFileConverter = () => {
       console.error('Conversion error:', error);
       toast({
         title: "Erro no processamento",
-        description: "Ocorreu um erro ao processar os arquivos.",
+        description: error instanceof Error ? error.message : "Ocorreu um erro ao processar os arquivos.",
         variant: "destructive",
       });
       throw error;
