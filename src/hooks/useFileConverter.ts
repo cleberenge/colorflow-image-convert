@@ -162,10 +162,21 @@ export const useFileConverter = () => {
           const file = files[i];
           console.log(`Processing file: ${file.name}`);
           
-          // Validar tipo de arquivo para video-mp3
+          // Validação especial para video-mp3
           if (conversionType === 'video-mp3') {
-            const validVideoTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/wmv', 'video/flv', 'video/webm'];
-            if (!validVideoTypes.includes(file.type) && !file.name.match(/\.(mp4|avi|mov|wmv|flv|webm|mkv)$/i)) {
+            console.log(`Validating video file: ${file.name}, type: ${file.type}, size: ${file.size}`);
+            
+            // Verificar tamanho do arquivo (máximo 50MB para evitar problemas de memória)
+            const maxSize = 50 * 1024 * 1024; // 50MB
+            if (file.size > maxSize) {
+              throw new Error(`Arquivo muito grande: ${file.name}. Máximo permitido: 50MB.`);
+            }
+            
+            // Verificar tipo de arquivo
+            const validVideoTypes = ['video/mp4', 'video/avi', 'video/mov', 'video/wmv', 'video/flv', 'video/webm', 'video/quicktime'];
+            const validExtensions = /\.(mp4|avi|mov|wmv|flv|webm|mkv|m4v|3gp)$/i;
+            
+            if (!validVideoTypes.includes(file.type) && !validExtensions.test(file.name)) {
               throw new Error(`Formato de vídeo não suportado: ${file.name}. Use MP4, AVI, MOV, WMV, FLV, WebM ou MKV.`);
             }
           }
@@ -178,13 +189,15 @@ export const useFileConverter = () => {
           formData.append('file', file);
           formData.append('conversionType', conversionType);
 
+          console.log(`Calling edge function ${functionName} for ${file.name}`);
+
           const { data, error } = await supabase.functions.invoke(functionName, {
             body: formData,
           });
 
           if (error) {
             console.error(`Error processing ${file.name}:`, error);
-            throw error;
+            throw new Error(error.message || `Erro ao processar ${file.name}`);
           }
 
           // Progresso intermediário do arquivo
@@ -195,12 +208,7 @@ export const useFileConverter = () => {
           let extension: string;
           let newFileName: string;
           
-          if (conversionType === 'jpg-pdf') {
-            mimeType = 'application/pdf';
-            extension = 'pdf';
-            const originalName = file.name.split('.')[0];
-            newFileName = `${originalName}.${extension}`;
-          } else if (conversionType === 'video-mp3') {
+          if (conversionType === 'video-mp3') {
             mimeType = 'audio/mpeg';
             extension = 'mp3';
             const originalName = file.name.split('.')[0];
@@ -224,10 +232,16 @@ export const useFileConverter = () => {
 
           // Ensure data is treated as binary
           const blob = new Blob([data], { type: mimeType });
+          
+          // Verificar se o blob tem conteúdo
+          if (blob.size === 0) {
+            throw new Error(`Arquivo convertido está vazio: ${file.name}`);
+          }
+          
           const convertedFile = new File([blob], newFileName, { type: mimeType });
           convertedFiles.push({ file: convertedFile, originalName: file.name });
           
-          console.log(`File processed successfully: ${newFileName}, MIME type: ${mimeType}`);
+          console.log(`File processed successfully: ${newFileName}, MIME type: ${mimeType}, size: ${convertedFile.size}`);
           
           // Finalizar progresso do arquivo
           updateProgress(fileStartProgress + progressPerFile);

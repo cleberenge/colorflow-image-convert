@@ -23,10 +23,20 @@ serve(async (req) => {
       throw new Error('No file provided');
     }
 
-    console.log(`Processing video: ${file.name}, type: ${conversionType}`);
+    console.log(`Processing video: ${file.name}, type: ${conversionType}, size: ${file.size} bytes`);
 
-    // Create temporary files
-    const tempInputPath = `/tmp/input_${Date.now()}.${file.name.split('.').pop()}`;
+    // Check file size limit (50MB for memory efficiency)
+    const maxSize = 50 * 1024 * 1024; // 50MB
+    if (file.size > maxSize) {
+      throw new Error('Arquivo muito grande. Máximo permitido: 50MB');
+    }
+
+    // Create temporary files with unique names
+    const timestamp = Date.now();
+    const inputExtension = file.name.split('.').pop() || 'mp4';
+    const tempInputPath = `/tmp/input_${timestamp}.${inputExtension}`;
+    
+    console.log(`Creating temporary input file: ${tempInputPath}`);
     const arrayBuffer = await file.arrayBuffer();
     await Deno.writeFile(tempInputPath, new Uint8Array(arrayBuffer));
 
@@ -35,8 +45,8 @@ serve(async (req) => {
     let outputMimeType: string;
 
     if (conversionType === 'video-mp3') {
-      // Extract audio to MP3
-      outputPath = `/tmp/output_${Date.now()}.mp3`;
+      // Extract audio to MP3 with memory-optimized settings
+      outputPath = `/tmp/output_${timestamp}.mp3`;
       outputMimeType = 'audio/mpeg';
       
       command = new Deno.Command("ffmpeg", {
@@ -44,8 +54,10 @@ serve(async (req) => {
           "-i", tempInputPath,
           "-vn", // No video
           "-acodec", "libmp3lame",
-          "-ab", "192k",
+          "-ab", "128k", // Reduced bitrate for memory efficiency
           "-ar", "44100",
+          "-ac", "2", // Stereo
+          "-map_metadata", "-1", // Remove metadata to save space
           "-y", // Overwrite output
           outputPath
         ],
@@ -53,9 +65,9 @@ serve(async (req) => {
         stderr: "piped",
       });
     } else if (conversionType === 'compress-video') {
-      // Compress video
+      // Compress video with memory-optimized settings
       const extension = file.name.split('.').pop();
-      outputPath = `/tmp/compressed_${Date.now()}.${extension}`;
+      outputPath = `/tmp/compressed_${timestamp}.${extension}`;
       outputMimeType = file.type;
       
       command = new Deno.Command("ffmpeg", {
@@ -63,7 +75,11 @@ serve(async (req) => {
           "-i", tempInputPath,
           "-vcodec", "libx264",
           "-crf", "28", // Higher CRF = more compression
-          "-preset", "fast",
+          "-preset", "ultrafast", // Faster processing, less memory
+          "-vf", "scale=iw*0.8:ih*0.8", // Reduce resolution by 20%
+          "-acodec", "aac",
+          "-ab", "96k", // Reduced audio bitrate
+          "-map_metadata", "-1", // Remove metadata
           "-y",
           outputPath
         ],
@@ -74,13 +90,27 @@ serve(async (req) => {
       throw new Error(`Unsupported conversion type: ${conversionType}`);
     }
 
-    console.log('Starting FFmpeg processing...');
+    console.log('Starting FFmpeg processing with memory-optimized settings...');
+    
+    // Set resource limits for FFmpeg
     const process = command.spawn();
-    const output = await process.output();
+    
+    // Set a timeout for the process (2 minutes max)
+    const timeout = setTimeout(() => {
+      try {
+        process.kill("SIGTERM");
+      } catch (e) {
+        console.log('Could not kill process:', e);
+      }
+    }, 120000); // 2 minutes
 
-    // Clean up input file
+    const output = await process.output();
+    clearTimeout(timeout);
+
+    // Clean up input file immediately
     try {
       await Deno.remove(tempInputPath);
+      console.log('Input file cleaned up');
     } catch (e) {
       console.log('Could not remove temp input file:', e);
     }
@@ -88,15 +118,39 @@ serve(async (req) => {
     if (!process.success) {
       const error = new TextDecoder().decode(output.stderr);
       console.error('FFmpeg error:', error);
-      throw new Error(`FFmpeg processing failed: ${error}`);
+      
+      // More specific error messages
+      if (error.includes('No space left')) {
+        throw new Error('Espaço insuficiente no servidor. Tente com um arquivo menor.');
+      } else if (error.includes('memory')) {
+        throw new Error('Arquivo muito complexo para processar. Tente com um arquivo menor ou de menor qualidade.');
+      } else if (error.includes('Invalid data')) {
+        throw new Error('Arquivo de vídeo corrompido ou formato inválido.');
+      } else {
+        throw new Error(`Erro no processamento do vídeo: ${error.substring(0, 200)}`);
+      }
     }
 
-    // Read the output file
-    const outputBuffer = await Deno.readFile(outputPath);
+    console.log('FFmpeg processing completed successfully');
+
+    // Check if output file exists and has content
+    let outputBuffer: Uint8Array;
+    try {
+      const stat = await Deno.stat(outputPath);
+      if (stat.size === 0) {
+        throw new Error('Arquivo de saída está vazio. Possível erro na conversão.');
+      }
+      outputBuffer = await Deno.readFile(outputPath);
+      console.log(`Output file size: ${outputBuffer.length} bytes`);
+    } catch (e) {
+      console.error('Error reading output file:', e);
+      throw new Error('Falha ao ler arquivo convertido.');
+    }
     
     // Clean up output file
     try {
       await Deno.remove(outputPath);
+      console.log('Output file cleaned up');
     } catch (e) {
       console.log('Could not remove temp output file:', e);
     }
@@ -112,18 +166,40 @@ serve(async (req) => {
       newFileName = `${originalName}_compressed.${extension}`;
     }
 
-    console.log(`Video processing completed: ${newFileName}`);
+    console.log(`Video processing completed successfully: ${newFileName}`);
 
     return new Response(outputBuffer, {
       headers: {
         ...corsHeaders,
         'Content-Type': outputMimeType,
         'Content-Disposition': `attachment; filename="${newFileName}"`,
+        'Content-Length': outputBuffer.length.toString(),
       },
     });
 
   } catch (error) {
     console.error('Error in video conversion:', error);
+    
+    // Clean up any remaining temp files
+    try {
+      const tempFiles = [];
+      for await (const dirEntry of Deno.readDir('/tmp')) {
+        if (dirEntry.name.startsWith('input_') || dirEntry.name.startsWith('output_') || dirEntry.name.startsWith('compressed_')) {
+          tempFiles.push(`/tmp/${dirEntry.name}`);
+        }
+      }
+      
+      for (const tempFile of tempFiles) {
+        try {
+          await Deno.remove(tempFile);
+        } catch (e) {
+          // Ignore cleanup errors
+        }
+      }
+    } catch (e) {
+      // Ignore cleanup errors
+    }
+    
     return new Response(
       JSON.stringify({ error: error.message }), 
       { 
