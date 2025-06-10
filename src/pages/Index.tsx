@@ -6,6 +6,7 @@ import ConversionTool from '@/components/ConversionTool';
 import ConversionIcon from '@/components/ConversionIcon';
 import { useLanguage } from '@/hooks/useLanguage';
 import { getConversionColor } from '@/utils/conversionColors';
+import { ConversionType } from '@/types/fileConverter';
 
 // Conversion types with SmallPDF-inspired design
 const conversionTypes = [
@@ -220,7 +221,7 @@ const pageLinks = [
 ];
 
 const Index = () => {
-  const [activeConversion, setActiveConversion] = useState('png-jpg');
+  const [activeConversion, setActiveConversion] = useState<ConversionType>('png-jpg');
   const { language, t } = useLanguage();
 
   // Separate main tools (top row) and other tools (bottom)
@@ -267,7 +268,7 @@ const Index = () => {
                 return (
                   <button
                     key={type.id}
-                    onClick={() => setActiveConversion(type.id)}
+                    onClick={() => setActiveConversion(type.id as ConversionType)}
                     className={`px-0.5 py-2 flex items-center gap-1 transition-all duration-300 hover:bg-white flex-1 first:rounded-l-lg last:rounded-r-lg ${
                       activeConversion === type.id ? 'bg-white' : 'bg-transparent'
                     }`}
@@ -296,7 +297,7 @@ const Index = () => {
                 return (
                   <button
                     key={type.id}
-                    onClick={() => setActiveConversion(type.id)}
+                    onClick={() => setActiveConversion(type.id as ConversionType)}
                     className={`px-0.5 py-2 flex items-center gap-1 transition-all duration-300 hover:bg-white flex-1 first:rounded-l-lg last:rounded-r-lg ${
                       activeConversion === type.id ? 'bg-white' : 'bg-transparent'
                     }`}
