@@ -26,7 +26,7 @@ export const useServerSideConverter = () => {
       }
 
       console.log(`Using edge function: ${functionName} for conversion type: ${conversionType}`);
-      updateProgress(20);
+      updateProgress(15);
 
       if (conversionType === 'merge-pdf' && files.length > 1) {
         // Special handling for PDF merge
@@ -36,7 +36,7 @@ export const useServerSideConverter = () => {
           formData.append('files', file);
         });
 
-        updateProgress(40);
+        updateProgress(30);
 
         const { data, error } = await supabase.functions.invoke(functionName, {
           body: formData,
@@ -44,24 +44,27 @@ export const useServerSideConverter = () => {
 
         if (error) throw error;
 
-        updateProgress(70);
+        updateProgress(80);
 
         const blob = new Blob([data], { type: 'application/pdf' });
         const mergedFile = new File([blob], 'merged.pdf', { type: 'application/pdf' });
         convertedFiles.push({ file: mergedFile, originalName: 'merged_files' });
         
-        updateProgress(90);
+        updateProgress(95);
 
       } else {
-        // Process each file individually with proper progress tracking
-        const progressPerFile = 60 / files.length;
+        // Process each file individually with smoother progress tracking
+        const totalFiles = files.length;
         
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
-          console.log(`Processing file: ${file.name}`);
+          console.log(`Processing file ${i + 1}/${totalFiles}: ${file.name}`);
           
-          const fileStartProgress = 20 + (i * progressPerFile);
-          updateProgress(fileStartProgress);
+          // Calculate progress more smoothly
+          const fileStartProgress = 15 + (i * 70 / totalFiles);
+          const fileEndProgress = 15 + ((i + 1) * 70 / totalFiles);
+          
+          updateProgress(Math.round(fileStartProgress));
 
           const formData = new FormData();
           formData.append('file', file);
@@ -69,8 +72,8 @@ export const useServerSideConverter = () => {
 
           console.log(`Calling edge function ${functionName} for ${file.name}`);
           
-          // Update progress during processing
-          updateProgress(fileStartProgress + (progressPerFile * 0.3));
+          // Update progress during processing - more granular steps
+          updateProgress(Math.round(fileStartProgress + (fileEndProgress - fileStartProgress) * 0.2));
 
           const { data, error } = await supabase.functions.invoke(functionName, {
             body: formData,
@@ -81,7 +84,7 @@ export const useServerSideConverter = () => {
             throw new Error(error.message || `Erro ao processar ${file.name}`);
           }
 
-          updateProgress(fileStartProgress + (progressPerFile * 0.7));
+          updateProgress(Math.round(fileStartProgress + (fileEndProgress - fileStartProgress) * 0.6));
 
           // Create file from response
           let mimeType: string;
@@ -111,15 +114,17 @@ export const useServerSideConverter = () => {
           
           console.log(`File processed successfully: ${newFileName}, MIME type: ${mimeType}, size: ${convertedFile.size}`);
           
-          updateProgress(fileStartProgress + progressPerFile);
+          updateProgress(Math.round(fileEndProgress));
         }
       }
 
-      // Final progress update
+      // Smooth final progress updates
+      updateProgress(90);
+      await new Promise(resolve => setTimeout(resolve, 200));
       updateProgress(95);
-      
-      // Small delay to show completion
-      await new Promise(resolve => setTimeout(resolve, 300));
+      await new Promise(resolve => setTimeout(resolve, 200));
+      updateProgress(98);
+      await new Promise(resolve => setTimeout(resolve, 200));
       updateProgress(100);
       
       return convertedFiles;

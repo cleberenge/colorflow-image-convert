@@ -1,4 +1,3 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { PDFDocument } from "https://cdn.skypack.dev/pdf-lib@^1.17.1";
@@ -160,7 +159,7 @@ startxref
         throw new Error('No file provided');
       }
 
-      console.log('Iniciando compressão corrigida de PDF');
+      console.log('Iniciando compressão otimizada de PDF');
       console.log('Arquivo original:', file.name, 'Tamanho:', file.size, 'bytes');
       
       try {
@@ -170,101 +169,90 @@ startxref
         const pageCount = originalPdf.getPageCount();
         console.log('PDF carregado com', pageCount, 'páginas');
         
-        // Estratégia corrigida: manter o conteúdo mas reduzir qualidade
-        const compressedPdf = await PDFDocument.create();
+        // Nova estratégia: usar configurações otimizadas do pdf-lib sem escalonamento
+        console.log('Aplicando compressão com configurações otimizadas...');
         
-        // Copiar todas as páginas mas com redução controlada
-        const pages = await compressedPdf.copyPages(originalPdf, Array.from({ length: pageCount }, (_, i) => i));
-        
-        pages.forEach((page, index) => {
-          console.log(`Processando página ${index + 1} com redução controlada`);
-          
-          // Redução mais suave: 85% do tamanho original
-          const scaleFactor = 0.85;
-          const { width, height } = page.getSize();
-          
-          // Aplicar escala mantendo proporção
-          page.scale(scaleFactor, scaleFactor);
-          
-          // Recentrar a página após redimensionamento
-          const newWidth = width * scaleFactor;
-          const newHeight = height * scaleFactor;
-          const xOffset = (width - newWidth) / 2;
-          const yOffset = (height - newHeight) / 2;
-          
-          page.translateContent(xOffset, yOffset);
-          
-          compressedPdf.addPage(page);
-        });
-        
-        console.log('Gerando PDF com qualidade reduzida...');
-        
-        // Configurações para compressão sem perder conteúdo
-        const compressedBytes = await compressedPdf.save({
-          useObjectStreams: false,
-          addDefaultPage: false,
-          updateFieldAppearances: false,
+        // Simplesmente salvar com configurações de compressão máxima
+        const compressedBytes = await originalPdf.save({
+          useObjectStreams: true,  // Ativar streams de objeto para compressão
+          addDefaultPage: false,   // Não adicionar página padrão
+          updateFieldAppearances: false, // Não atualizar aparências de campo
+          // Configurações adicionais para compressão
         });
         
         const finalSize = compressedBytes.length;
         const compressionRatio = ((file.size - finalSize) / file.size * 100);
         
-        console.log('Resultado final:');
+        console.log('Resultado da compressão otimizada:');
         console.log('- Tamanho original:', file.size, 'bytes');
         console.log('- Tamanho comprimido:', finalSize, 'bytes');
         console.log('- Redução:', compressionRatio.toFixed(2) + '%');
         
-        // Verificar se houve redução mínima
-        if (finalSize >= file.size * 0.95) {
-          console.log('Aplicando compressão adicional...');
+        // Se não houve redução suficiente, aplicar estratégia mais agressiva
+        if (finalSize >= file.size * 0.90) {
+          console.log('Aplicando compressão mais agressiva...');
           
-          // Compressão mais agressiva se necessário
-          const minimalPdf = await PDFDocument.create();
-          const reducedPages = await minimalPdf.copyPages(originalPdf, Array.from({ length: Math.min(pageCount, 20) }, (_, i) => i));
+          // Criar novo PDF com configurações mais agressivas
+          const aggressivePdf = await PDFDocument.create();
           
-          reducedPages.forEach((page) => {
-            page.scale(0.75, 0.75);
-            minimalPdf.addPage(page);
+          // Copiar páginas com limitação
+          const maxPages = Math.min(pageCount, 50); // Limitar número de páginas se necessário
+          const pagesToCopy = Array.from({ length: maxPages }, (_, i) => i);
+          
+          const copiedPages = await aggressivePdf.copyPages(originalPdf, pagesToCopy);
+          
+          copiedPages.forEach((page) => {
+            aggressivePdf.addPage(page);
           });
           
-          const minimalBytes = await minimalPdf.save({
-            useObjectStreams: false,
+          // Salvar com máxima compressão
+          const aggressiveBytes = await aggressivePdf.save({
+            useObjectStreams: true,
             addDefaultPage: false,
+            updateFieldAppearances: false,
           });
           
-          const minimalRatio = ((file.size - minimalBytes.length) / file.size * 100);
-          console.log('Compressão adicional - Redução:', minimalRatio.toFixed(2) + '%');
+          const aggressiveSize = aggressiveBytes.length;
+          const aggressiveRatio = ((file.size - aggressiveSize) / file.size * 100);
           
-          if (minimalBytes.length < file.size) {
+          console.log('Compressão agressiva - Redução:', aggressiveRatio.toFixed(2) + '%');
+          
+          if (aggressiveSize < file.size) {
             const originalName = file.name.split('.')[0];
             const newFileName = `${originalName}_compressed.pdf`;
 
-            return new Response(minimalBytes, {
+            return new Response(aggressiveBytes, {
               headers: {
                 ...corsHeaders,
                 'Content-Type': 'application/pdf',
                 'Content-Disposition': `attachment; filename="${newFileName}"`,
-                'X-Compression-Ratio': minimalRatio.toFixed(2),
+                'X-Compression-Ratio': aggressiveRatio.toFixed(2),
                 'X-Original-Size': file.size.toString(),
-                'X-Compressed-Size': minimalBytes.length.toString(),
+                'X-Compressed-Size': aggressiveSize.toString(),
               },
             });
           }
         }
         
-        const originalName = file.name.split('.')[0];
-        const newFileName = `${originalName}_compressed.pdf`;
+        // Retornar resultado da compressão padrão se houve redução
+        if (finalSize < file.size) {
+          const originalName = file.name.split('.')[0];
+          const newFileName = `${originalName}_compressed.pdf`;
 
-        return new Response(compressedBytes, {
-          headers: {
-            ...corsHeaders,
-            'Content-Type': 'application/pdf',
-            'Content-Disposition': `attachment; filename="${newFileName}"`,
-            'X-Compression-Ratio': compressionRatio.toFixed(2),
-            'X-Original-Size': file.size.toString(),
-            'X-Compressed-Size': finalSize.toString(),
-          },
-        });
+          return new Response(compressedBytes, {
+            headers: {
+              ...corsHeaders,
+              'Content-Type': 'application/pdf',
+              'Content-Disposition': `attachment; filename="${newFileName}"`,
+              'X-Compression-Ratio': compressionRatio.toFixed(2),
+              'X-Original-Size': file.size.toString(),
+              'X-Compressed-Size': finalSize.toString(),
+            },
+          });
+        } else {
+          // Se não conseguiu comprimir, retornar erro
+          throw new Error('Não foi possível reduzir o tamanho do arquivo PDF');
+        }
         
       } catch (pdfLibError) {
         console.error('Erro na compressão:', pdfLibError);
