@@ -188,15 +188,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
         return '.png';
       case 'jpg-pdf':
         return '.jpg,.jpeg';
-      case 'pdf-word':
       case 'split-pdf':
       case 'reduce-pdf':
-        return '.pdf';
-      case 'word-pdf':
-        return '.doc,.docx';
-      case 'video-mp3':
-      case 'compress-video':
-        return '.mp4,.avi,.mov,.mkv,.wmv,.flv,.webm';
       case 'merge-pdf':
         return '.pdf';
       default:
