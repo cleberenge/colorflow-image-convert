@@ -1,27 +1,55 @@
 
 import { useState } from 'react';
-import { FFmpeg } from '@ffmpeg/ffmpeg';
-import { fetchFile, toBlobURL } from '@ffmpeg/util';
 import { ConvertedFile } from '@/types/fileConverter';
+
+// Declare global FFmpeg types
+declare global {
+  interface Window {
+    FFmpeg: any;
+    createFFmpeg: any;
+    fetchFile: any;
+  }
+}
 
 export const useFFmpegConverter = () => {
   const [isConverting, setIsConverting] = useState(false);
-  const [ffmpeg, setFFmpeg] = useState<FFmpeg | null>(null);
+  const [ffmpeg, setFFmpeg] = useState<any>(null);
 
-  const loadFFmpeg = async (): Promise<FFmpeg> => {
+  const loadFFmpeg = async (): Promise<any> => {
     if (ffmpeg) return ffmpeg;
 
-    const newFFmpeg = new FFmpeg();
-    
-    // Load FFmpeg with CDN URLs
-    const baseURL = 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/umd';
-    await newFFmpeg.load({
-      coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
-      wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
-    });
+    try {
+      // Load FFmpeg.wasm from CDN
+      if (!window.createFFmpeg) {
+        await loadScript('https://unpkg.com/@ffmpeg/ffmpeg@0.12.10/dist/ffmpeg.min.js');
+      }
 
-    setFFmpeg(newFFmpeg);
-    return newFFmpeg;
+      console.log('Creating FFmpeg instance...');
+      const newFFmpeg = window.createFFmpeg({
+        log: true,
+        corePath: 'https://unpkg.com/@ffmpeg/core@0.12.6/dist/ffmpeg-core.js',
+      });
+
+      console.log('Loading FFmpeg...');
+      await newFFmpeg.load();
+      console.log('FFmpeg loaded successfully');
+
+      setFFmpeg(newFFmpeg);
+      return newFFmpeg;
+    } catch (error) {
+      console.error('Failed to load FFmpeg:', error);
+      throw new Error('Não foi possível carregar o FFmpeg. Verifique sua conexão com a internet.');
+    }
+  };
+
+  const loadScript = (src: string): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      const script = document.createElement('script');
+      script.src = src;
+      script.onload = () => resolve();
+      script.onerror = () => reject(new Error(`Failed to load script: ${src}`));
+      document.head.appendChild(script);
+    });
   };
 
   const convertVideoToMp3 = async (
@@ -45,28 +73,28 @@ export const useFFmpegConverter = () => {
         console.log(`Convertendo arquivo: ${file.name}`);
         updateProgress(fileStartProgress);
 
-        // Escrever arquivo de entrada no sistema de arquivos virtual do FFmpeg
         const inputFileName = `input_${i}.${file.name.split('.').pop()}`;
         const outputFileName = `output_${i}.mp3`;
         
-        await ffmpegInstance.writeFile(inputFileName, await fetchFile(file));
+        // Write input file
+        ffmpegInstance.FS('writeFile', inputFileName, await window.fetchFile(file));
         updateProgress(fileStartProgress + (progressPerFile * 0.3));
 
-        // Executar conversão FFmpeg
-        await ffmpegInstance.exec([
+        // Run FFmpeg conversion
+        await ffmpegInstance.run(
           '-i', inputFileName,
-          '-vn', // Sem vídeo
+          '-vn', // No video
           '-acodec', 'libmp3lame',
           '-ab', '128k',
           '-ar', '44100',
           '-f', 'mp3',
           outputFileName
-        ]);
+        );
         updateProgress(fileStartProgress + (progressPerFile * 0.7));
 
-        // Ler arquivo convertido
-        const data = await ffmpegInstance.readFile(outputFileName);
-        const blob = new Blob([data], { type: 'audio/mpeg' });
+        // Read converted file
+        const data = ffmpegInstance.FS('readFile', outputFileName);
+        const blob = new Blob([data.buffer], { type: 'audio/mpeg' });
         
         const originalName = file.name.split('.')[0];
         const newFileName = `${originalName}.mp3`;
@@ -74,9 +102,9 @@ export const useFFmpegConverter = () => {
         
         convertedFiles.push({ file: convertedFile, originalName: file.name });
         
-        // Limpar arquivos temporários
-        await ffmpegInstance.deleteFile(inputFileName);
-        await ffmpegInstance.deleteFile(outputFileName);
+        // Clean up temporary files
+        ffmpegInstance.FS('unlink', inputFileName);
+        ffmpegInstance.FS('unlink', outputFileName);
         
         updateProgress(fileStartProgress + progressPerFile);
         console.log(`Arquivo convertido: ${newFileName}`);
@@ -116,11 +144,12 @@ export const useFFmpegConverter = () => {
         const inputFileName = `input_${i}.${extension}`;
         const outputFileName = `output_${i}.${extension}`;
         
-        await ffmpegInstance.writeFile(inputFileName, await fetchFile(file));
+        // Write input file
+        ffmpegInstance.FS('writeFile', inputFileName, await window.fetchFile(file));
         updateProgress(fileStartProgress + (progressPerFile * 0.3));
 
-        // Executar compressão FFmpeg
-        await ffmpegInstance.exec([
+        // Run FFmpeg compression
+        await ffmpegInstance.run(
           '-i', inputFileName,
           '-vcodec', 'libx264',
           '-crf', '28',
@@ -128,12 +157,12 @@ export const useFFmpegConverter = () => {
           '-acodec', 'aac',
           '-b:a', '128k',
           outputFileName
-        ]);
+        );
         updateProgress(fileStartProgress + (progressPerFile * 0.7));
 
-        // Ler arquivo comprimido
-        const data = await ffmpegInstance.readFile(outputFileName);
-        const blob = new Blob([data], { type: file.type });
+        // Read compressed file
+        const data = ffmpegInstance.FS('readFile', outputFileName);
+        const blob = new Blob([data.buffer], { type: file.type });
         
         const originalName = file.name.split('.')[0];
         const newFileName = `${originalName}_compressed.${extension}`;
@@ -141,9 +170,9 @@ export const useFFmpegConverter = () => {
         
         convertedFiles.push({ file: convertedFile, originalName: file.name });
         
-        // Limpar arquivos temporários
-        await ffmpegInstance.deleteFile(inputFileName);
-        await ffmpegInstance.deleteFile(outputFileName);
+        // Clean up temporary files
+        ffmpegInstance.FS('unlink', inputFileName);
+        ffmpegInstance.FS('unlink', outputFileName);
         
         updateProgress(fileStartProgress + progressPerFile);
         console.log(`Arquivo comprimido: ${newFileName}`);
