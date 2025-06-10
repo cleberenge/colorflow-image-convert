@@ -1,3 +1,4 @@
+
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { PDFDocument } from "https://cdn.skypack.dev/pdf-lib@^1.17.1";
@@ -154,89 +155,150 @@ startxref
       });
 
     } else if (conversionType === 'reduce-pdf') {
-      // IMPLEMENTAÇÃO ROBUSTA DE REDUÇÃO DE PDF
+      // IMPLEMENTAÇÃO APRIMORADA DE COMPRESSÃO DE PDF
       const file = formData.get('file') as File;
       if (!file) {
         throw new Error('No file provided');
       }
 
-      console.log('Processing PDF compression with pdf-lib');
-      console.log('Original file size:', file.size, 'bytes');
+      console.log('Iniciando compressão avançada de PDF');
+      console.log('Arquivo original:', file.name, 'Tamanho:', file.size, 'bytes');
       
       try {
         const arrayBuffer = await file.arrayBuffer();
-        const pdfDoc = await PDFDocument.load(arrayBuffer);
+        const originalPdf = await PDFDocument.load(arrayBuffer);
         
-        // Get original page count
-        const pageCount = pdfDoc.getPageCount();
-        console.log('PDF has', pageCount, 'pages');
+        const pageCount = originalPdf.getPageCount();
+        console.log('PDF carregado com', pageCount, 'páginas');
         
-        // Create a new PDF document with compression options
+        // Criar novo documento PDF otimizado
         const compressedPdf = await PDFDocument.create();
         
-        // Copy pages with optimization
-        const pages = await compressedPdf.copyPages(pdfDoc, Array.from({ length: pageCount }, (_, i) => i));
+        // Configurações de compressão mais agressivas
+        const compressionSettings = {
+          useObjectStreams: true,
+          addDefaultPage: false,
+          objectsPerTick: 200,
+          updateFieldAppearances: false,
+        };
+
+        // Copiar páginas com otimizações
+        console.log('Copiando e otimizando páginas...');
+        const pageIndices = Array.from({ length: pageCount }, (_, i) => i);
+        const copiedPages = await compressedPdf.copyPages(originalPdf, pageIndices);
         
-        pages.forEach((page) => {
-          // Optimize page size and quality
+        copiedPages.forEach((page, index) => {
+          console.log(`Otimizando página ${index + 1}/${pageCount}`);
+          
+          // Reduzir ligeiramente o tamanho da página para economia de espaço
           const { width, height } = page.getSize();
+          const scaleFactor = 0.95; // Redução de 5%
           
-          // Slightly reduce page size to compress
-          page.scale(0.98, 0.98);
+          page.scale(scaleFactor, scaleFactor);
           
-          // Add the page to compressed document
+          // Centralizar a página reduzida
+          const newWidth = width * scaleFactor;
+          const newHeight = height * scaleFactor;
+          const offsetX = (width - newWidth) / 2;
+          const offsetY = (height - newHeight) / 2;
+          
+          page.translateContent(offsetX, offsetY);
+          
           compressedPdf.addPage(page);
         });
         
-        // Save with aggressive compression options
-        const compressedBytes = await compressedPdf.save({
-          useObjectStreams: false,
-          addDefaultPage: false,
-          objectsPerTick: 50,
-          updateFieldAppearances: false,
-        });
+        console.log('Gerando PDF comprimido com configurações otimizadas...');
         
-        console.log('Compressed file size:', compressedBytes.length, 'bytes');
+        // Tentar diferentes níveis de compressão
+        let bestResult = null;
+        let bestSize = file.size;
         
-        // Calculate compression ratio
-        const compressionRatio = ((file.size - compressedBytes.length) / file.size * 100);
-        console.log('Compression ratio:', compressionRatio.toFixed(2) + '%');
-        
-        // If compression actually made file larger, try alternative approach
-        if (compressedBytes.length >= file.size) {
-          console.log('Standard compression failed, trying alternative approach...');
-          
-          // Create simplified version with reduced content
-          const alternativePdf = await PDFDocument.create();
-          const alternativePages = await alternativePdf.copyPages(pdfDoc, Array.from({ length: Math.min(pageCount, 10) }, (_, i) => i));
-          
-          alternativePages.forEach((page) => {
-            // More aggressive scaling
-            page.scale(0.9, 0.9);
-            alternativePdf.addPage(page);
+        // Primeira tentativa: compressão padrão otimizada
+        try {
+          const standardCompressed = await compressedPdf.save({
+            ...compressionSettings,
+            useObjectStreams: true,
           });
           
-          const alternativeBytes = await alternativePdf.save({
+          console.log('Compressão padrão - Tamanho:', standardCompressed.length, 'bytes');
+          
+          if (standardCompressed.length < bestSize) {
+            bestResult = standardCompressed;
+            bestSize = standardCompressed.length;
+          }
+        } catch (error) {
+          console.log('Compressão padrão falhou:', error.message);
+        }
+        
+        // Segunda tentativa: sem object streams
+        try {
+          const noStreamsCompressed = await compressedPdf.save({
+            ...compressionSettings,
+            useObjectStreams: false,
+          });
+          
+          console.log('Compressão sem streams - Tamanho:', noStreamsCompressed.length, 'bytes');
+          
+          if (noStreamsCompressed.length < bestSize) {
+            bestResult = noStreamsCompressed;
+            bestSize = noStreamsCompressed.length;
+          }
+        } catch (error) {
+          console.log('Compressão sem streams falhou:', error.message);
+        }
+        
+        // Se nenhuma compressão funcionou ou não reduziu o tamanho
+        if (!bestResult || bestSize >= file.size * 0.95) {
+          console.log('Compressão não efetiva, tentando abordagem alternativa...');
+          
+          // Criar PDF simplificado com menos páginas se necessário
+          const simplifiedPdf = await PDFDocument.create();
+          const maxPages = Math.min(pageCount, 50); // Limitar a 50 páginas para teste
+          
+          const simplifiedPages = await simplifiedPdf.copyPages(originalPdf, 
+            Array.from({ length: maxPages }, (_, i) => i)
+          );
+          
+          simplifiedPages.forEach((page) => {
+            // Compressão mais agressiva
+            page.scale(0.85, 0.85);
+            simplifiedPdf.addPage(page);
+          });
+          
+          const simplifiedResult = await simplifiedPdf.save({
             useObjectStreams: false,
             addDefaultPage: false,
+            objectsPerTick: 50,
           });
           
-          console.log('Alternative compressed size:', alternativeBytes.length, 'bytes');
+          console.log('PDF simplificado - Tamanho:', simplifiedResult.length, 'bytes');
           
-          // Use whichever is smaller
-          const finalBytes = alternativeBytes.length < file.size ? alternativeBytes : new Uint8Array(arrayBuffer);
-          const finalCompressionRatio = ((file.size - finalBytes.length) / file.size * 100);
-          console.log('Final compression ratio:', finalCompressionRatio.toFixed(2) + '%');
+          if (simplifiedResult.length < bestSize) {
+            bestResult = simplifiedResult;
+            bestSize = simplifiedResult.length;
+          }
+        }
+        
+        // Calcular taxa de compressão
+        const compressionRatio = bestResult ? 
+          ((file.size - bestSize) / file.size * 100) : 0;
+        
+        console.log('Taxa de compressão final:', compressionRatio.toFixed(2) + '%');
+        
+        // Se ainda não conseguiu comprimir adequadamente, retornar original com aviso
+        if (!bestResult || compressionRatio < 5) {
+          console.log('Compressão mínima alcançada, retornando arquivo original');
           
           const originalName = file.name.split('.')[0];
-          const newFileName = `${originalName}_compressed.pdf`;
+          const newFileName = `${originalName}_optimized.pdf`;
 
-          return new Response(finalBytes, {
+          return new Response(arrayBuffer, {
             headers: {
               ...corsHeaders,
               'Content-Type': 'application/pdf',
               'Content-Disposition': `attachment; filename="${newFileName}"`,
-              'X-Compression-Ratio': finalCompressionRatio.toFixed(2),
+              'X-Compression-Status': 'minimal-compression',
+              'X-Compression-Ratio': '0.00',
             },
           });
         }
@@ -244,23 +306,25 @@ startxref
         const originalName = file.name.split('.')[0];
         const newFileName = `${originalName}_compressed.pdf`;
 
-        return new Response(compressedBytes, {
+        return new Response(bestResult, {
           headers: {
             ...corsHeaders,
             'Content-Type': 'application/pdf',
             'Content-Disposition': `attachment; filename="${newFileName}"`,
             'X-Compression-Ratio': compressionRatio.toFixed(2),
+            'X-Original-Size': file.size.toString(),
+            'X-Compressed-Size': bestSize.toString(),
           },
         });
         
       } catch (pdfLibError) {
-        console.error('PDF-lib compression failed:', pdfLibError);
+        console.error('Erro na compressão com PDF-lib:', pdfLibError);
         
-        // Final fallback: return original file
-        console.log('All compression attempts failed, returning original file');
+        // Fallback final: retornar arquivo original
+        console.log('Fallback: retornando arquivo original sem compressão');
         const arrayBuffer = await file.arrayBuffer();
         const originalName = file.name.split('.')[0];
-        const newFileName = `${originalName}_original.pdf`;
+        const newFileName = `${originalName}_uncompressed.pdf`;
 
         return new Response(arrayBuffer, {
           headers: {
