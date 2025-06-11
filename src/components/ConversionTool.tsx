@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -66,6 +67,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
 
   const handleConversionChange = (value: string) => {
     setSelectedConversion(value as ConversionType);
+    // Clear state when switching functions to make them independent
+    setSelectedFiles([]);
     setConvertedFiles([]);
   };
 
@@ -197,6 +200,23 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     }
   };
 
+  // Determine if text should be white (for reduce-pdf function)
+  const isReducePdf = selectedConversion === 'reduce-pdf';
+  const textColor = isReducePdf ? 'text-white' : 'text-black';
+
+  // Get upload text based on conversion type
+  const getUploadText = () => {
+    if (selectedConversion === 'merge-pdf') {
+      return 'PDFs para mesclar';
+    } else if (selectedConversion === 'reduce-pdf') {
+      return 'PDF para reduzir';
+    } else if (selectedConversion === 'split-pdf') {
+      return 'PDF para dividir';
+    } else {
+      return 'até 25 arquivos';
+    }
+  };
+
   return (
     <div className="flex flex-col items-center space-y-2 animate-fade-in">
       {/* Upload Area */}
@@ -221,15 +241,13 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
             className="cursor-pointer flex flex-col items-center space-y-2"
           >
             <div className="w-12 h-12 bg-black/10 rounded-full flex items-center justify-center">
-              <Upload className="w-6 h-6 text-black" />
+              <Upload className={`w-6 h-6 ${textColor}`} />
             </div>
             <div>
-              <p className="text-base font-medium text-black mb-1">
-                Clique para selecionar {selectedConversion === 'merge-pdf' ? 'PDFs para mesclar' : 
-                selectedConversion === 'reduce-pdf' ? 'PDF para reduzir' : 
-                selectedConversion === 'split-pdf' ? 'PDF para dividir' : 'até 25 arquivos'}
+              <p className={`text-base font-medium ${textColor} mb-1`}>
+                Clique para selecionar {getUploadText()}
               </p>
-              <p className="text-sm text-black/80">
+              <p className={`text-sm ${textColor}/80`}>
                 ou arraste e solte aqui
               </p>
             </div>
@@ -283,11 +301,12 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
                 </div>
               ))}
             </div>
+            {/* Horizontal alignment for buttons */}
             <div className="flex items-center space-x-2">
               <Button
                 onClick={convertSelectedFiles}
                 disabled={isConverting}
-                className="text-black font-medium transition-all duration-300"
+                className="text-white font-medium transition-all duration-300"
                 style={{ 
                   backgroundColor: conversionColor,
                   borderColor: conversionColor
@@ -297,7 +316,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
               </Button>
               <Button
                 onClick={clearFiles}
-                className="text-black font-medium transition-all duration-300"
+                className="text-white font-medium transition-all duration-300"
                 style={{ 
                   backgroundColor: conversionColor,
                   borderColor: conversionColor
@@ -309,7 +328,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
                 <Button
                   onClick={downloadZip}
                   disabled={isConverting}
-                  className="text-black font-medium transition-all duration-300"
+                  className="text-white font-medium transition-all duration-300"
                   style={{ 
                     backgroundColor: conversionColor,
                     borderColor: conversionColor
