@@ -233,7 +233,7 @@ const Index = () => {
             </div>
             
             {/* All conversion functions in one horizontal row */}
-            <div className="flex justify-center mb-6 max-w-3xl mx-auto bg-gray-50 rounded-lg p-1 gap-0.25">
+            <div className="flex justify-between mb-6 max-w-3xl mx-auto bg-gray-50 rounded-lg p-1 gap-0">
               {orderedConversions.map((type) => {
                 const conversionColor = getConversionColor(type.id);
                 return (
