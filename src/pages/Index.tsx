@@ -184,10 +184,14 @@ const Index = () => {
   const [activeConversion, setActiveConversion] = useState<ConversionType>('png-jpg');
   const { language, t } = useLanguage();
 
-  // Main tools - top row (image conversions)
-  const mainTools = conversionTypes.slice(0, 2); // PNG->JPG, JPG->PDF
-  // PDF tools - bottom row
-  const pdfTools = conversionTypes.slice(2); // Split, Merge, Reduce PDF
+  // Ordenar conversions na ordem correta: PNG->JPG, JPG->PDF, Split PDF, Merge PDF, Reduce PDF
+  const orderedConversions = [
+    conversionTypes[0], // PNG para JPG
+    conversionTypes[1], // JPG para PDF  
+    conversionTypes[2], // Dividir PDF
+    conversionTypes[3], // Juntar PDF
+    conversionTypes[4]  // Reduzir PDF
+  ];
 
   return (
     <>
@@ -222,52 +226,26 @@ const Index = () => {
               </p>
             </div>
             
-            {/* Main tools - top row with tighter spacing */}
-            <div className="flex justify-center mb-1 max-w-lg mx-auto gap-0 bg-gray-50 rounded-lg">
-              {mainTools.map((type) => {
+            {/* All conversion functions in one horizontal row */}
+            <div className="flex justify-between mb-6 max-w-4xl mx-auto bg-gray-50 rounded-lg p-1">
+              {orderedConversions.map((type) => {
                 const conversionColor = getConversionColor(type.id);
                 return (
                   <button
                     key={type.id}
                     onClick={() => setActiveConversion(type.id as ConversionType)}
-                    className={`px-0.5 py-2 flex items-center gap-1 transition-all duration-300 hover:bg-white flex-1 first:rounded-l-lg last:rounded-r-lg ${
+                    className={`px-1 py-2 flex items-center gap-1 transition-all duration-300 hover:bg-white flex-1 first:rounded-l-lg last:rounded-r-lg ${
                       activeConversion === type.id ? 'bg-white' : 'bg-transparent'
                     }`}
                   >
                     <ConversionIcon conversionType={type.id} className="w-4 h-4 flex-shrink-0" />
                     <span 
-                      className={`text-xs font-medium text-left leading-tight flex-1 ${
+                      className={`text-xs font-medium text-center leading-tight flex-1 ${
                         type.id === 'png-jpg' && activeConversion === type.id ? 'text-black' : ''
                       }`}
                       style={{ 
                         color: activeConversion === type.id ? 
                           (type.id === 'png-jpg' ? '#000000' : conversionColor) : '#374151'
-                      }}
-                    >
-                      {type.label[language]}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-            
-            {/* PDF tools - bottom row with very tight spacing and justification */}
-            <div className="flex justify-between mb-6 max-w-lg mx-auto bg-gray-50 rounded-lg">
-              {pdfTools.map((type) => {
-                const conversionColor = getConversionColor(type.id);
-                return (
-                  <button
-                    key={type.id}
-                    onClick={() => setActiveConversion(type.id as ConversionType)}
-                    className={`px-0.5 py-2 flex items-center gap-1 transition-all duration-300 hover:bg-white flex-1 first:rounded-l-lg last:rounded-r-lg ${
-                      activeConversion === type.id ? 'bg-white' : 'bg-transparent'
-                    }`}
-                  >
-                    <ConversionIcon conversionType={type.id} className="w-4 h-4 flex-shrink-0" />
-                    <span 
-                      className="text-xs font-medium text-left leading-tight flex-1"
-                      style={{ 
-                        color: activeConversion === type.id ? conversionColor : '#374151'
                       }}
                     >
                       {type.label[language]}
@@ -310,6 +288,15 @@ const Index = () => {
         <div className="w-full h-[90px] mt-8">
           <div className="h-full" />
         </div>
+        
+        {/* Footer */}
+        <footer className="w-full py-4 px-6 bg-gray-50 border-t border-gray-200">
+          <div className="text-center">
+            <p className="text-sm text-gray-600">
+              © {new Date().getFullYear()} ChoicePDF. Todos os direitos reservados.
+            </p>
+          </div>
+        </footer>
       </div>
     </>
   );
