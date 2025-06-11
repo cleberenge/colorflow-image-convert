@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -288,7 +287,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
               <Button
                 onClick={convertSelectedFiles}
                 disabled={isConverting}
-                className="text-white font-medium transition-all duration-300"
+                className="text-black font-medium transition-all duration-300"
                 style={{ 
                   backgroundColor: conversionColor,
                   borderColor: conversionColor
@@ -298,7 +297,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
               </Button>
               <Button
                 onClick={clearFiles}
-                className="text-white font-medium transition-all duration-300"
+                className="text-black font-medium transition-all duration-300"
                 style={{ 
                   backgroundColor: conversionColor,
                   borderColor: conversionColor
@@ -310,7 +309,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
                 <Button
                   onClick={downloadZip}
                   disabled={isConverting}
-                  className="text-white font-medium transition-all duration-300"
+                  className="text-black font-medium transition-all duration-300"
                   style={{ 
                     backgroundColor: conversionColor,
                     borderColor: conversionColor

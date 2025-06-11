@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -20,13 +21,21 @@ const ImageConverter = () => {
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     if (files.length > 25) {
-      // Silent validation, no popup
+      toast({
+        title: "Limite excedido",
+        description: "Selecione no máximo 25 arquivos.",
+        variant: "destructive",
+      });
       return;
     }
 
     const validFiles = files.filter(file => file.type === 'image/png');
     if (validFiles.length !== files.length) {
-      // Silent validation, no popup
+      toast({
+        title: "Formato inválido",
+        description: "Por favor, selecione apenas arquivos PNG.",
+        variant: "destructive",
+      });
     }
 
     if (validFiles.length > 0) {
@@ -35,9 +44,12 @@ const ImageConverter = () => {
       setSelectedFiles(sortedFiles);
       setConvertedFiles([]);
       setProgress(0);
-      // Remove toast notification
+      toast({
+        title: `${sortedFiles.length} arquivo(s) PNG selecionado(s)`,
+        description: `Pronto(s) para conversão.`,
+      });
     }
-  }, []);
+  }, [toast]);
 
   const convertToJPG = useCallback(async () => {
     if (selectedFiles.length === 0) return;
@@ -223,7 +235,7 @@ const ImageConverter = () => {
               <Button
                 onClick={convertToJPG}
                 disabled={isConverting}
-                className="text-white font-medium transition-all duration-300"
+                className="text-black font-medium transition-all duration-300"
                 style={{ 
                   backgroundColor: conversionColor,
                   borderColor: conversionColor
@@ -233,7 +245,7 @@ const ImageConverter = () => {
               </Button>
               <Button
                 onClick={clearFiles}
-                className="text-white font-medium transition-all duration-300"
+                className="text-black font-medium transition-all duration-300"
                 style={{ 
                   backgroundColor: conversionColor,
                   borderColor: conversionColor
@@ -245,7 +257,7 @@ const ImageConverter = () => {
                 <Button
                   onClick={downloadFiles}
                   disabled={isConverting}
-                  className="text-white font-medium transition-all duration-300"
+                  className="text-black font-medium transition-all duration-300"
                   style={{ 
                     backgroundColor: conversionColor,
                     borderColor: conversionColor
