@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -235,7 +234,7 @@ const Index = () => {
                   <button
                     key={type.id}
                     onClick={() => setActiveConversion(type.id as ConversionType)}
-                    className={`px-1.5 py-2 flex flex-col items-center gap-1 transition-all duration-300 hover:bg-white flex-1 rounded-md ${
+                    className={`px-1.5 py-2 flex items-center gap-1.5 transition-all duration-300 hover:bg-white flex-1 rounded-md ${
                       activeConversion === type.id ? 'bg-white' : 'bg-transparent'
                     }`}
                   >
