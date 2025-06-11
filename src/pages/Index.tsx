@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -99,7 +100,7 @@ const pageLinks = [
       hi: 'प्रश्न पूछने या सहायता का अनुरोध करने के लिए संपर्क करें। हमारी टीम हमेशा मदद के लिए तैयार है। हमारी सेवाओं को बेहतर बनाने के लिए सुझाव भेजें।',
       ar: 'تواصل معنا لطرح الأسئلة أو طلب الدعم. فريقنا مستعد دائماً للمساعدة. أرسل اقتراحات لتحسين خدماتنا.',
       ko: '질문을 하거나 지원을 요청하려면 연락하십시오. 우리 팀은 항상 도울 준비가 되어 있습니다. 서비스 개선을 위한 제안을 보내주십시오.',
-      ja: '質問をしたりサポートを要請するために連絡してください。私たちのチームはいつでも助ける準備ができています。サービス改善のための提案を送ってください。'
+      ja: '質問をしたりサポートを要청するために連絡してください。私たちのチームはいつでも助ける準備ができています。サービス改善のための提案を送ってください。'
     } 
   },
   { 
@@ -227,20 +228,20 @@ const Index = () => {
             </div>
             
             {/* All conversion functions in one horizontal row */}
-            <div className="flex justify-center mb-6 max-w-3xl mx-auto bg-gray-50 rounded-lg p-1 gap-1">
+            <div className="flex justify-center mb-6 max-w-3xl mx-auto bg-gray-50 rounded-lg p-1 gap-0.5">
               {orderedConversions.map((type) => {
                 const conversionColor = getConversionColor(type.id);
                 return (
                   <button
                     key={type.id}
                     onClick={() => setActiveConversion(type.id as ConversionType)}
-                    className={`px-2 py-2 flex items-center gap-2 transition-all duration-300 hover:bg-white flex-1 rounded-md ${
+                    className={`px-1.5 py-2 flex flex-col items-center gap-1 transition-all duration-300 hover:bg-white flex-1 rounded-md ${
                       activeConversion === type.id ? 'bg-white' : 'bg-transparent'
                     }`}
                   >
                     <ConversionIcon conversionType={type.id} className="w-4 h-4 flex-shrink-0" />
                     <span 
-                      className={`text-xs font-medium text-center leading-tight flex-1 ${
+                      className={`text-xs font-medium text-center leading-tight ${
                         type.id === 'png-jpg' && activeConversion === type.id ? 'text-black' : ''
                       }`}
                       style={{ 
@@ -290,7 +291,7 @@ const Index = () => {
         </div>
         
         {/* Footer */}
-        <footer className="w-full py-4 px-6 bg-gray-50 border-t border-gray-200">
+        <footer className="w-full py-4 px-6 bg-gray-50">
           <div className="text-center">
             <p className="text-sm text-gray-600">
               © {new Date().getFullYear()} ChoicePDF. Todos os direitos reservados.
