@@ -232,19 +232,19 @@ const Index = () => {
               </p>
             </div>
             
-            {/* All conversion functions in one horizontal row */}
-            <div className="flex mb-6 max-w-3xl mx-auto bg-gray-50 rounded-lg p-1 space-x-0">
+            {/* All conversion functions in one horizontal row - MODIFICADO: espaço entre funções reduzido */}
+            <div className="flex justify-center mb-6 max-w-3xl mx-auto bg-gray-50 rounded-lg p-0.5">
               {orderedConversions.map((type) => {
                 const conversionColor = getConversionColor(type.id);
                 return (
                   <button
                     key={type.id}
                     onClick={() => handleConversionChange(type.id as ConversionType)}
-                    className={`px-0.5 py-2 flex items-center gap-1 transition-all duration-300 hover:bg-white flex-1 rounded-md ${
+                    className={`px-0 py-2 mx-0.5 flex items-center justify-center transition-all duration-300 hover:bg-white flex-1 rounded-md ${
                       activeConversion === type.id ? 'bg-white' : 'bg-transparent'
                     }`}
                   >
-                    <ConversionIcon conversionType={type.id} className="w-4 h-4 flex-shrink-0" />
+                    <ConversionIcon conversionType={type.id} className="w-4 h-4 flex-shrink-0 mr-0.5" />
                     <span 
                       className={`text-xs font-medium text-center leading-tight ${
                         type.id === 'png-jpg' && activeConversion === type.id ? 'text-black' : ''
