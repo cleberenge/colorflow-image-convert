@@ -193,6 +193,11 @@ const Index = () => {
     conversionTypes[4]  // Reduzir PDF
   ];
 
+  // Function to handle conversion change and clear files
+  const handleConversionChange = (newConversion: ConversionType) => {
+    setActiveConversion(newConversion);
+  };
+
   return (
     <>
       <Helmet>
@@ -227,13 +232,13 @@ const Index = () => {
             </div>
             
             {/* All conversion functions in one horizontal row */}
-            <div className="flex justify-center mb-6 max-w-3xl mx-auto bg-gray-50 rounded-lg p-1 gap-0.5">
+            <div className="flex justify-center mb-6 max-w-3xl mx-auto bg-gray-50 rounded-lg p-1 gap-0.25">
               {orderedConversions.map((type) => {
                 const conversionColor = getConversionColor(type.id);
                 return (
                   <button
                     key={type.id}
-                    onClick={() => setActiveConversion(type.id as ConversionType)}
+                    onClick={() => handleConversionChange(type.id as ConversionType)}
                     className={`px-1.5 py-2 flex items-center gap-1.5 transition-all duration-300 hover:bg-white flex-1 rounded-md ${
                       activeConversion === type.id ? 'bg-white' : 'bg-transparent'
                     }`}
@@ -258,6 +263,7 @@ const Index = () => {
             {/* Active conversion tool */}
             <div className="bg-white rounded-xl p-6">
               <ConversionTool 
+                key={activeConversion}
                 conversionType={activeConversion} 
                 conversionInfo={conversionTypes.find(t => t.id === activeConversion) || conversionTypes[0]} 
               />
