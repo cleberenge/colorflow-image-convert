@@ -247,7 +247,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
               <p className={`text-base font-medium ${textColor} mb-1`}>
                 Clique para selecionar {getUploadText()}
               </p>
-              <p className={`text-sm ${textColor}/80`}>
+              <p className={`text-sm ${textColor}`}>
                 ou arraste e solte aqui
               </p>
             </div>
@@ -261,14 +261,16 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
           <div className="space-y-2">
             <h2 className="text-base font-semibold text-gray-800">Opções de Conversão</h2>
             <Select onValueChange={handleConversionChange} value={selectedConversion}>
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="w-full [&>svg]:hidden">
                 <SelectValue placeholder="Selecione o tipo de conversão" />
               </SelectTrigger>
               <SelectContent>
                 {conversionOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value} className="flex items-center space-x-2">
-                    <ConversionIcon conversionType={option.value} className="w-5 h-5" />
-                    <span>{option.label}</span>
+                  <SelectItem key={option.value} value={option.value}>
+                    <div className="flex items-center space-x-2">
+                      <ConversionIcon conversionType={option.value} className="w-5 h-5" />
+                      <span>{option.label}</span>
+                    </div>
                   </SelectItem>
                 ))}
               </SelectContent>

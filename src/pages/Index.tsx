@@ -227,14 +227,14 @@ const Index = () => {
             </div>
             
             {/* All conversion functions in one horizontal row */}
-            <div className="flex justify-between mb-6 max-w-4xl mx-auto bg-gray-50 rounded-lg p-1">
+            <div className="flex justify-center mb-6 max-w-3xl mx-auto bg-gray-50 rounded-lg p-1 gap-1">
               {orderedConversions.map((type) => {
                 const conversionColor = getConversionColor(type.id);
                 return (
                   <button
                     key={type.id}
                     onClick={() => setActiveConversion(type.id as ConversionType)}
-                    className={`px-1 py-2 flex items-center gap-1 transition-all duration-300 hover:bg-white flex-1 first:rounded-l-lg last:rounded-r-lg ${
+                    className={`px-2 py-2 flex items-center gap-2 transition-all duration-300 hover:bg-white flex-1 rounded-md ${
                       activeConversion === type.id ? 'bg-white' : 'bg-transparent'
                     }`}
                   >
