@@ -53,38 +53,45 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     if (files.length > 25) {
-      // Silent validation, no popup
       return;
     }
 
-    // Ordenar arquivos por nome em ordem crescente
     const sortedFiles = files.sort((a, b) => a.name.localeCompare(b.name));
     
     setSelectedFiles(sortedFiles);
     setConvertedFiles([]);
-    // Remove toast notification
   }, []);
 
   const handleConversionChange = (value: string) => {
     setSelectedConversion(value as ConversionType);
-    // Clear state when switching functions to make them independent
     setSelectedFiles([]);
     setConvertedFiles([]);
   };
 
   const convertSelectedFiles = useCallback(async () => {
     if (selectedFiles.length === 0) {
-      // Silent validation, no popup
       return;
     }
 
     try {
+      console.log('Iniciando conversão de arquivos:', selectedFiles.length);
+      console.log('Tipo de conversão:', selectedConversion);
+      
       const results = await convertFiles(selectedFiles, selectedConversion);
+      
+      console.log('Conversão concluída, arquivos convertidos:', results);
+      console.log('Número de arquivos convertidos:', results.length);
+      
       setConvertedFiles(results);
-      // Remove success toast notification
+      
+      // Log para debug
+      results.forEach((result, index) => {
+        console.log(`Arquivo ${index + 1}:`, result.file.name, 'Tamanho:', result.file.size);
+      });
+      
     } catch (error) {
       console.error('Erro na conversão:', error);
-      // Remove error toast notification
+      setConvertedFiles([]);
     }
   }, [selectedFiles, selectedConversion, convertFiles]);
 
@@ -94,7 +101,10 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   }, []);
 
   const downloadZip = useCallback(async () => {
-    if (convertedFiles.length === 0) return;
+    if (convertedFiles.length === 0) {
+      console.log('Nenhum arquivo convertido para download');
+      return;
+    }
 
     try {
       console.log('Iniciando criação do ZIP...');
@@ -104,27 +114,23 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       for (const { file } of convertedFiles) {
         console.log('Adicionando arquivo ao ZIP:', file.name, 'Tamanho:', file.size, 'Tipo:', file.type);
         
-        // Verificar se o arquivo é válido
         if (file.size === 0) {
           console.warn('Arquivo vazio detectado:', file.name);
           continue;
         }
         
         try {
-          // Ler o arquivo como blob primeiro para garantir integridade
           const blob = new Blob([file], { type: file.type });
           const arrayBuffer = await blob.arrayBuffer();
           
           console.log('Arquivo lido com sucesso:', file.name, 'Tamanho do buffer:', arrayBuffer.byteLength);
           
-          // Adicionar ao ZIP sem compressão para evitar corrupção
           zip.file(file.name, arrayBuffer, { 
             binary: true,
-            compression: 'STORE' // Sem compressão para manter integridade
+            compression: 'STORE'
           });
         } catch (fileError) {
           console.error('Erro ao processar arquivo:', file.name, fileError);
-          // Adicionar arquivo de erro em vez de falhar completamente
           const errorContent = `Erro ao processar o arquivo: ${file.name}`;
           zip.file(`ERROR_${file.name}.txt`, errorContent);
         }
@@ -132,18 +138,16 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       
       console.log('Gerando arquivo ZIP...');
       
-      // Gerar ZIP com configurações otimizadas
       const zipBlob = await zip.generateAsync({ 
         type: 'blob',
-        compression: 'STORE', // Sem compressão
+        compression: 'STORE',
         compressionOptions: {
-          level: 0 // Nível 0 = sem compressão
+          level: 0
         }
       });
       
       console.log('ZIP gerado com sucesso. Tamanho:', zipBlob.size);
       
-      // Criar URL e fazer download
       const url = URL.createObjectURL(zipBlob);
       const link = document.createElement('a');
       link.href = url;
@@ -153,18 +157,13 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       document.body.removeChild(link);
       URL.revokeObjectURL(url);
       
-      // Remove download success toast notification
-      
     } catch (error) {
       console.error('Erro ao criar ZIP:', error);
-      // Remove download error toast notification
     }
   }, [convertedFiles]);
 
-  // Get conversion color for styling
   const conversionColor = getConversionColor(selectedConversion);
 
-  // Organizar arquivos em colunas verticais
   const organizeFilesInColumns = (files: File[]) => {
     const filesPerColumn = 5;
     const numColumns = Math.ceil(files.length / filesPerColumn);
@@ -184,7 +183,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     return columns;
   };
 
-  // Definir accept baseado no tipo de conversão
   const getAcceptedFileTypes = () => {
     switch (selectedConversion) {
       case 'png-jpg':
@@ -200,12 +198,10 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     }
   };
 
-  // Determine if text should be white (for reduce-pdf function)
   const isReducePdf = selectedConversion === 'reduce-pdf';
   const isPngJpg = selectedConversion === 'png-jpg';
   const textColor = isReducePdf ? 'text-white' : 'text-black';
 
-  // Get upload text based on conversion type
   const getUploadText = () => {
     if (selectedConversion === 'merge-pdf') {
       return 'PDFs para mesclar';
@@ -217,6 +213,11 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       return 'até 25 arquivos';
     }
   };
+
+  // Debug: log do estado dos arquivos convertidos
+  console.log('Estado atual dos arquivos convertidos:', convertedFiles);
+  console.log('Número de arquivos convertidos:', convertedFiles.length);
+  console.log('Está convertendo?', isConverting);
 
   return (
     <div className="flex flex-col items-center space-y-2 animate-fade-in">
@@ -310,7 +311,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
                 </div>
               ))}
             </div>
-            {/* Horizontal alignment for buttons */}
             <div className="flex items-center space-x-2">
               <Button
                 onClick={convertSelectedFiles}
@@ -333,10 +333,10 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
               >
                 Limpar
               </Button>
-              {convertedFiles.length > 0 && (
+              {/* Botão de download sempre visível quando há arquivos convertidos */}
+              {convertedFiles.length > 0 && !isConverting && (
                 <Button
                   onClick={downloadZip}
-                  disabled={isConverting}
                   className={`font-medium transition-all duration-300 ${isPngJpg ? 'text-black' : 'text-white'}`}
                   style={{ 
                     backgroundColor: conversionColor,
@@ -344,7 +344,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
                   }}
                 >
                   <Download className="w-4 h-4 mr-2" />
-                  Baixar
+                  Baixar ({convertedFiles.length} arquivo{convertedFiles.length > 1 ? 's' : ''})
                 </Button>
               )}
             </div>
@@ -363,6 +363,13 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
             <Progress value={progress} className="h-2" indicatorColor={conversionColor} />
           </div>
         </Card>
+      )}
+
+      {/* Status dos arquivos convertidos para debug */}
+      {convertedFiles.length > 0 && (
+        <div className="w-full max-w-3xl p-2 text-sm text-gray-600 bg-gray-50 rounded">
+          Debug: {convertedFiles.length} arquivo{convertedFiles.length > 1 ? 's' : ''} convertido{convertedFiles.length > 1 ? 's' : ''} pronto{convertedFiles.length > 1 ? 's' : ''} para download
+        </div>
       )}
     </div>
   );
