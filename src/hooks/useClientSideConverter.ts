@@ -36,7 +36,7 @@ export const useClientSideConverter = () => {
         await new Promise(resolve => setTimeout(resolve, 200));
         console.log('Mesclagem de PDFs concluída com sucesso');
       } else if (conversionType === 'reduce-pdf') {
-        console.log('Comprimindo PDF no client-side');
+        console.log('Comprimindo PDF usando Ghostscript via servidor');
         updateProgress(10);
         await new Promise(resolve => setTimeout(resolve, 200));
         
@@ -48,9 +48,9 @@ export const useClientSideConverter = () => {
           await new Promise(resolve => setTimeout(resolve, 300));
           
           try {
-            console.log(`Comprimindo ${file.name}`);
+            console.log(`Comprimindo ${file.name} usando Ghostscript`);
             
-            const results = await compressPdfClientSide(file, (fileProgress) => {
+            const results = await compressPdfWithGhostscript(file, (fileProgress) => {
               const totalProgress = baseProgress + (fileProgress * 70 / files.length / 100);
               updateProgress(Math.min(Math.max(totalProgress, 0), 90));
             });
@@ -59,7 +59,7 @@ export const useClientSideConverter = () => {
             updateProgress(Math.min(baseProgress + (70 / files.length), 90));
             await new Promise(resolve => setTimeout(resolve, 200));
             
-            console.log(`${file.name} comprimido com sucesso`);
+            console.log(`${file.name} comprimido com sucesso usando Ghostscript`);
           } catch (error) {
             console.error(`Erro ao comprimir ${file.name}:`, error);
             throw error;
@@ -135,87 +135,48 @@ export const useClientSideConverter = () => {
   return { convertClientSide, isConverting };
 };
 
-// Função para comprimir PDF no client-side - MELHORADA
-const compressPdfClientSide = async (
+// Nova função para comprimir PDF usando Ghostscript via servidor
+const compressPdfWithGhostscript = async (
   file: File, 
   onProgress: (progress: number) => void
 ): Promise<ConvertedFile[]> => {
-  const { PDFDocument } = await import('pdf-lib');
   
   onProgress(10);
   await new Promise(resolve => setTimeout(resolve, 200));
   
   try {
-    console.log(`Iniciando compressão de ${file.name}, tamanho original: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
+    console.log(`Iniciando compressão Ghostscript de ${file.name}, tamanho original: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
     
-    const arrayBuffer = await file.arrayBuffer();
-    onProgress(20);
-    await new Promise(resolve => setTimeout(resolve, 300));
+    const formData = new FormData();
+    formData.append('file', file);
+    formData.append('conversionType', 'reduce-pdf');
     
-    const pdfDoc = await PDFDocument.load(arrayBuffer);
-    onProgress(40);
-    await new Promise(resolve => setTimeout(resolve, 400));
+    onProgress(30);
+    await new Promise(resolve => setTimeout(resolve, 500));
     
-    console.log(`PDF carregado, ${pdfDoc.getPageCount()} páginas`);
+    console.log('Enviando arquivo para compressão Ghostscript...');
     
-    // Estratégia 1: Salvar com configurações básicas de compressão
-    console.log('Aplicando compressão básica...');
-    const basicCompressed = await pdfDoc.save({
-      useObjectStreams: false,
-      addDefaultPage: false,
-      updateFieldAppearances: false,
+    const response = await fetch('/api/convert-pdf', {
+      method: 'POST',
+      body: formData,
     });
     
-    onProgress(60);
+    onProgress(70);
     await new Promise(resolve => setTimeout(resolve, 300));
     
-    let finalBytes = basicCompressed;
-    let finalSize = basicCompressed.length;
-    
-    // Estratégia 2: Se não houve redução significativa, tentar recompressão
-    if (finalSize >= file.size * 0.85) {
-      console.log('Aplicando compressão mais agressiva...');
-      
-      try {
-        // Recriar PDF com páginas otimizadas
-        const optimizedPdf = await PDFDocument.create();
-        const pageCount = pdfDoc.getPageCount();
-        
-        // Limitar a 100 páginas para evitar problemas de memória
-        const pagesToProcess = Math.min(pageCount, 100);
-        const copiedPages = await optimizedPdf.copyPages(pdfDoc, Array.from({ length: pagesToProcess }, (_, i) => i));
-        
-        copiedPages.forEach((page) => {
-          optimizedPdf.addPage(page);
-        });
-        
-        onProgress(80);
-        await new Promise(resolve => setTimeout(resolve, 300));
-        
-        const recompressedBytes = await optimizedPdf.save({
-          useObjectStreams: true,
-          addDefaultPage: false,
-          updateFieldAppearances: false,
-        });
-        
-        // Usar o melhor resultado
-        if (recompressedBytes.length < finalSize) {
-          finalBytes = recompressedBytes;
-          finalSize = recompressedBytes.length;
-          console.log('Compressão agressiva foi mais eficaz');
-        }
-        
-      } catch (recompressError) {
-        console.log('Compressão agressiva falhou, usando resultado básico:', recompressError);
-      }
+    if (!response.ok) {
+      throw new Error(`Erro na compressão: ${response.status}`);
     }
     
-    onProgress(95);
+    const compressedBlob = await response.blob();
+    const finalSize = compressedBlob.size;
+    
+    onProgress(90);
     await new Promise(resolve => setTimeout(resolve, 200));
     
     const compressionRatio = ((file.size - finalSize) / file.size) * 100;
     
-    console.log(`Compressão concluída:`);
+    console.log(`Compressão Ghostscript concluída:`);
     console.log(`- Tamanho original: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
     console.log(`- Tamanho comprimido: ${(finalSize / 1024 / 1024).toFixed(2)} MB`);
     console.log(`- Redução: ${compressionRatio.toFixed(2)}%`);
@@ -223,7 +184,7 @@ const compressPdfClientSide = async (
     const originalName = file.name.split('.')[0];
     const compressedFileName = `${originalName}_compressed.pdf`;
     
-    const compressedFile = new File([finalBytes], compressedFileName, {
+    const compressedFile = new File([compressedBlob], compressedFileName, {
       type: 'application/pdf',
     });
     
@@ -232,7 +193,63 @@ const compressPdfClientSide = async (
     return [{ file: compressedFile, originalName: file.name }];
     
   } catch (error) {
-    console.error('Erro na compressão client-side:', error);
+    console.error('Erro na compressão Ghostscript:', error);
+    // Fallback para compressão client-side se Ghostscript falhar
+    console.log('Fallback para compressão client-side...');
+    return await compressPdfClientSideFallback(file, onProgress);
+  }
+};
+
+// Função de fallback para compressão client-side
+const compressPdfClientSideFallback = async (
+  file: File, 
+  onProgress: (progress: number) => void
+): Promise<ConvertedFile[]> => {
+  const { PDFDocument } = await import('pdf-lib');
+  
+  onProgress(40);
+  await new Promise(resolve => setTimeout(resolve, 200));
+  
+  try {
+    console.log(`Fallback: Compressão client-side de ${file.name}`);
+    
+    const arrayBuffer = await file.arrayBuffer();
+    onProgress(50);
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
+    const pdfDoc = await PDFDocument.load(arrayBuffer);
+    onProgress(70);
+    await new Promise(resolve => setTimeout(resolve, 400));
+    
+    console.log(`PDF carregado, ${pdfDoc.getPageCount()} páginas`);
+    
+    const basicCompressed = await pdfDoc.save({
+      useObjectStreams: true,
+      addDefaultPage: false,
+      updateFieldAppearances: false,
+    });
+    
+    onProgress(95);
+    await new Promise(resolve => setTimeout(resolve, 200));
+    
+    const finalSize = basicCompressed.length;
+    const compressionRatio = ((file.size - finalSize) / file.size) * 100;
+    
+    console.log(`Fallback concluído - Redução: ${compressionRatio.toFixed(2)}%`);
+    
+    const originalName = file.name.split('.')[0];
+    const compressedFileName = `${originalName}_compressed.pdf`;
+    
+    const compressedFile = new File([basicCompressed], compressedFileName, {
+      type: 'application/pdf',
+    });
+    
+    onProgress(100);
+    
+    return [{ file: compressedFile, originalName: file.name }];
+    
+  } catch (error) {
+    console.error('Erro no fallback client-side:', error);
     throw new Error(`Falha ao comprimir ${file.name}: ${error.message}`);
   }
 };

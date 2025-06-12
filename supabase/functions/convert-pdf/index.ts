@@ -20,7 +20,145 @@ serve(async (req) => {
     
     console.log(`PDF operation type: ${conversionType}`);
 
-    if (conversionType === 'jpg-pdf') {
+    if (conversionType === 'reduce-pdf') {
+      const file = formData.get('file') as File;
+      if (!file) {
+        throw new Error('No file provided');
+      }
+
+      console.log('Iniciando compressão PDF com Ghostscript');
+      console.log('Arquivo original:', file.name, 'Tamanho:', file.size, 'bytes');
+      
+      try {
+        const arrayBuffer = await file.arrayBuffer();
+        const inputBytes = new Uint8Array(arrayBuffer);
+        
+        // Salvar arquivo temporário
+        const tempInputPath = `/tmp/input_${Date.now()}.pdf`;
+        const tempOutputPath = `/tmp/output_${Date.now()}.pdf`;
+        
+        await Deno.writeFile(tempInputPath, inputBytes);
+        console.log('Arquivo temporário criado:', tempInputPath);
+        
+        // Comando Ghostscript otimizado para compressão máxima
+        const ghostscriptCommand = [
+          'gs',
+          '-sDEVICE=pdfwrite',
+          '-dCompatibilityLevel=1.4',
+          '-dPDFSETTINGS=/screen',
+          '-dNOPAUSE',
+          '-dQUIET',
+          '-dBATCH',
+          '-dDetectDuplicateImages=true',
+          '-dCompressFonts=true',
+          '-dSubsetFonts=true',
+          '-dColorImageDownsampleType=/Bicubic',
+          '-dColorImageResolution=144',
+          '-dGrayImageDownsampleType=/Bicubic', 
+          '-dGrayImageResolution=144',
+          '-dMonoImageDownsampleType=/Bicubic',
+          '-dMonoImageResolution=144',
+          '-dOptimize=true',
+          `-sOutputFile=${tempOutputPath}`,
+          tempInputPath
+        ];
+        
+        console.log('Executando Ghostscript:', ghostscriptCommand.join(' '));
+        
+        const process = new Deno.Command(ghostscriptCommand[0], {
+          args: ghostscriptCommand.slice(1),
+          stdout: 'piped',
+          stderr: 'piped'
+        });
+        
+        const { code, stdout, stderr } = await process.output();
+        
+        const stdoutText = new TextDecoder().decode(stdout);
+        const stderrText = new TextDecoder().decode(stderr);
+        
+        console.log('Ghostscript stdout:', stdoutText);
+        if (stderrText) console.log('Ghostscript stderr:', stderrText);
+        
+        if (code !== 0) {
+          throw new Error(`Ghostscript failed with code ${code}: ${stderrText}`);
+        }
+        
+        // Verificar se o arquivo de saída foi criado
+        let compressedBytes: Uint8Array;
+        try {
+          compressedBytes = await Deno.readFile(tempOutputPath);
+          console.log('Arquivo comprimido lido:', compressedBytes.length, 'bytes');
+        } catch (readError) {
+          console.log('Erro ao ler arquivo comprimido, usando fallback pdf-lib');
+          throw readError;
+        }
+        
+        // Limpeza dos arquivos temporários
+        try {
+          await Deno.remove(tempInputPath);
+          await Deno.remove(tempOutputPath);
+        } catch (cleanupError) {
+          console.log('Erro na limpeza de arquivos temporários:', cleanupError);
+        }
+        
+        const finalSize = compressedBytes.length;
+        const compressionRatio = ((file.size - finalSize) / file.size * 100);
+        
+        console.log('Compressão Ghostscript concluída:');
+        console.log('- Tamanho original:', file.size, 'bytes');
+        console.log('- Tamanho comprimido:', finalSize, 'bytes');
+        console.log('- Redução:', compressionRatio.toFixed(2) + '%');
+        
+        const originalName = file.name.split('.')[0];
+        const newFileName = `${originalName}_compressed.pdf`;
+
+        return new Response(compressedBytes, {
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': `attachment; filename="${newFileName}"`,
+            'X-Compression-Method': 'ghostscript',
+            'X-Compression-Ratio': compressionRatio.toFixed(2),
+            'X-Original-Size': file.size.toString(),
+            'X-Compressed-Size': finalSize.toString(),
+          },
+        });
+        
+      } catch (ghostscriptError) {
+        console.error('Erro no Ghostscript, usando fallback pdf-lib:', ghostscriptError);
+        
+        // Fallback para pdf-lib se Ghostscript falhar
+        const arrayBuffer = await file.arrayBuffer();
+        const originalPdf = await PDFDocument.load(arrayBuffer);
+        
+        const compressedBytes = await originalPdf.save({
+          useObjectStreams: true,
+          addDefaultPage: false,
+          updateFieldAppearances: false,
+        });
+        
+        const finalSize = compressedBytes.length;
+        const compressionRatio = ((file.size - finalSize) / file.size * 100);
+        
+        console.log('Fallback pdf-lib - Redução:', compressionRatio.toFixed(2) + '%');
+        
+        const originalName = file.name.split('.')[0];
+        const newFileName = `${originalName}_compressed.pdf`;
+
+        return new Response(compressedBytes, {
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/pdf',
+            'Content-Disposition': `attachment; filename="${newFileName}"`,
+            'X-Compression-Method': 'pdf-lib-fallback',
+            'X-Compression-Ratio': compressionRatio.toFixed(2),
+            'X-Original-Size': file.size.toString(),
+            'X-Compressed-Size': finalSize.toString(),
+          },
+        });
+      }
+
+    } else if (conversionType === 'jpg-pdf') {
       // Convert JPG to PDF using jsPDF library via web API
       const file = formData.get('file') as File;
       if (!file) {
@@ -152,104 +290,6 @@ startxref
           'Content-Disposition': 'attachment; filename="merged.pdf"',
         },
       });
-
-    } else if (conversionType === 'reduce-pdf') {
-      const file = formData.get('file') as File;
-      if (!file) {
-        throw new Error('No file provided');
-      }
-
-      console.log('Iniciando compressão de PDF simples e eficaz');
-      console.log('Arquivo original:', file.name, 'Tamanho:', file.size, 'bytes');
-      
-      try {
-        const arrayBuffer = await file.arrayBuffer();
-        const originalPdf = await PDFDocument.load(arrayBuffer);
-        
-        const pageCount = originalPdf.getPageCount();
-        console.log('PDF carregado com', pageCount, 'páginas');
-        
-        // ESTRATÉGIA SIMPLES: Apenas salvar com configurações de compressão
-        console.log('Aplicando compressão básica...');
-        
-        // Salvar com configurações de compressão básicas que realmente funcionam
-        const compressedBytes = await originalPdf.save({
-          useObjectStreams: false, // Desabilitar para compatibilidade
-          addDefaultPage: false,
-          updateFieldAppearances: false,
-          objectsPerTick: 50, // Processar em pequenos lotes
-        });
-        
-        const finalSize = compressedBytes.length;
-        console.log('Tamanho após compressão básica:', finalSize, 'bytes');
-        
-        // Se não houve redução significativa, aplicar compressão mais agressiva
-        if (finalSize >= file.size * 0.9) {
-          console.log('Aplicando compressão mais agressiva...');
-          
-          // Criar novo PDF com páginas otimizadas
-          const optimizedPdf = await PDFDocument.create();
-          
-          // Copiar apenas as primeiras 50 páginas para evitar problemas de memória
-          const pagesToCopy = Math.min(pageCount, 50);
-          const pages = await optimizedPdf.copyPages(originalPdf, Array.from({ length: pagesToCopy }, (_, i) => i));
-          
-          pages.forEach((page) => {
-            optimizedPdf.addPage(page);
-          });
-          
-          const optimizedBytes = await optimizedPdf.save({
-            useObjectStreams: false,
-            addDefaultPage: false,
-          });
-          
-          const optimizedSize = optimizedBytes.length;
-          console.log('Tamanho após otimização:', optimizedSize, 'bytes');
-          
-          // Usar o melhor resultado
-          const bestBytes = optimizedSize < finalSize ? optimizedBytes : compressedBytes;
-          const bestSize = optimizedSize < finalSize ? optimizedSize : finalSize;
-          
-          const compressionRatio = ((file.size - bestSize) / file.size * 100);
-          console.log('Compressão final - Redução:', compressionRatio.toFixed(2) + '%');
-          
-          const originalName = file.name.split('.')[0];
-          const newFileName = `${originalName}_compressed.pdf`;
-
-          return new Response(bestBytes, {
-            headers: {
-              ...corsHeaders,
-              'Content-Type': 'application/pdf',
-              'Content-Disposition': `attachment; filename="${newFileName}"`,
-              'X-Compression-Ratio': compressionRatio.toFixed(2),
-              'X-Original-Size': file.size.toString(),
-              'X-Compressed-Size': bestSize.toString(),
-            },
-          });
-        } else {
-          // Compressão básica foi suficiente
-          const compressionRatio = ((file.size - finalSize) / file.size * 100);
-          console.log('Compressão básica bem-sucedida - Redução:', compressionRatio.toFixed(2) + '%');
-          
-          const originalName = file.name.split('.')[0];
-          const newFileName = `${originalName}_compressed.pdf`;
-
-          return new Response(compressedBytes, {
-            headers: {
-              ...corsHeaders,
-              'Content-Type': 'application/pdf',
-              'Content-Disposition': `attachment; filename="${newFileName}"`,
-              'X-Compression-Ratio': compressionRatio.toFixed(2),
-              'X-Original-Size': file.size.toString(),
-              'X-Compressed-Size': finalSize.toString(),
-            },
-          });
-        }
-        
-      } catch (pdfLibError) {
-        console.error('Erro na compressão:', pdfLibError);
-        throw new Error(`Falha na compressão: ${pdfLibError.message}`);
-      }
 
     } else {
       throw new Error(`Unsupported PDF operation: ${conversionType}`);

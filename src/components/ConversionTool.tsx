@@ -202,6 +202,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
 
   // Determine if text should be white (for reduce-pdf function)
   const isReducePdf = selectedConversion === 'reduce-pdf';
+  const isPngJpg = selectedConversion === 'png-jpg';
   const textColor = isReducePdf ? 'text-white' : 'text-black';
 
   // Get upload text based on conversion type
@@ -289,7 +290,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
                 <div key={columnIndex} className="flex flex-col gap-2 min-w-0 flex-1">
                   {column.map((file, fileIndex) => {
                     const fileNumber = columnIndex * 5 + fileIndex + 1;
-                    const isPngJpg = selectedConversion === 'png-jpg';
                     return (
                       <div key={columnIndex * 5 + fileIndex} className="flex items-center gap-1 min-w-0">
                         <div 
@@ -315,7 +315,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
               <Button
                 onClick={convertSelectedFiles}
                 disabled={isConverting}
-                className="text-white font-medium transition-all duration-300"
+                className={`font-medium transition-all duration-300 ${isPngJpg ? 'text-black' : 'text-white'}`}
                 style={{ 
                   backgroundColor: conversionColor,
                   borderColor: conversionColor
@@ -325,7 +325,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
               </Button>
               <Button
                 onClick={clearFiles}
-                className="text-white font-medium transition-all duration-300"
+                className={`font-medium transition-all duration-300 ${isPngJpg ? 'text-black' : 'text-white'}`}
                 style={{ 
                   backgroundColor: conversionColor,
                   borderColor: conversionColor
@@ -337,7 +337,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
                 <Button
                   onClick={downloadZip}
                   disabled={isConverting}
-                  className="text-white font-medium transition-all duration-300"
+                  className={`font-medium transition-all duration-300 ${isPngJpg ? 'text-black' : 'text-white'}`}
                   style={{ 
                     backgroundColor: conversionColor,
                     borderColor: conversionColor
