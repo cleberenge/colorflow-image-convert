@@ -1,3 +1,4 @@
+
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { PDFDocument } from "https://cdn.skypack.dev/pdf-lib@^1.17.1";
@@ -39,17 +40,19 @@ serve(async (req) => {
           throw new Error('Arquivo não é um PDF válido');
         }
         
-        console.log('Usando pdf-lib para compressão');
+        console.log('Carregando PDF com pdf-lib...');
         
         try {
           const originalPdf = await PDFDocument.load(arrayBuffer);
           console.log(`PDF carregado com ${originalPdf.getPageCount()} páginas`);
           
           // Compressão otimizada com pdf-lib
+          console.log('Aplicando compressão otimizada...');
           const compressedBytes = await originalPdf.save({
             useObjectStreams: true,
             addDefaultPage: false,
             updateFieldAppearances: false,
+            objectsPerTick: 50,
           });
           
           const finalSize = compressedBytes.length;
@@ -60,14 +63,25 @@ serve(async (req) => {
           console.log('- Tamanho comprimido:', finalSize, 'bytes');
           console.log('- Redução:', compressionRatio.toFixed(2) + '%');
           
-          // Criar blob válido
-          const compressedBlob = new Blob([compressedBytes], { type: 'application/pdf' });
+          // Validar se o PDF comprimido é válido
+          if (finalSize < 200) {
+            throw new Error('PDF comprimido muito pequeno, possível corrupção');
+          }
           
-          return new Response(compressedBlob, {
+          // Verificar se ainda é um PDF válido
+          const compressedHeader = new TextDecoder().decode(compressedBytes.slice(0, 5));
+          if (!compressedHeader.startsWith('%PDF-')) {
+            throw new Error('PDF comprimido não é válido');
+          }
+          
+          console.log('PDF comprimido validado com sucesso');
+          
+          return new Response(compressedBytes, {
             headers: {
               ...corsHeaders,
               'Content-Type': 'application/pdf',
               'Content-Length': finalSize.toString(),
+              'Content-Disposition': 'attachment; filename="compressed.pdf"',
               'X-Compression-Method': 'pdf-lib',
               'X-Compression-Ratio': compressionRatio.toFixed(2),
               'X-Original-Size': file.size.toString(),

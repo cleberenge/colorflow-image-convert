@@ -19,15 +19,17 @@ export const useClientSideConverter = () => {
     const convertedFiles: ConvertedFile[] = [];
 
     try {
-      // Progresso inicial suave
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // Progresso inicial mais gradual
+      updateProgress(2);
+      await new Promise(resolve => setTimeout(resolve, 150));
       updateProgress(5);
+      await new Promise(resolve => setTimeout(resolve, 200));
       
       if (conversionType === 'merge-pdf') {
         console.log('Mesclando PDFs no client-side');
-        updateProgress(10);
+        updateProgress(8);
         await new Promise(resolve => setTimeout(resolve, 200));
-        updateProgress(20);
+        updateProgress(12);
         
         const results = await mergePdfs(files);
         convertedFiles.push(...results);
@@ -36,28 +38,30 @@ export const useClientSideConverter = () => {
         await new Promise(resolve => setTimeout(resolve, 200));
         console.log('Mesclagem de PDFs concluída com sucesso');
       } else if (conversionType === 'reduce-pdf') {
-        console.log('Comprimindo PDF usando servidor');
-        updateProgress(10);
-        await new Promise(resolve => setTimeout(resolve, 200));
+        console.log('Iniciando compressão de PDF usando servidor');
+        updateProgress(8);
+        await new Promise(resolve => setTimeout(resolve, 300));
         
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
-          const baseProgress = 15 + (i * 70 / files.length);
+          const baseProgress = 10 + (i * 75 / files.length);
           
-          updateProgress(Math.min(baseProgress, 90));
-          await new Promise(resolve => setTimeout(resolve, 300));
+          updateProgress(Math.min(baseProgress, 85));
+          await new Promise(resolve => setTimeout(resolve, 400));
           
           try {
             console.log(`Comprimindo ${file.name} usando servidor`);
             
             const results = await compressPdfWithServer(file, (fileProgress) => {
-              const totalProgress = baseProgress + (fileProgress * 70 / files.length / 100);
-              updateProgress(Math.min(Math.max(totalProgress, 0), 90));
+              const totalProgress = baseProgress + ((fileProgress / 100) * (75 / files.length));
+              updateProgress(Math.min(Math.max(totalProgress, baseProgress), 85));
             });
             
             convertedFiles.push(...results);
-            updateProgress(Math.min(baseProgress + (70 / files.length), 90));
-            await new Promise(resolve => setTimeout(resolve, 200));
+            
+            const finalProgress = baseProgress + (75 / files.length);
+            updateProgress(Math.min(finalProgress, 85));
+            await new Promise(resolve => setTimeout(resolve, 300));
             
             console.log(`${file.name} comprimido com sucesso`);
           } catch (error) {
@@ -66,41 +70,43 @@ export const useClientSideConverter = () => {
           }
         }
       } else {
-        // Processar outros tipos de conversão com progresso otimizado
+        // Processar outros tipos de conversão com progresso mais suave
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
-          const baseProgress = 10 + (i * 75 / files.length);
-          updateProgress(Math.min(baseProgress, 90));
-          await new Promise(resolve => setTimeout(resolve, 200));
+          const baseProgress = 8 + (i * 77 / files.length);
+          updateProgress(Math.min(baseProgress, 85));
+          await new Promise(resolve => setTimeout(resolve, 300));
 
           try {
             let results: ConvertedFile[];
 
-            // Progresso durante o processamento
-            updateProgress(Math.min(baseProgress + 5, 90));
+            // Progresso durante o processamento mais gradual
+            updateProgress(Math.min(baseProgress + 3, 85));
+            await new Promise(resolve => setTimeout(resolve, 200));
+            updateProgress(Math.min(baseProgress + 8, 85));
             await new Promise(resolve => setTimeout(resolve, 300));
 
             if (conversionType === 'png-jpg') {
               console.log(`Converting ${file.name} to JPG on client-side`);
-              updateProgress(Math.min(baseProgress + 15, 90));
+              updateProgress(Math.min(baseProgress + 15, 85));
               await new Promise(resolve => setTimeout(resolve, 400));
               const convertedFile = await convertPngToJpg(file, 0.9);
               results = [{ file: convertedFile, originalName: file.name }];
             } else if (conversionType === 'jpg-pdf') {
               console.log(`Converting ${file.name} to PDF on client-side`);
-              updateProgress(Math.min(baseProgress + 15, 90));
+              updateProgress(Math.min(baseProgress + 15, 85));
               await new Promise(resolve => setTimeout(resolve, 400));
               const convertedFile = await convertJpgToPdf(file);
               results = [{ file: convertedFile, originalName: file.name }];
             } else if (conversionType === 'word-pdf') {
               console.log(`Converting ${file.name} to PDF on client-side using mammoth + jsPDF`);
-              updateProgress(Math.min(baseProgress + 15, 90));
+              updateProgress(Math.min(baseProgress + 15, 85));
               await new Promise(resolve => setTimeout(resolve, 500));
               const convertedFile = await convertWordToPdf(file);
               results = [{ file: convertedFile, originalName: file.name }];
             } else if (conversionType === 'split-pdf') {
               console.log(`Splitting ${file.name} on client-side`);
-              updateProgress(Math.min(baseProgress + 15, 90));
+              updateProgress(Math.min(baseProgress + 15, 85));
               await new Promise(resolve => setTimeout(resolve, 600));
               results = await splitPdf(file, { mode: 'single' });
             } else {
@@ -108,8 +114,8 @@ export const useClientSideConverter = () => {
             }
 
             convertedFiles.push(...results);
-            updateProgress(Math.min(baseProgress + (75 / files.length), 90));
-            await new Promise(resolve => setTimeout(resolve, 150));
+            updateProgress(Math.min(baseProgress + (77 / files.length), 85));
+            await new Promise(resolve => setTimeout(resolve, 200));
             
             console.log(`Successfully processed ${file.name}`);
           } catch (error) {
@@ -119,13 +125,18 @@ export const useClientSideConverter = () => {
         }
       }
       
-      // Progresso final suave
-      updateProgress(92);
+      // Progresso final mais suave e garantido
+      updateProgress(87);
+      await new Promise(resolve => setTimeout(resolve, 250));
+      updateProgress(91);
+      await new Promise(resolve => setTimeout(resolve, 250));
+      updateProgress(95);
       await new Promise(resolve => setTimeout(resolve, 200));
-      updateProgress(96);
-      await new Promise(resolve => setTimeout(resolve, 200));
+      updateProgress(98);
+      await new Promise(resolve => setTimeout(resolve, 150));
       updateProgress(100);
       
+      console.log('Conversão finalizada, arquivos convertidos:', convertedFiles.length);
       return convertedFiles;
     } finally {
       setIsConverting(false);
@@ -135,13 +146,13 @@ export const useClientSideConverter = () => {
   return { convertClientSide, isConverting };
 };
 
-// Função para comprimir PDF usando servidor
+// Função melhorada para comprimir PDF usando servidor
 const compressPdfWithServer = async (
   file: File, 
   onProgress: (progress: number) => void
 ): Promise<ConvertedFile[]> => {
   
-  onProgress(10);
+  onProgress(5);
   await new Promise(resolve => setTimeout(resolve, 200));
   
   try {
@@ -151,8 +162,10 @@ const compressPdfWithServer = async (
     formData.append('file', file);
     formData.append('conversionType', 'reduce-pdf');
     
-    onProgress(30);
-    await new Promise(resolve => setTimeout(resolve, 500));
+    onProgress(15);
+    await new Promise(resolve => setTimeout(resolve, 300));
+    onProgress(25);
+    await new Promise(resolve => setTimeout(resolve, 400));
     
     console.log('Enviando arquivo para compressão no servidor...');
     
@@ -161,8 +174,8 @@ const compressPdfWithServer = async (
       body: formData,
     });
     
-    onProgress(70);
-    await new Promise(resolve => setTimeout(resolve, 300));
+    onProgress(60);
+    await new Promise(resolve => setTimeout(resolve, 400));
     
     if (!response.ok) {
       const errorText = await response.text();
@@ -170,10 +183,15 @@ const compressPdfWithServer = async (
       throw new Error(`Erro na compressão: ${response.status} - ${errorText}`);
     }
     
+    onProgress(75);
+    await new Promise(resolve => setTimeout(resolve, 300));
+    
     // Verificar se a resposta é realmente um PDF
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/pdf')) {
       console.error('Content-Type inválido:', contentType);
+      const responseText = await response.text();
+      console.error('Resposta do servidor:', responseText);
       throw new Error('Resposta do servidor não é um PDF válido');
     }
     
@@ -181,7 +199,7 @@ const compressPdfWithServer = async (
     const compressedBlob = await response.blob();
     const finalSize = compressedBlob.size;
     
-    if (finalSize === 0 || finalSize < 100) {
+    if (finalSize === 0 || finalSize < 200) {
       throw new Error('Arquivo comprimido está vazio ou corrompido');
     }
     
@@ -204,7 +222,7 @@ const compressPdfWithServer = async (
       lastModified: Date.now()
     });
     
-    console.log('Arquivo final criado:', compressedFile.name, 'Tamanho:', compressedFile.size);
+    console.log('Arquivo final criado com sucesso:', compressedFile.name, 'Tamanho:', compressedFile.size);
     
     onProgress(100);
     
