@@ -5,9 +5,11 @@ import { convertJpgToPdf } from '@/utils/pdfConverter';
 import { convertWordToPdf } from '@/utils/wordToPdfConverter';
 import { splitPdf } from '@/utils/pdfSplitter';
 import { mergePdfs } from '@/utils/pdfMerger';
+import { useILoveApiConverter } from './useILoveApiConverter';
 
 export const useClientSideConverter = () => {
   const [isConverting, setIsConverting] = useState(false);
+  const { compressPdfWithILoveApi } = useILoveApiConverter();
 
   const convertClientSide = async (
     files: File[], 
@@ -37,7 +39,7 @@ export const useClientSideConverter = () => {
         await new Promise(resolve => setTimeout(resolve, 200));
         console.log('Mesclagem de PDFs concluída com sucesso');
       } else if (conversionType === 'reduce-pdf') {
-        console.log('Iniciando compressão de PDF usando servidor');
+        console.log('Iniciando compressão de PDF usando ILoveAPI');
         updateProgress(7);
         await new Promise(resolve => setTimeout(resolve, 200));
         updateProgress(10);
@@ -50,9 +52,9 @@ export const useClientSideConverter = () => {
           await new Promise(resolve => setTimeout(resolve, 200));
           
           try {
-            console.log(`Comprimindo ${file.name} usando servidor`);
+            console.log(`Comprimindo ${file.name} usando ILoveAPI`);
             
-            const results = await compressPdfWithServer(file, (fileProgress) => {
+            const results = await compressPdfWithILoveApi(file, (fileProgress) => {
               const totalProgress = baseProgress + ((fileProgress / 100) * (75 / files.length));
               updateProgress(Math.min(Math.max(totalProgress, baseProgress + 2), 85));
             });
@@ -143,95 +145,4 @@ export const useClientSideConverter = () => {
   };
 
   return { convertClientSide, isConverting };
-};
-
-const compressPdfWithServer = async (
-  file: File, 
-  onProgress: (progress: number) => void
-): Promise<ConvertedFile[]> => {
-  
-  try {
-    console.log(`Iniciando compressão de ${file.name}, tamanho original: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
-    
-    onProgress(2);
-    await new Promise(resolve => setTimeout(resolve, 100));
-    onProgress(5);
-    await new Promise(resolve => setTimeout(resolve, 100));
-    onProgress(8);
-    await new Promise(resolve => setTimeout(resolve, 100));
-    onProgress(12);
-    await new Promise(resolve => setTimeout(resolve, 100));
-    onProgress(15);
-    await new Promise(resolve => setTimeout(resolve, 100));
-    onProgress(20);
-    await new Promise(resolve => setTimeout(resolve, 100));
-    onProgress(25);
-    
-    const formData = new FormData();
-    formData.append('file', file);
-    formData.append('conversionType', 'reduce-pdf');
-    
-    onProgress(30);
-    console.log('Enviando arquivo para compressão no servidor...');
-    
-    const response = await fetch('/api/convert-pdf', {
-      method: 'POST',
-      body: formData,
-    });
-    
-    onProgress(45);
-    await new Promise(resolve => setTimeout(resolve, 200));
-    onProgress(55);
-    
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('Erro na resposta do servidor:', errorText);
-      throw new Error(`Erro na compressão: ${response.status} - ${errorText}`);
-    }
-    
-    onProgress(65);
-    
-    const contentType = response.headers.get('content-type');
-    if (!contentType || !contentType.includes('application/pdf')) {
-      console.error('Content-Type inválido:', contentType);
-      const responseText = await response.text();
-      console.error('Resposta do servidor:', responseText);
-      throw new Error('Resposta do servidor não é um PDF válido');
-    }
-    
-    onProgress(75);
-    
-    const compressedBlob = await response.blob();
-    const finalSize = compressedBlob.size;
-    
-    if (finalSize === 0 || finalSize < 200) {
-      throw new Error('Arquivo comprimido está vazio ou corrompido');
-    }
-    
-    onProgress(85);
-    
-    const compressionRatio = ((file.size - finalSize) / file.size) * 100;
-    
-    console.log(`Compressão concluída:`);
-    console.log(`- Tamanho original: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
-    console.log(`- Tamanho comprimido: ${(finalSize / 1024 / 1024).toFixed(2)} MB`);
-    console.log(`- Redução: ${compressionRatio.toFixed(2)}%`);
-    
-    const originalName = file.name.split('.')[0];
-    const compressedFileName = `${originalName}_compressed.pdf`;
-    
-    const compressedFile = new File([compressedBlob], compressedFileName, {
-      type: 'application/pdf',
-      lastModified: Date.now()
-    });
-    
-    console.log('Arquivo final criado:', compressedFile.name, 'Tamanho:', compressedFile.size);
-    onProgress(100);
-    
-    return [{ file: compressedFile, originalName: file.name }];
-    
-  } catch (error) {
-    console.error('Erro na compressão no servidor:', error);
-    throw new Error(`Falha ao comprimir ${file.name}: ${error.message}`);
-  }
 };

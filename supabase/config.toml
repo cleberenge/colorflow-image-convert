@@ -12,3 +12,6 @@ verify_jwt = false
 
 [functions.convert-word-libreoffice]
 verify_jwt = false
+
+[functions.compress-pdf-iloveapi]
+verify_jwt = false
