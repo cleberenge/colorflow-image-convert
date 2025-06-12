@@ -1,3 +1,4 @@
+
 import React from 'react';
 import Header from '@/components/Header';
 import { useLanguage } from '@/hooks/useLanguage';
@@ -38,7 +39,7 @@ const Contact = () => {
             </div>
             <h3 className="font-semibold mb-3 text-lg text-gray-800">Email</h3>
             <p className="text-gray-600">Envie suas dúvidas e sugestões</p>
-            <p className="text-blue-500 font-medium mt-2">contato@fileconverter.com</p>
+            <p className="text-blue-500 font-medium mt-2">cleber.conteudo@gmail.com</p>
           </div>
           
           <div className="text-center bg-gray-50 p-8 rounded-lg">
