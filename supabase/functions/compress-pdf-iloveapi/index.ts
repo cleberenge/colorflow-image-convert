@@ -22,12 +22,30 @@ serve(async (req) => {
       throw new Error('Nenhum arquivo fornecido');
     }
 
-    console.log(`Processando arquivo: ${file.name}, tamanho: ${file.size} bytes`);
+    console.log(`Processando arquivo: ${file.name}, tamanho: ${file.size} bytes, tipo: ${file.type}`);
+    
+    // Verificar se é um PDF válido
+    const arrayBuffer = await file.arrayBuffer();
+    const uint8Array = new Uint8Array(arrayBuffer);
+    const header = new TextDecoder().decode(uint8Array.slice(0, 5));
+    
+    console.log(`Header do arquivo recebido: ${header}`);
+    
+    if (!header.startsWith('%PDF-')) {
+      throw new Error('Arquivo não é um PDF válido');
+    }
+    
+    // Verificar tamanho do arquivo (limite de 25MB)
+    if (file.size > 25 * 1024 * 1024) {
+      throw new Error('Arquivo muito grande. Máximo permitido: 25MB');
+    }
     
     const ILOVEAPI_KEY = Deno.env.get('ILOVEAPI_KEY');
     if (!ILOVEAPI_KEY) {
       throw new Error('Chave da API ILoveAPI não configurada');
     }
+
+    console.log('Chave da API encontrada, iniciando processo...');
 
     // Primeira etapa: Iniciar tarefa de compressão
     console.log('Iniciando tarefa de compressão...');
@@ -40,10 +58,12 @@ serve(async (req) => {
       },
     });
 
+    console.log(`Status da resposta start: ${startResponse.status}`);
+
     if (!startResponse.ok) {
       const errorText = await startResponse.text();
       console.error('Erro ao iniciar tarefa:', errorText);
-      throw new Error(`Erro ao iniciar compressão: ${startResponse.status}`);
+      throw new Error(`Erro ao iniciar compressão: ${startResponse.status} - ${errorText}`);
     }
 
     const startData = await startResponse.json();
@@ -65,10 +85,12 @@ serve(async (req) => {
       body: uploadFormData,
     });
 
+    console.log(`Status da resposta upload: ${uploadResponse.status}`);
+
     if (!uploadResponse.ok) {
       const errorText = await uploadResponse.text();
       console.error('Erro no upload:', errorText);
-      throw new Error(`Erro no upload: ${uploadResponse.status}`);
+      throw new Error(`Erro no upload: ${uploadResponse.status} - ${errorText}`);
     }
 
     const uploadData = await uploadResponse.json();
@@ -89,10 +111,12 @@ serve(async (req) => {
       }),
     });
 
+    console.log(`Status da resposta process: ${processResponse.status}`);
+
     if (!processResponse.ok) {
       const errorText = await processResponse.text();
       console.error('Erro no processamento:', errorText);
-      throw new Error(`Erro no processamento: ${processResponse.status}`);
+      throw new Error(`Erro no processamento: ${processResponse.status} - ${errorText}`);
     }
 
     const processData = await processResponse.json();
@@ -112,14 +136,30 @@ serve(async (req) => {
       }),
     });
 
+    console.log(`Status da resposta download: ${downloadResponse.status}`);
+
     if (!downloadResponse.ok) {
       const errorText = await downloadResponse.text();
       console.error('Erro no download:', errorText);
-      throw new Error(`Erro no download: ${downloadResponse.status}`);
+      throw new Error(`Erro no download: ${downloadResponse.status} - ${errorText}`);
     }
 
     const compressedBuffer = await downloadResponse.arrayBuffer();
     const compressedSize = compressedBuffer.byteLength;
+    
+    // Verificar se o arquivo comprimido é válido
+    const compressedUint8Array = new Uint8Array(compressedBuffer);
+    const compressedHeader = new TextDecoder().decode(compressedUint8Array.slice(0, 5));
+    
+    console.log(`Header do arquivo comprimido: ${compressedHeader}`);
+    
+    if (!compressedHeader.startsWith('%PDF-')) {
+      throw new Error('Arquivo comprimido não é um PDF válido');
+    }
+    
+    if (compressedSize === 0) {
+      throw new Error('Arquivo comprimido está vazio');
+    }
     
     console.log(`Compressão concluída com sucesso:`);
     console.log(`- Tamanho original: ${file.size} bytes`);
@@ -132,15 +172,39 @@ serve(async (req) => {
         'Content-Type': 'application/pdf',
         'Content-Length': compressedSize.toString(),
         'Content-Disposition': 'attachment; filename="compressed.pdf"',
+        'X-Original-Size': file.size.toString(),
+        'X-Compressed-Size': compressedSize.toString(),
       },
     });
 
   } catch (error) {
-    console.error('Erro na compressão PDF via ILoveAPI:', error);
+    console.error('Erro detalhado na compressão PDF via ILoveAPI:', error);
+    console.error('Stack trace:', error.stack);
+    
+    let errorMessage = 'Erro interno do servidor';
+    let statusCode = 500;
+    
+    if (error.message.includes('PDF válido')) {
+      errorMessage = 'Arquivo não é um PDF válido';
+      statusCode = 415;
+    } else if (error.message.includes('muito grande')) {
+      errorMessage = 'Arquivo muito grande';
+      statusCode = 413;
+    } else if (error.message.includes('Chave da API')) {
+      errorMessage = 'Serviço temporariamente indisponível';
+      statusCode = 503;
+    } else if (error.message.includes('Nenhum arquivo')) {
+      errorMessage = 'Nenhum arquivo fornecido';
+      statusCode = 400;
+    }
+    
     return new Response(
-      JSON.stringify({ error: error.message }), 
+      JSON.stringify({ 
+        error: errorMessage,
+        details: error.message 
+      }), 
       { 
-        status: 500, 
+        status: statusCode, 
         headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
       }
     );

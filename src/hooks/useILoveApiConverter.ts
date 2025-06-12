@@ -13,6 +13,19 @@ export const useILoveApiConverter = () => {
     
     try {
       console.log(`Iniciando compressão com ILoveAPI: ${file.name}, tamanho: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
+      console.log(`Tipo do arquivo: ${file.type}`);
+      console.log(`Última modificação: ${new Date(file.lastModified).toISOString()}`);
+      
+      // Verificar se é um PDF válido antes de enviar
+      const arrayBuffer = await file.arrayBuffer();
+      const uint8Array = new Uint8Array(arrayBuffer);
+      const header = new TextDecoder().decode(uint8Array.slice(0, 5));
+      
+      console.log(`Header do arquivo: ${header}`);
+      
+      if (!header.startsWith('%PDF-')) {
+        throw new Error('O arquivo selecionado não é um PDF válido. Por favor, selecione um arquivo PDF.');
+      }
       
       updateProgress(5);
       await new Promise(resolve => setTimeout(resolve, 200));
@@ -35,18 +48,45 @@ export const useILoveApiConverter = () => {
       await new Promise(resolve => setTimeout(resolve, 300));
       updateProgress(75);
       
+      console.log(`Status da resposta: ${response.status}`);
+      console.log(`Headers da resposta:`, Object.fromEntries(response.headers.entries()));
+      
       if (!response.ok) {
         const errorText = await response.text();
         console.error('Erro na resposta da API:', errorText);
-        throw new Error(`Erro na compressão: ${response.status} - ${errorText}`);
+        
+        // Mensagens de erro mais específicas
+        if (response.status === 413) {
+          throw new Error('Arquivo muito grande. Tente com um arquivo menor que 25MB.');
+        } else if (response.status === 415) {
+          throw new Error('Tipo de arquivo não suportado. Certifique-se de que é um PDF válido.');
+        } else if (response.status === 500) {
+          throw new Error('Erro no servidor de compressão. Tente novamente em alguns minutos.');
+        } else {
+          throw new Error(`Erro na compressão (${response.status}): ${errorText || 'Erro desconhecido'}`);
+        }
       }
       
       updateProgress(85);
       
       const compressedBlob = await response.blob();
+      console.log(`Tamanho do blob recebido: ${compressedBlob.size} bytes`);
+      console.log(`Tipo do blob: ${compressedBlob.type}`);
       
       if (compressedBlob.size === 0) {
-        throw new Error('Arquivo comprimido está vazio');
+        throw new Error('O arquivo comprimido está vazio. Tente novamente ou use um arquivo diferente.');
+      }
+      
+      // Verificar se o blob recebido é um PDF válido
+      const compressedArrayBuffer = await compressedBlob.arrayBuffer();
+      const compressedUint8Array = new Uint8Array(compressedArrayBuffer);
+      const compressedHeader = new TextDecoder().decode(compressedUint8Array.slice(0, 5));
+      
+      console.log(`Header do arquivo comprimido: ${compressedHeader}`);
+      
+      if (!compressedHeader.startsWith('%PDF-')) {
+        console.error('Arquivo comprimido não é um PDF válido');
+        throw new Error('Erro na compressão: arquivo resultante não é um PDF válido.');
       }
       
       updateProgress(95);
@@ -62,14 +102,26 @@ export const useILoveApiConverter = () => {
       console.log(`Compressão concluída com sucesso: ${compressedFile.name}`);
       console.log(`Tamanho original: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
       console.log(`Tamanho comprimido: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`);
+      console.log(`Redução: ${(((file.size - compressedFile.size) / file.size) * 100).toFixed(2)}%`);
       
       updateProgress(100);
       
       return [{ file: compressedFile, originalName: file.name }];
       
     } catch (error) {
-      console.error('Erro na compressão com ILoveAPI:', error);
-      throw new Error(`Falha ao comprimir ${file.name}: ${error.message}`);
+      console.error('Erro detalhado na compressão com ILoveAPI:', error);
+      console.error('Stack trace:', error.stack);
+      
+      // Mensagens de erro mais amigáveis
+      if (error.message.includes('PDF válido')) {
+        throw error; // Já tem uma mensagem amigável
+      } else if (error.message.includes('Failed to fetch')) {
+        throw new Error('Erro de conexão. Verifique sua internet e tente novamente.');
+      } else if (error.message.includes('NetworkError')) {
+        throw new Error('Erro de rede. Tente novamente em alguns segundos.');
+      } else {
+        throw new Error(`Erro na compressão de ${file.name}: ${error.message}`);
+      }
     } finally {
       setIsConverting(false);
     }
