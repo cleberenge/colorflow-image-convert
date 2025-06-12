@@ -1,4 +1,3 @@
-
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { PDFDocument } from "https://cdn.skypack.dev/pdf-lib@^1.17.1";
@@ -34,7 +33,7 @@ serve(async (req) => {
         const arrayBuffer = await file.arrayBuffer();
         const inputBytes = new Uint8Array(arrayBuffer);
         
-        // Verificar se é um arquivo PDF válido
+        // Verificar se é um PDF válido
         const pdfHeader = new TextDecoder().decode(inputBytes.slice(0, 5));
         if (!pdfHeader.startsWith('%PDF-')) {
           throw new Error('Arquivo não é um PDF válido');
@@ -42,57 +41,49 @@ serve(async (req) => {
         
         console.log('Carregando PDF com pdf-lib...');
         
-        try {
-          const originalPdf = await PDFDocument.load(arrayBuffer);
-          console.log(`PDF carregado com ${originalPdf.getPageCount()} páginas`);
-          
-          // Compressão otimizada com pdf-lib
-          console.log('Aplicando compressão otimizada...');
-          const compressedBytes = await originalPdf.save({
-            useObjectStreams: true,
-            addDefaultPage: false,
-            updateFieldAppearances: false,
-            objectsPerTick: 50,
-          });
-          
-          const finalSize = compressedBytes.length;
-          const compressionRatio = ((file.size - finalSize) / file.size * 100);
-          
-          console.log('Compressão pdf-lib concluída:');
-          console.log('- Tamanho original:', file.size, 'bytes');
-          console.log('- Tamanho comprimido:', finalSize, 'bytes');
-          console.log('- Redução:', compressionRatio.toFixed(2) + '%');
-          
-          // Validar se o PDF comprimido é válido
-          if (finalSize < 200) {
-            throw new Error('PDF comprimido muito pequeno, possível corrupção');
-          }
-          
-          // Verificar se ainda é um PDF válido
-          const compressedHeader = new TextDecoder().decode(compressedBytes.slice(0, 5));
-          if (!compressedHeader.startsWith('%PDF-')) {
-            throw new Error('PDF comprimido não é válido');
-          }
-          
-          console.log('PDF comprimido validado com sucesso');
-          
-          return new Response(compressedBytes, {
-            headers: {
-              ...corsHeaders,
-              'Content-Type': 'application/pdf',
-              'Content-Length': finalSize.toString(),
-              'Content-Disposition': 'attachment; filename="compressed.pdf"',
-              'X-Compression-Method': 'pdf-lib',
-              'X-Compression-Ratio': compressionRatio.toFixed(2),
-              'X-Original-Size': file.size.toString(),
-              'X-Compressed-Size': finalSize.toString(),
-            },
-          });
-          
-        } catch (pdfLibError) {
-          console.error('Erro no pdf-lib:', pdfLibError);
-          throw new Error(`Falha ao comprimir PDF: ${pdfLibError.message}`);
+        const originalPdf = await PDFDocument.load(arrayBuffer);
+        console.log(`PDF carregado com ${originalPdf.getPageCount()} páginas`);
+        
+        // Compressão otimizada
+        console.log('Aplicando compressão...');
+        const compressedBytes = await originalPdf.save({
+          useObjectStreams: true,
+          addDefaultPage: false,
+          updateFieldAppearances: false,
+        });
+        
+        const finalSize = compressedBytes.length;
+        const compressionRatio = ((file.size - finalSize) / file.size * 100);
+        
+        console.log('Compressão concluída:');
+        console.log('- Tamanho original:', file.size, 'bytes');
+        console.log('- Tamanho comprimido:', finalSize, 'bytes');
+        console.log('- Redução:', compressionRatio.toFixed(2) + '%');
+        
+        // Validar se o PDF comprimido é válido
+        if (finalSize < 200) {
+          throw new Error('PDF comprimido muito pequeno, possível corrupção');
         }
+        
+        // Verificar se ainda é um PDF válido
+        const compressedHeader = new TextDecoder().decode(compressedBytes.slice(0, 5));
+        if (!compressedHeader.startsWith('%PDF-')) {
+          throw new Error('PDF comprimido não é válido');
+        }
+        
+        console.log('PDF comprimido validado com sucesso');
+        
+        return new Response(compressedBytes, {
+          headers: {
+            ...corsHeaders,
+            'Content-Type': 'application/pdf',
+            'Content-Length': finalSize.toString(),
+            'Content-Disposition': 'attachment; filename="compressed.pdf"',
+            'X-Compression-Ratio': compressionRatio.toFixed(2),
+            'X-Original-Size': file.size.toString(),
+            'X-Compressed-Size': finalSize.toString(),
+          },
+        });
 
       } catch (processingError) {
         console.error('Erro no processamento:', processingError);
@@ -100,7 +91,6 @@ serve(async (req) => {
       }
 
     } else if (conversionType === 'jpg-pdf') {
-      // Convert JPG to PDF using jsPDF library via web API
       const file = formData.get('file') as File;
       if (!file) {
         throw new Error('No file provided');
@@ -182,7 +172,6 @@ startxref
       });
 
     } else if (conversionType === 'merge-pdf') {
-      // For PDF merge, return a simple merged placeholder
       const files = formData.getAll('files') as File[];
       if (files.length < 2) {
         throw new Error('At least 2 PDF files required for merging');
