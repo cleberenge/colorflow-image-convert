@@ -3,7 +3,7 @@ import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
-import { Upload, Download, File as ImageIcon } from 'lucide-react';
+import { Upload, Download } from 'lucide-react';
 import { useFileConverter } from '@/hooks/useFileConverter';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import ConversionIcon from '@/components/ConversionIcon';
@@ -287,19 +287,25 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
             <div className="flex gap-4 overflow-x-auto">
               {organizeFilesInColumns(selectedFiles).map((column, columnIndex) => (
                 <div key={columnIndex} className="flex flex-col gap-2 min-w-0 flex-1">
-                  {column.map((file, fileIndex) => (
-                    <div key={columnIndex * 5 + fileIndex} className="flex items-center gap-1 min-w-0">
-                      <div className="w-4 h-4 bg-gray-100 rounded flex items-center justify-center flex-shrink-0">
-                        <ImageIcon className="w-2.5 h-2.5 text-gray-600" />
+                  {column.map((file, fileIndex) => {
+                    const fileNumber = columnIndex * 5 + fileIndex + 1;
+                    return (
+                      <div key={columnIndex * 5 + fileIndex} className="flex items-center gap-1 min-w-0">
+                        <div 
+                          className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
+                          style={{ backgroundColor: conversionColor }}
+                        >
+                          <span className="text-xs font-bold text-black">{fileNumber}</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-gray-800 text-xs truncate">{file.name}</p>
+                          <p className="text-xs text-gray-600">
+                            {(file.size / 1024 / 1024).toFixed(2)} MB
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-gray-800 text-xs truncate">{file.name}</p>
-                        <p className="text-xs text-gray-600">
-                          {(file.size / 1024 / 1024).toFixed(2)} MB
-                        </p>
-                      </div>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               ))}
             </div>
