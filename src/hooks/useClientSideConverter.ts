@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { ConvertedFile } from '@/types/fileConverter';
 import { convertPngToJpg } from '@/utils/imageConverter';
@@ -35,7 +36,7 @@ export const useClientSideConverter = () => {
         await new Promise(resolve => setTimeout(resolve, 200));
         console.log('Mesclagem de PDFs concluída com sucesso');
       } else if (conversionType === 'reduce-pdf') {
-        console.log('Comprimindo PDF usando servidor com Ghostscript');
+        console.log('Comprimindo PDF usando servidor');
         updateProgress(10);
         await new Promise(resolve => setTimeout(resolve, 200));
         
@@ -134,7 +135,7 @@ export const useClientSideConverter = () => {
   return { convertClientSide, isConverting };
 };
 
-// Função para comprimir PDF usando servidor com Ghostscript
+// Função para comprimir PDF usando servidor
 const compressPdfWithServer = async (
   file: File, 
   onProgress: (progress: number) => void
@@ -172,14 +173,16 @@ const compressPdfWithServer = async (
     // Verificar se a resposta é realmente um PDF
     const contentType = response.headers.get('content-type');
     if (!contentType || !contentType.includes('application/pdf')) {
+      console.error('Content-Type inválido:', contentType);
       throw new Error('Resposta do servidor não é um PDF válido');
     }
     
+    // Obter o blob diretamente da resposta
     const compressedBlob = await response.blob();
     const finalSize = compressedBlob.size;
     
-    if (finalSize === 0) {
-      throw new Error('Arquivo comprimido está vazio');
+    if (finalSize === 0 || finalSize < 100) {
+      throw new Error('Arquivo comprimido está vazio ou corrompido');
     }
     
     onProgress(90);
@@ -195,9 +198,13 @@ const compressPdfWithServer = async (
     const originalName = file.name.split('.')[0];
     const compressedFileName = `${originalName}_compressed.pdf`;
     
+    // Criar arquivo válido a partir do blob
     const compressedFile = new File([compressedBlob], compressedFileName, {
       type: 'application/pdf',
+      lastModified: Date.now()
     });
+    
+    console.log('Arquivo final criado:', compressedFile.name, 'Tamanho:', compressedFile.size);
     
     onProgress(100);
     
