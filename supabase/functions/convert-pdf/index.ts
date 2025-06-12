@@ -1,3 +1,4 @@
+
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { PDFDocument } from "https://cdn.skypack.dev/pdf-lib@^1.17.1";
@@ -26,111 +27,143 @@ serve(async (req) => {
         throw new Error('No file provided');
       }
 
-      console.log('Iniciando compressão PDF com Ghostscript');
+      console.log('Iniciando compressão PDF');
       console.log('Arquivo original:', file.name, 'Tamanho:', file.size, 'bytes');
       
       try {
+        // Primeiro, tentar validar se é um PDF válido
         const arrayBuffer = await file.arrayBuffer();
         const inputBytes = new Uint8Array(arrayBuffer);
         
-        // Salvar arquivo temporário
-        const tempInputPath = `/tmp/input_${Date.now()}.pdf`;
-        const tempOutputPath = `/tmp/output_${Date.now()}.pdf`;
-        
-        await Deno.writeFile(tempInputPath, inputBytes);
-        console.log('Arquivo temporário criado:', tempInputPath);
-        
-        // Comando Ghostscript otimizado para compressão máxima
-        const ghostscriptCommand = [
-          'gs',
-          '-sDEVICE=pdfwrite',
-          '-dCompatibilityLevel=1.4',
-          '-dPDFSETTINGS=/screen',
-          '-dNOPAUSE',
-          '-dQUIET',
-          '-dBATCH',
-          '-dDetectDuplicateImages=true',
-          '-dCompressFonts=true',
-          '-dSubsetFonts=true',
-          '-dColorImageDownsampleType=/Bicubic',
-          '-dColorImageResolution=144',
-          '-dGrayImageDownsampleType=/Bicubic', 
-          '-dGrayImageResolution=144',
-          '-dMonoImageDownsampleType=/Bicubic',
-          '-dMonoImageResolution=144',
-          '-dOptimize=true',
-          `-sOutputFile=${tempOutputPath}`,
-          tempInputPath
-        ];
-        
-        console.log('Executando Ghostscript:', ghostscriptCommand.join(' '));
-        
-        const process = new Deno.Command(ghostscriptCommand[0], {
-          args: ghostscriptCommand.slice(1),
-          stdout: 'piped',
-          stderr: 'piped'
-        });
-        
-        const { code, stdout, stderr } = await process.output();
-        
-        const stdoutText = new TextDecoder().decode(stdout);
-        const stderrText = new TextDecoder().decode(stderr);
-        
-        console.log('Ghostscript stdout:', stdoutText);
-        if (stderrText) console.log('Ghostscript stderr:', stderrText);
-        
-        if (code !== 0) {
-          throw new Error(`Ghostscript failed with code ${code}: ${stderrText}`);
+        // Verificar se é um arquivo PDF válido
+        const pdfHeader = new TextDecoder().decode(inputBytes.slice(0, 5));
+        if (!pdfHeader.startsWith('%PDF-')) {
+          throw new Error('Arquivo não é um PDF válido');
         }
         
-        // Verificar se o arquivo de saída foi criado
-        let compressedBytes: Uint8Array;
+        // Verificar se Ghostscript está disponível
+        let gsAvailable = false;
         try {
-          compressedBytes = await Deno.readFile(tempOutputPath);
-          console.log('Arquivo comprimido lido:', compressedBytes.length, 'bytes');
-        } catch (readError) {
-          console.log('Erro ao ler arquivo comprimido, usando fallback pdf-lib');
-          throw readError;
+          const testProcess = new Deno.Command('gs', {
+            args: ['--version'],
+            stdout: 'piped',
+            stderr: 'piped'
+          });
+          const testResult = await testProcess.output();
+          gsAvailable = testResult.code === 0;
+          console.log('Ghostscript disponível:', gsAvailable);
+        } catch (error) {
+          console.log('Ghostscript não disponível, usando fallback pdf-lib');
+          gsAvailable = false;
         }
         
-        // Limpeza dos arquivos temporários
-        try {
-          await Deno.remove(tempInputPath);
-          await Deno.remove(tempOutputPath);
-        } catch (cleanupError) {
-          console.log('Erro na limpeza de arquivos temporários:', cleanupError);
-        }
-        
-        const finalSize = compressedBytes.length;
-        const compressionRatio = ((file.size - finalSize) / file.size * 100);
-        
-        console.log('Compressão Ghostscript concluída:');
-        console.log('- Tamanho original:', file.size, 'bytes');
-        console.log('- Tamanho comprimido:', finalSize, 'bytes');
-        console.log('- Redução:', compressionRatio.toFixed(2) + '%');
-        
-        const originalName = file.name.split('.')[0];
-        const newFileName = `${originalName}_compressed.pdf`;
+        if (gsAvailable) {
+          // Tentar compressão com Ghostscript
+          const tempInputPath = `/tmp/input_${Date.now()}.pdf`;
+          const tempOutputPath = `/tmp/output_${Date.now()}.pdf`;
+          
+          await Deno.writeFile(tempInputPath, inputBytes);
+          console.log('Arquivo temporário criado:', tempInputPath);
+          
+          // Comando Ghostscript com configurações mais conservadoras
+          const ghostscriptCommand = [
+            'gs',
+            '-sDEVICE=pdfwrite',
+            '-dCompatibilityLevel=1.4',
+            '-dPDFSETTINGS=/ebook',
+            '-dNOPAUSE',
+            '-dQUIET',
+            '-dBATCH',
+            '-dDetectDuplicateImages=true',
+            '-dCompressFonts=true',
+            '-dSubsetFonts=true',
+            '-dOptimize=true',
+            `-sOutputFile=${tempOutputPath}`,
+            tempInputPath
+          ];
+          
+          console.log('Executando Ghostscript com configurações conservadoras');
+          
+          const process = new Deno.Command('gs', {
+            args: ghostscriptCommand.slice(1),
+            stdout: 'piped',
+            stderr: 'piped'
+          });
+          
+          const { code, stdout, stderr } = await process.output();
+          
+          const stdoutText = new TextDecoder().decode(stdout);
+          const stderrText = new TextDecoder().decode(stderr);
+          
+          console.log('Ghostscript stdout:', stdoutText);
+          if (stderrText && !stderrText.includes('Warning')) {
+            console.log('Ghostscript stderr:', stderrText);
+          }
+          
+          if (code === 0) {
+            // Verificar se arquivo de saída foi criado e é válido
+            try {
+              const compressedBytes = await Deno.readFile(tempOutputPath);
+              console.log('Arquivo comprimido lido:', compressedBytes.length, 'bytes');
+              
+              // Verificar se o arquivo comprimido é um PDF válido
+              const compressedHeader = new TextDecoder().decode(compressedBytes.slice(0, 5));
+              if (!compressedHeader.startsWith('%PDF-')) {
+                throw new Error('Arquivo comprimido não é um PDF válido');
+              }
+              
+              // Limpeza dos arquivos temporários
+              try {
+                await Deno.remove(tempInputPath);
+                await Deno.remove(tempOutputPath);
+              } catch (cleanupError) {
+                console.log('Erro na limpeza de arquivos temporários:', cleanupError);
+              }
+              
+              const finalSize = compressedBytes.length;
+              const compressionRatio = ((file.size - finalSize) / file.size * 100);
+              
+              console.log('Compressão Ghostscript bem-sucedida:');
+              console.log('- Tamanho original:', file.size, 'bytes');
+              console.log('- Tamanho comprimido:', finalSize, 'bytes');
+              console.log('- Redução:', compressionRatio.toFixed(2) + '%');
+              
+              const originalName = file.name.split('.')[0];
+              const newFileName = `${originalName}_compressed.pdf`;
 
-        return new Response(compressedBytes, {
-          headers: {
-            ...corsHeaders,
-            'Content-Type': 'application/pdf',
-            'Content-Disposition': `attachment; filename="${newFileName}"`,
-            'X-Compression-Method': 'ghostscript',
-            'X-Compression-Ratio': compressionRatio.toFixed(2),
-            'X-Original-Size': file.size.toString(),
-            'X-Compressed-Size': finalSize.toString(),
-          },
-        });
-        
+              return new Response(compressedBytes, {
+                headers: {
+                  ...corsHeaders,
+                  'Content-Type': 'application/pdf',
+                  'Content-Disposition': `attachment; filename="${newFileName}"`,
+                  'X-Compression-Method': 'ghostscript',
+                  'X-Compression-Ratio': compressionRatio.toFixed(2),
+                  'X-Original-Size': file.size.toString(),
+                  'X-Compressed-Size': finalSize.toString(),
+                },
+              });
+              
+            } catch (readError) {
+              console.log('Erro ao ler arquivo comprimido, usando fallback pdf-lib');
+              throw readError;
+            }
+          } else {
+            throw new Error(`Ghostscript failed with code ${code}: ${stderrText}`);
+          }
+        }
       } catch (ghostscriptError) {
         console.error('Erro no Ghostscript, usando fallback pdf-lib:', ghostscriptError);
-        
-        // Fallback para pdf-lib se Ghostscript falhar
+      }
+      
+      // Fallback para pdf-lib
+      console.log('Usando fallback pdf-lib para compressão');
+      try {
         const arrayBuffer = await file.arrayBuffer();
         const originalPdf = await PDFDocument.load(arrayBuffer);
         
+        console.log(`PDF carregado com ${originalPdf.getPageCount()} páginas`);
+        
+        // Compressão básica com pdf-lib
         const compressedBytes = await originalPdf.save({
           useObjectStreams: true,
           addDefaultPage: false,
@@ -140,7 +173,10 @@ serve(async (req) => {
         const finalSize = compressedBytes.length;
         const compressionRatio = ((file.size - finalSize) / file.size * 100);
         
-        console.log('Fallback pdf-lib - Redução:', compressionRatio.toFixed(2) + '%');
+        console.log('Compressão pdf-lib concluída:');
+        console.log('- Tamanho original:', file.size, 'bytes');
+        console.log('- Tamanho comprimido:', finalSize, 'bytes');
+        console.log('- Redução:', compressionRatio.toFixed(2) + '%');
         
         const originalName = file.name.split('.')[0];
         const newFileName = `${originalName}_compressed.pdf`;
@@ -156,6 +192,10 @@ serve(async (req) => {
             'X-Compressed-Size': finalSize.toString(),
           },
         });
+        
+      } catch (pdfLibError) {
+        console.error('Erro no fallback pdf-lib:', pdfLibError);
+        throw new Error(`Falha ao comprimir PDF: ${pdfLibError.message}`);
       }
 
     } else if (conversionType === 'jpg-pdf') {
