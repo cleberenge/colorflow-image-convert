@@ -13,7 +13,10 @@ serve(async (req) => {
   }
 
   try {
-    console.log('[EdgeFunction] === REQUISIÇÃO DE COMPRESSÃO PDF ===');
+    console.log('[EdgeFunction] === REQUISIÇÃO DETALHADA ===');
+    console.log('[EdgeFunction] Método:', req.method);
+    console.log('[EdgeFunction] URL:', req.url);
+    console.log('[EdgeFunction] Headers:', Object.fromEntries(req.headers.entries()));
     
     const formData = await req.formData();
     const file = formData.get('file') as File;
@@ -22,17 +25,20 @@ serve(async (req) => {
       throw new Error('Nenhum arquivo fornecido');
     }
 
-    console.log(`[EdgeFunction] Arquivo recebido: ${file.name}`);
-    console.log(`[EdgeFunction] Tamanho: ${file.size} bytes`);
+    console.log(`[EdgeFunction] === ARQUIVO RECEBIDO ===`);
+    console.log(`[EdgeFunction] Nome: ${file.name}`);
+    console.log(`[EdgeFunction] Tamanho: ${file.size} bytes (${(file.size / 1024 / 1024).toFixed(2)} MB)`);
     console.log(`[EdgeFunction] Tipo: ${file.type}`);
     
-    // Verificar se é um PDF válido
+    // Verificação detalhada do arquivo
     const arrayBuffer = await file.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
-    const header = new TextDecoder().decode(uint8Array.slice(0, 5));
+    const header = new TextDecoder().decode(uint8Array.slice(0, 20));
     
-    console.log(`[EdgeFunction] Header do arquivo: "${header}"`);
-    console.log(`[EdgeFunction] Primeiros 10 bytes:`, Array.from(uint8Array.slice(0, 10)).map(b => b.toString(16).padStart(2, '0')).join(' '));
+    console.log(`[EdgeFunction] === VALIDAÇÃO DO ARQUIVO ===`);
+    console.log(`[EdgeFunction] Header: "${header}"`);
+    console.log(`[EdgeFunction] Primeiros 30 bytes:`, Array.from(uint8Array.slice(0, 30)).map(b => b.toString(16).padStart(2, '0')).join(' '));
+    console.log(`[EdgeFunction] Últimos 20 bytes:`, Array.from(uint8Array.slice(-20)).map(b => b.toString(16).padStart(2, '0')).join(' '));
     
     if (!header.startsWith('%PDF-')) {
       throw new Error('Arquivo não é um PDF válido');
@@ -48,10 +54,10 @@ serve(async (req) => {
       throw new Error('Chave da API ILoveAPI não configurada');
     }
 
-    console.log('[EdgeFunction] Chave da API encontrada, iniciando processo...');
+    console.log('[EdgeFunction] === INICIANDO PROCESSO ILOVEAPI ===');
 
     // Primeira etapa: Iniciar tarefa de compressão
-    console.log('[EdgeFunction] === INICIANDO TAREFA ===');
+    console.log('[EdgeFunction] ETAPA 1: Iniciando tarefa');
     
     const startResponse = await fetch('https://api.ilovepdf.com/v1/start/compress', {
       method: 'POST',
@@ -61,7 +67,9 @@ serve(async (req) => {
       },
     });
 
-    console.log(`[EdgeFunction] Start response status: ${startResponse.status}`);
+    console.log(`[EdgeFunction] Start response:`);
+    console.log(`- Status: ${startResponse.status}`);
+    console.log(`- Headers:`, Object.fromEntries(startResponse.headers.entries()));
 
     if (!startResponse.ok) {
       const errorText = await startResponse.text();
@@ -70,11 +78,12 @@ serve(async (req) => {
     }
 
     const startData = await startResponse.json();
+    console.log('[EdgeFunction] Start data:', startData);
     const taskId = startData.task;
-    console.log(`[EdgeFunction] Tarefa iniciada com ID: ${taskId}`);
+    console.log(`[EdgeFunction] Task ID: ${taskId}`);
 
     // Segunda etapa: Upload do arquivo
-    console.log('[EdgeFunction] === FAZENDO UPLOAD ===');
+    console.log('[EdgeFunction] ETAPA 2: Upload do arquivo');
     
     const uploadFormData = new FormData();
     uploadFormData.append('file', file);
@@ -88,7 +97,9 @@ serve(async (req) => {
       body: uploadFormData,
     });
 
-    console.log(`[EdgeFunction] Upload response status: ${uploadResponse.status}`);
+    console.log(`[EdgeFunction] Upload response:`);
+    console.log(`- Status: ${uploadResponse.status}`);
+    console.log(`- Headers:`, Object.fromEntries(uploadResponse.headers.entries()));
 
     if (!uploadResponse.ok) {
       const errorText = await uploadResponse.text();
@@ -97,10 +108,10 @@ serve(async (req) => {
     }
 
     const uploadData = await uploadResponse.json();
-    console.log('[EdgeFunction] Upload concluído:', uploadData);
+    console.log('[EdgeFunction] Upload data:', uploadData);
 
     // Terceira etapa: Processar compressão
-    console.log('[EdgeFunction] === PROCESSANDO COMPRESSÃO ===');
+    console.log('[EdgeFunction] ETAPA 3: Processando compressão');
     
     const processResponse = await fetch('https://api.ilovepdf.com/v1/process', {
       method: 'POST',
@@ -110,11 +121,13 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         task: taskId,
-        compression_level: 'recommended', // ou 'low', 'recommended', 'extreme'
+        compression_level: 'recommended',
       }),
     });
 
-    console.log(`[EdgeFunction] Process response status: ${processResponse.status}`);
+    console.log(`[EdgeFunction] Process response:`);
+    console.log(`- Status: ${processResponse.status}`);
+    console.log(`- Headers:`, Object.fromEntries(processResponse.headers.entries()));
 
     if (!processResponse.ok) {
       const errorText = await processResponse.text();
@@ -123,10 +136,10 @@ serve(async (req) => {
     }
 
     const processData = await processResponse.json();
-    console.log('[EdgeFunction] Processamento concluído:', processData);
+    console.log('[EdgeFunction] Process data:', processData);
 
     // Quarta etapa: Download do arquivo comprimido
-    console.log('[EdgeFunction] === FAZENDO DOWNLOAD ===');
+    console.log('[EdgeFunction] ETAPA 4: Download do arquivo comprimido');
     
     const downloadResponse = await fetch('https://api.ilovepdf.com/v1/download', {
       method: 'POST',
@@ -139,8 +152,11 @@ serve(async (req) => {
       }),
     });
 
-    console.log(`[EdgeFunction] Download response status: ${downloadResponse.status}`);
-    console.log(`[EdgeFunction] Download response headers:`, Object.fromEntries(downloadResponse.headers.entries()));
+    console.log(`[EdgeFunction] Download response:`);
+    console.log(`- Status: ${downloadResponse.status}`);
+    console.log(`- Content-Type: ${downloadResponse.headers.get('content-type')}`);
+    console.log(`- Content-Length: ${downloadResponse.headers.get('content-length')}`);
+    console.log(`- Headers completos:`, Object.fromEntries(downloadResponse.headers.entries()));
 
     if (!downloadResponse.ok) {
       const errorText = await downloadResponse.text();
@@ -151,34 +167,49 @@ serve(async (req) => {
     const compressedBuffer = await downloadResponse.arrayBuffer();
     const compressedSize = compressedBuffer.byteLength;
     
-    console.log(`[EdgeFunction] === ARQUIVO COMPRIMIDO RECEBIDO ===`);
+    console.log(`[EdgeFunction] === ARQUIVO COMPRIMIDO ANALISADO ===`);
     console.log(`[EdgeFunction] Tamanho: ${compressedSize} bytes`);
     
     if (compressedSize === 0) {
       throw new Error('Arquivo comprimido está vazio');
     }
     
-    // Vamos verificar o conteúdo do arquivo comprimido
+    // Verificação detalhada do arquivo comprimido
     const compressedUint8Array = new Uint8Array(compressedBuffer);
-    const compressedHeader = new TextDecoder().decode(compressedUint8Array.slice(0, 10));
+    const compressedHeader = new TextDecoder().decode(compressedUint8Array.slice(0, 20));
     
-    console.log(`[EdgeFunction] Header do arquivo comprimido: "${compressedHeader}"`);
-    console.log(`[EdgeFunction] Primeiros 20 bytes:`, Array.from(compressedUint8Array.slice(0, 20)).map(b => b.toString(16).padStart(2, '0')).join(' '));
-    console.log(`[EdgeFunction] Últimos 10 bytes:`, Array.from(compressedUint8Array.slice(-10)).map(b => b.toString(16).padStart(2, '0')).join(' '));
+    console.log(`[EdgeFunction] === VALIDAÇÃO DO ARQUIVO COMPRIMIDO ===`);
+    console.log(`[EdgeFunction] Header: "${compressedHeader}"`);
+    console.log(`[EdgeFunction] Primeiros 50 bytes:`, Array.from(compressedUint8Array.slice(0, 50)).map(b => b.toString(16).padStart(2, '0')).join(' '));
+    console.log(`[EdgeFunction] Últimos 30 bytes:`, Array.from(compressedUint8Array.slice(-30)).map(b => b.toString(16).padStart(2, '0')).join(' '));
     
     // Verificar se é realmente um PDF
     if (!compressedHeader.startsWith('%PDF-')) {
-      console.error('[EdgeFunction] ERRO: Arquivo comprimido não é um PDF!');
+      console.error('[EdgeFunction] === ERRO: ARQUIVO COMPRIMIDO INVÁLIDO ===');
+      console.error('[EdgeFunction] Header esperado: %PDF-');
       console.error('[EdgeFunction] Header recebido:', compressedHeader);
       
       // Verificar se é uma resposta de erro da API
-      const textContent = new TextDecoder().decode(compressedUint8Array.slice(0, 500));
-      console.error('[EdgeFunction] Conteúdo como texto:', textContent);
+      const textContent = new TextDecoder().decode(compressedUint8Array.slice(0, 1000));
+      console.error('[EdgeFunction] Conteúdo como texto (primeiros 1000 chars):', textContent);
+      
+      // Se contém caracteres de erro JSON
+      if (textContent.includes('error') || textContent.includes('Error')) {
+        console.error('[EdgeFunction] Possível resposta de erro da ILoveAPI no lugar do PDF');
+      }
       
       throw new Error('API retornou arquivo inválido - não é um PDF');
     }
     
-    console.log(`[EdgeFunction] === COMPRESSÃO CONCLUÍDA COM SUCESSO ===`);
+    // Verificar se o PDF está completo
+    const pdfEndCheck = new TextDecoder().decode(compressedUint8Array.slice(-50));
+    console.log(`[EdgeFunction] Final do PDF: "${pdfEndCheck}"`);
+    
+    if (!pdfEndCheck.includes('%%EOF')) {
+      console.warn('[EdgeFunction] AVISO: PDF pode estar incompleto - %%EOF não encontrado');
+    }
+    
+    console.log(`[EdgeFunction] === SUCESSO NA COMPRESSÃO ===`);
     console.log(`[EdgeFunction] Tamanho original: ${file.size} bytes`);
     console.log(`[EdgeFunction] Tamanho comprimido: ${compressedSize} bytes`);
     console.log(`[EdgeFunction] Redução: ${(((file.size - compressedSize) / file.size) * 100).toFixed(2)}%`);
@@ -195,9 +226,11 @@ serve(async (req) => {
     });
 
   } catch (error) {
-    console.error('[EdgeFunction] === ERRO NA COMPRESSÃO ===');
+    console.error('[EdgeFunction] === ERRO DETALHADO ===');
+    console.error('[EdgeFunction] Tipo:', typeof error);
     console.error('[EdgeFunction] Erro:', error);
-    console.error('[EdgeFunction] Stack trace:', error.stack);
+    console.error('[EdgeFunction] Mensagem:', error.message);
+    console.error('[EdgeFunction] Stack:', error.stack);
     
     let errorMessage = 'Erro interno do servidor';
     let statusCode = 500;
