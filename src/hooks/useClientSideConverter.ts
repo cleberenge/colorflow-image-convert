@@ -5,11 +5,10 @@ import { convertJpgToPdf } from '@/utils/pdfConverter';
 import { convertWordToPdf } from '@/utils/wordToPdfConverter';
 import { splitPdf } from '@/utils/pdfSplitter';
 import { mergePdfs } from '@/utils/pdfMerger';
-import { usePdfcpuConverter } from './usePdfcpuConverter';
+import { compressPdfClientSide } from '@/utils/pdfCompressor';
 
 export const useClientSideConverter = () => {
   const [isConverting, setIsConverting] = useState(false);
-  const { compressPdfWithPdfcpu } = usePdfcpuConverter();
 
   const convertClientSide = async (
     files: File[], 
@@ -41,7 +40,7 @@ export const useClientSideConverter = () => {
         await new Promise(resolve => setTimeout(resolve, 200));
         console.log('[ClientSideConverter] Mesclagem de PDFs concluída com sucesso');
       } else if (conversionType === 'reduce-pdf') {
-        console.log('[ClientSideConverter] Iniciando compressão de PDF usando PDFCPU');
+        console.log('[ClientSideConverter] Iniciando compressão de PDF no client-side');
         updateProgress(7);
         await new Promise(resolve => setTimeout(resolve, 200));
         updateProgress(10);
@@ -57,13 +56,26 @@ export const useClientSideConverter = () => {
           await new Promise(resolve => setTimeout(resolve, 200));
           
           try {
-            const results = await compressPdfWithPdfcpu(file, (fileProgress) => {
-              const totalProgress = baseProgress + ((fileProgress / 100) * (75 / files.length));
-              updateProgress(Math.min(Math.max(totalProgress, baseProgress + 2), 85));
+            updateProgress(Math.min(baseProgress + 5, 85));
+            await new Promise(resolve => setTimeout(resolve, 300));
+            
+            // Comprimir usando PDF-lib no client-side
+            const compressedFile = await compressPdfClientSide(file, {
+              quality: 0.7,
+              removeMetadata: true,
+              optimizeImages: true
             });
             
-            console.log(`[ClientSideConverter] Arquivo comprimido com sucesso:`, results);
-            convertedFiles.push(...results);
+            console.log(`[ClientSideConverter] Arquivo comprimido com sucesso:`, {
+              original: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
+              compressed: `${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`,
+              reduction: `${((file.size - compressedFile.size) / file.size * 100).toFixed(1)}%`
+            });
+            
+            convertedFiles.push({
+              file: compressedFile,
+              originalName: file.name
+            });
             
             const finalProgress = baseProgress + (75 / files.length);
             updateProgress(Math.min(finalProgress, 85));
