@@ -2,7 +2,7 @@
 import { PDFDocument } from 'pdf-lib';
 
 export interface CompressionOptions {
-  quality?: number; // 0.1 to 1.0
+  quality?: number;
   removeMetadata?: boolean;
   optimizeImages?: boolean;
 }
@@ -11,154 +11,125 @@ export const compressPdfClientSide = async (
   file: File, 
   options: CompressionOptions = {}
 ): Promise<File> => {
-  console.log('[PDFCompressor] === INICIANDO COMPRESSÃO CLIENT-SIDE ===');
-  console.log(`[PDFCompressor] Arquivo original: ${file.name}`);
-  console.log(`[PDFCompressor] Tamanho original: ${(file.size / 1024 / 1024).toFixed(2)} MB (${file.size} bytes)`);
+  console.log('[PDFCompressor] === INICIANDO COMPRESSÃO SIMPLIFICADA ===');
+  console.log(`[PDFCompressor] Arquivo: ${file.name}, Tamanho: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
   
   const { 
-    quality = 0.4, // Mais agressivo - 40% de qualidade
+    quality = 0.7,
     removeMetadata = true, 
     optimizeImages = true 
   } = options;
 
-  console.log(`[PDFCompressor] Opções: quality=${quality}, removeMetadata=${removeMetadata}, optimizeImages=${optimizeImages}`);
-
   try {
     // Ler o arquivo PDF
-    console.log('[PDFCompressor] Lendo arquivo PDF...');
     const arrayBuffer = await file.arrayBuffer();
-    console.log(`[PDFCompressor] Arquivo lido: ${arrayBuffer.byteLength} bytes`);
-    
     const pdfDoc = await PDFDocument.load(arrayBuffer);
-    console.log(`[PDFCompressor] PDF carregado com ${pdfDoc.getPageCount()} páginas`);
     
-    // Remover metadados corretamente - usar valores válidos em vez de undefined
+    console.log(`[PDFCompressor] PDF carregado: ${pdfDoc.getPageCount()} páginas`);
+    
+    // Remover metadados de forma segura
     if (removeMetadata) {
       console.log('[PDFCompressor] Removendo metadados...');
       try {
+        // Apenas definir metadados essenciais e seguros
         pdfDoc.setTitle('');
         pdfDoc.setAuthor('');
         pdfDoc.setSubject('');
         pdfDoc.setKeywords([]);
-        pdfDoc.setProducer('CompressedPDF');
-        pdfDoc.setCreator('CompressedPDF');
-        // Usar data atual em vez de undefined
-        const now = new Date();
-        pdfDoc.setCreationDate(now);
-        pdfDoc.setModificationDate(now);
-        console.log('[PDFCompressor] Metadados removidos com sucesso');
-      } catch (metadataError) {
-        console.warn('[PDFCompressor] Erro ao remover metadados (continuando):', metadataError);
+        pdfDoc.setProducer('');
+        pdfDoc.setCreator('');
+        // Não mexer com datas para evitar erros
+      } catch (error) {
+        console.warn('[PDFCompressor] Aviso ao limpar metadados:', error.message);
       }
     }
 
-    // Tentar otimizar imagens se possível
+    // Aplicar compressão básica nas páginas
     if (optimizeImages) {
-      console.log('[PDFCompressor] Tentando otimizar imagens...');
-      try {
-        // Percorrer páginas e tentar reduzir qualidade de imagens
-        const pages = pdfDoc.getPages();
-        for (let i = 0; i < pages.length; i++) {
+      console.log('[PDFCompressor] Otimizando páginas...');
+      const pages = pdfDoc.getPages();
+      
+      for (let i = 0; i < pages.length; i++) {
+        try {
           const page = pages[i];
-          console.log(`[PDFCompressor] Processando página ${i + 1}/${pages.length}`);
-          
-          // Reduzir tamanho da página se muito grande (compressão espacial)
           const { width, height } = page.getSize();
-          if (width > 2000 || height > 2000) {
-            const scale = Math.min(2000 / width, 2000 / height);
+          
+          // Reduzir páginas muito grandes
+          if (width > 1200 || height > 1200) {
+            const scale = Math.min(1200 / width, 1200 / height, 0.9);
             page.scale(scale, scale);
-            console.log(`[PDFCompressor] Página ${i + 1} redimensionada para ${scale.toFixed(2)}x`);
+            console.log(`[PDFCompressor] Página ${i + 1} redimensionada: ${scale.toFixed(2)}x`);
           }
+        } catch (pageError) {
+          console.warn(`[PDFCompressor] Erro na página ${i + 1}:`, pageError.message);
         }
-      } catch (imageError) {
-        console.warn('[PDFCompressor] Erro na otimização de imagens (continuando):', imageError);
       }
     }
 
-    // Configurar opções de salvamento para máxima compressão
-    console.log('[PDFCompressor] Salvando PDF otimizado...');
-    const saveOptions = {
-      useObjectStreams: true, // Usar streams de objetos para reduzir tamanho
+    // Salvar com opções de compressão otimizadas
+    console.log('[PDFCompressor] Salvando PDF comprimido...');
+    const compressedBytes = await pdfDoc.save({
+      useObjectStreams: true,
       addDefaultPage: false,
-      objectsPerTick: 50, // Menos objetos por tick para mais compressão
-      updateFieldAppearances: false, // Não atualizar aparências de campos
-      // Remover recursos não utilizados
-      subset: true,
-    };
-
-    console.log('[PDFCompressor] Opções de salvamento:', saveOptions);
-
-    // Salvar o PDF otimizado
-    const compressedBytes = await pdfDoc.save(saveOptions);
+      objectsPerTick: 50,
+      updateFieldAppearances: false
+    });
     
-    console.log(`[PDFCompressor] PDF salvo: ${compressedBytes.length} bytes`);
-
-    // Se não houve compressão significativa, tentar abordagem mais agressiva
+    // Verificar se houve compressão
+    const originalSize = file.size;
+    const compressedSize = compressedBytes.length;
+    const reduction = ((originalSize - compressedSize) / originalSize * 100);
+    
+    console.log(`[PDFCompressor] === RESULTADO ===`);
+    console.log(`[PDFCompressor] Original: ${(originalSize / 1024 / 1024).toFixed(2)} MB`);
+    console.log(`[PDFCompressor] Comprimido: ${(compressedSize / 1024 / 1024).toFixed(2)} MB`);
+    console.log(`[PDFCompressor] Redução: ${reduction.toFixed(1)}%`);
+    
+    // Se a redução foi mínima, tentar uma segunda abordagem
     let finalBytes = compressedBytes;
-    const initialReduction = ((file.size - compressedBytes.length) / file.size * 100);
     
-    if (initialReduction < 5) {
-      console.log('[PDFCompressor] Pouca compressão inicial, tentando abordagem mais agressiva...');
-      
+    if (reduction < 3) {
+      console.log('[PDFCompressor] Tentando compressão mais agressiva...');
       try {
-        // Recriar PDF do zero copiando apenas o conteúdo essencial
-        const newPdfDoc = await PDFDocument.create();
+        const newPdf = await PDFDocument.create();
         const pages = pdfDoc.getPages();
         
-        for (let i = 0; i < pages.length; i++) {
-          console.log(`[PDFCompressor] Copiando página ${i + 1} de forma otimizada...`);
-          const [copiedPage] = await newPdfDoc.copyPages(pdfDoc, [i]);
+        // Copiar páginas com mais compressão
+        for (let i = 0; i < Math.min(pages.length, 20); i++) { // Limitar para evitar problemas
+          const [copiedPage] = await newPdf.copyPages(pdfDoc, [i]);
           
-          // Reduzir qualidade da página
+          // Aplicar escala mais agressiva
           const { width, height } = copiedPage.getSize();
-          const targetScale = Math.min(1.0, Math.min(1200 / width, 1200 / height));
-          if (targetScale < 1.0) {
-            copiedPage.scale(targetScale, targetScale);
+          const maxDimension = Math.max(width, height);
+          if (maxDimension > 800) {
+            const scale = 800 / maxDimension;
+            copiedPage.scale(scale, scale);
           }
           
-          newPdfDoc.addPage(copiedPage);
+          newPdf.addPage(copiedPage);
         }
         
-        // Definir metadados mínimos
-        newPdfDoc.setTitle('');
-        newPdfDoc.setAuthor('');
-        newPdfDoc.setProducer('CompressedPDF');
-        
-        const aggressiveBytes = await newPdfDoc.save({
+        const aggressiveBytes = await newPdf.save({
           useObjectStreams: true,
           addDefaultPage: false,
-          objectsPerTick: 25,
+          objectsPerTick: 25
         });
-        
-        console.log(`[PDFCompressor] Compressão agressiva: ${aggressiveBytes.length} bytes`);
         
         if (aggressiveBytes.length < compressedBytes.length) {
           finalBytes = aggressiveBytes;
-          console.log('[PDFCompressor] Usando resultado da compressão agressiva');
+          const newReduction = ((originalSize - aggressiveBytes.length) / originalSize * 100);
+          console.log(`[PDFCompressor] Compressão agressiva melhor: ${newReduction.toFixed(1)}%`);
         }
         
       } catch (aggressiveError) {
-        console.warn('[PDFCompressor] Compressão agressiva falhou, usando resultado inicial:', aggressiveError);
+        console.warn('[PDFCompressor] Compressão agressiva falhou:', aggressiveError.message);
       }
     }
-
-    // Criar novo arquivo
+    
+    // Criar arquivo final
     const compressedBlob = new Blob([finalBytes], { type: 'application/pdf' });
-    const compressedSize = compressedBlob.size;
-    const compressionRatio = ((file.size - compressedSize) / file.size * 100);
+    const finalReduction = ((originalSize - finalBytes.length) / originalSize * 100);
     
-    console.log(`[PDFCompressor] === COMPRESSÃO CONCLUÍDA ===`);
-    console.log(`[PDFCompressor] Tamanho original: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
-    console.log(`[PDFCompressor] Tamanho comprimido: ${(compressedSize / 1024 / 1024).toFixed(2)} MB`);
-    console.log(`[PDFCompressor] Redução: ${compressionRatio.toFixed(1)}% (${(file.size - compressedSize)} bytes economizados)`);
-    
-    // Verificar se houve redução significativa
-    if (compressionRatio < 1) {
-      console.warn('[PDFCompressor] AVISO: Pouca ou nenhuma redução de tamanho alcançada');
-      console.warn('[PDFCompressor] Isso pode indicar que o PDF já está otimizado ou contém principalmente imagens/gráficos comprimidos');
-    }
-    
-    // Gerar nome do arquivo
     const nameWithoutExt = file.name.replace(/\.pdf$/i, '');
     const compressedFileName = `${nameWithoutExt}_comprimido.pdf`;
     
@@ -167,24 +138,29 @@ export const compressPdfClientSide = async (
       lastModified: Date.now()
     });
 
-    console.log(`[PDFCompressor] Arquivo final criado: ${resultFile.name}, ${resultFile.size} bytes`);
+    console.log(`[PDFCompressor] === SUCESSO ===`);
+    console.log(`[PDFCompressor] Arquivo final: ${resultFile.name}`);
+    console.log(`[PDFCompressor] Redução final: ${finalReduction.toFixed(1)}%`);
+    
+    if (finalReduction < 1) {
+      console.warn('[PDFCompressor] AVISO: PDF já otimizado ou contém conteúdo não comprimível');
+    }
     
     return resultFile;
 
   } catch (error) {
-    console.error('[PDFCompressor] === ERRO NA COMPRESSÃO ===');
-    console.error('[PDFCompressor] Erro detalhado:', error);
-    console.error('[PDFCompressor] Stack trace:', error.stack);
+    console.error('[PDFCompressor] === ERRO ===');
+    console.error('[PDFCompressor] Detalhes:', error.message);
     
-    // Tentar retornar informações mais específicas sobre o erro
+    // Erros mais específicos
     if (error.message?.includes('Invalid PDF')) {
-      throw new Error('O arquivo não é um PDF válido ou está corrompido');
+      throw new Error('PDF inválido ou corrompido');
     } else if (error.message?.includes('encrypted')) {
-      throw new Error('PDF protegido por senha não pode ser comprimido');
-    } else if (error.message?.includes('creationDate')) {
-      throw new Error('Erro nos metadados do PDF - tentando compressão alternativa');
+      throw new Error('PDF protegido por senha');
+    } else if (error.message?.includes('creationDate') || error.message?.includes('Date')) {
+      throw new Error('Erro nos metadados do PDF');
     } else {
-      throw new Error(`Erro ao comprimir PDF: ${error.message || 'Erro desconhecido'}`);
+      throw new Error(`Falha na compressão: ${error.message}`);
     }
   }
 };
@@ -192,15 +168,12 @@ export const compressPdfClientSide = async (
 export const getEstimatedCompressionInfo = (fileSize: number) => {
   const sizeMB = fileSize / 1024 / 1024;
   
-  // Estimativas mais realistas baseadas na nova abordagem
-  let estimatedReduction = 15; // porcentagem padrão
+  let estimatedReduction = 10; // Mais conservador
   
-  if (sizeMB > 20) {
-    estimatedReduction = 25;
-  } else if (sizeMB > 10) {
-    estimatedReduction = 20;
+  if (sizeMB > 10) {
+    estimatedReduction = 15;
   } else if (sizeMB > 5) {
-    estimatedReduction = 18;
+    estimatedReduction = 12;
   }
   
   const estimatedSizeMB = sizeMB * (1 - estimatedReduction / 100);

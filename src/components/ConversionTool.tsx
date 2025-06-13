@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -99,7 +98,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     console.log('- Tamanhos originais:', selectedFiles.map(f => `${f.name}: ${(f.size / 1024 / 1024).toFixed(2)} MB`));
     
     setConversionError(null);
-    setConvertedFiles([]); // Limpar arquivos convertidos anteriores
+    setConvertedFiles([]);
 
     try {
       const results = await convertFiles(selectedFiles, selectedConversion);
@@ -125,13 +124,29 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       
       if (results.length === 0) {
         console.warn('[ConversionTool] AVISO: Nenhum arquivo foi convertido!');
-        setConversionError('Nenhum arquivo foi convertido. Tente novamente.');
+        setConversionError('Nenhum arquivo foi convertido. Verifique se o arquivo não está corrompido.');
       }
       
     } catch (error) {
       console.error('[ConversionTool] === ERRO NA CONVERSÃO ===');
       console.error('Erro:', error);
-      setConversionError(error.message || 'Erro desconhecido na conversão');
+      
+      // Mensagens de erro mais específicas
+      let errorMessage = 'Erro desconhecido na conversão';
+      
+      if (error.message?.includes('PDF inválido')) {
+        errorMessage = 'O arquivo PDF está inválido ou corrompido';
+      } else if (error.message?.includes('protegido por senha')) {
+        errorMessage = 'Não é possível comprimir PDFs protegidos por senha';
+      } else if (error.message?.includes('metadados')) {
+        errorMessage = 'Erro nos metadados do PDF. Tente outro arquivo.';
+      } else if (error.message?.includes('muito grande')) {
+        errorMessage = 'Arquivo muito grande. Tente um arquivo menor.';
+      } else if (error.message) {
+        errorMessage = error.message;
+      }
+      
+      setConversionError(errorMessage);
       setConvertedFiles([]);
     }
   }, [selectedFiles, selectedConversion, convertFiles]);
@@ -404,11 +419,21 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
         </Card>
       )}
 
-      {/* Error Message */}
+      {/* Error Message - melhorado */}
       {conversionError && (
         <Card className="w-full max-w-3xl p-3 bg-red-50 border border-red-200">
           <div className="text-red-700 text-sm">
-            <strong>Erro:</strong> {conversionError}
+            <div className="flex items-start space-x-2">
+              <span className="font-semibold text-red-800">⚠️ Erro:</span>
+              <div>
+                <p className="font-medium">{conversionError}</p>
+                {selectedConversion === 'reduce-pdf' && (
+                  <p className="text-xs mt-1 text-red-600">
+                    Dica: Alguns PDFs já estão otimizados ou contêm imagens altamente comprimidas.
+                  </p>
+                )}
+              </div>
+            </div>
           </div>
         </Card>
       )}
