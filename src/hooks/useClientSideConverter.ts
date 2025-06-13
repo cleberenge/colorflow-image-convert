@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { ConvertedFile } from '@/types/fileConverter';
 import { convertPngToJpg } from '@/utils/imageConverter';
@@ -6,11 +5,11 @@ import { convertJpgToPdf } from '@/utils/pdfConverter';
 import { convertWordToPdf } from '@/utils/wordToPdfConverter';
 import { splitPdf } from '@/utils/pdfSplitter';
 import { mergePdfs } from '@/utils/pdfMerger';
-import { useILoveApiConverter } from './useILoveApiConverter';
+import { usePdfcpuConverter } from './usePdfcpuConverter';
 
 export const useClientSideConverter = () => {
   const [isConverting, setIsConverting] = useState(false);
-  const { compressPdfWithILoveApi } = useILoveApiConverter();
+  const { compressPdfWithPdfcpu } = usePdfcpuConverter();
 
   const convertClientSide = async (
     files: File[], 
@@ -42,7 +41,7 @@ export const useClientSideConverter = () => {
         await new Promise(resolve => setTimeout(resolve, 200));
         console.log('[ClientSideConverter] Mesclagem de PDFs concluída com sucesso');
       } else if (conversionType === 'reduce-pdf') {
-        console.log('[ClientSideConverter] Iniciando compressão de PDF usando ILoveAPI');
+        console.log('[ClientSideConverter] Iniciando compressão de PDF usando PDFCPU');
         updateProgress(7);
         await new Promise(resolve => setTimeout(resolve, 200));
         updateProgress(10);
@@ -58,7 +57,7 @@ export const useClientSideConverter = () => {
           await new Promise(resolve => setTimeout(resolve, 200));
           
           try {
-            const results = await compressPdfWithILoveApi(file, (fileProgress) => {
+            const results = await compressPdfWithPdfcpu(file, (fileProgress) => {
               const totalProgress = baseProgress + ((fileProgress / 100) * (75 / files.length));
               updateProgress(Math.min(Math.max(totalProgress, baseProgress + 2), 85));
             });
