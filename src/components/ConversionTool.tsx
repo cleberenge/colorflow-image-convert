@@ -41,6 +41,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [convertedFiles, setConvertedFiles] = useState<ConvertedFile[]>([]);
   const [selectedConversion, setSelectedConversion] = useState<ConversionType>(propConversionType || 'png-jpg');
+  const [conversionError, setConversionError] = useState<string | null>(null);
   const { convertFiles, isConverting, progress } = useFileConverter();
 
   // Update selectedConversion when propConversionType changes
@@ -50,6 +51,16 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     }
   }, [propConversionType]);
 
+  // Debug: log do estado atual
+  useEffect(() => {
+    console.log('[ConversionTool] Estado atual:');
+    console.log('- Arquivos selecionados:', selectedFiles.length);
+    console.log('- Arquivos convertidos:', convertedFiles.length);
+    console.log('- Está convertendo?', isConverting);
+    console.log('- Erro:', conversionError);
+    console.log('- Progresso:', progress);
+  }, [selectedFiles, convertedFiles, isConverting, conversionError, progress]);
+
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     if (files.length > 25) {
@@ -58,64 +69,79 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
 
     const sortedFiles = files.sort((a, b) => a.name.localeCompare(b.name));
     
+    console.log('[ConversionTool] Arquivos selecionados:', sortedFiles.map(f => f.name));
+    
     setSelectedFiles(sortedFiles);
     setConvertedFiles([]);
+    setConversionError(null);
   }, []);
 
   const handleConversionChange = (value: string) => {
+    console.log('[ConversionTool] Tipo de conversão alterado para:', value);
     setSelectedConversion(value as ConversionType);
     setSelectedFiles([]);
     setConvertedFiles([]);
+    setConversionError(null);
   };
 
   const convertSelectedFiles = useCallback(async () => {
     if (selectedFiles.length === 0) {
+      console.log('[ConversionTool] Nenhum arquivo selecionado para conversão');
       return;
     }
 
+    console.log('[ConversionTool] === INICIANDO CONVERSÃO ===');
+    console.log('- Arquivos:', selectedFiles.length);
+    console.log('- Tipo:', selectedConversion);
+    
+    setConversionError(null);
+    setConvertedFiles([]); // Limpar arquivos convertidos anteriores
+
     try {
-      console.log('Iniciando conversão de arquivos:', selectedFiles.length);
-      console.log('Tipo de conversão:', selectedConversion);
-      
       const results = await convertFiles(selectedFiles, selectedConversion);
       
-      console.log('Conversão concluída, arquivos convertidos:', results);
-      console.log('Número de arquivos convertidos:', results.length);
+      console.log('[ConversionTool] === CONVERSÃO CONCLUÍDA ===');
+      console.log('- Arquivos convertidos:', results.length);
+      console.log('- Detalhes:', results.map(r => ({ name: r.file.name, size: r.file.size })));
       
       setConvertedFiles(results);
       
-      // Log para debug
-      results.forEach((result, index) => {
-        console.log(`Arquivo ${index + 1}:`, result.file.name, 'Tamanho:', result.file.size);
-      });
+      if (results.length === 0) {
+        console.warn('[ConversionTool] AVISO: Nenhum arquivo foi convertido!');
+        setConversionError('Nenhum arquivo foi convertido. Tente novamente.');
+      }
       
     } catch (error) {
-      console.error('Erro na conversão:', error);
+      console.error('[ConversionTool] === ERRO NA CONVERSÃO ===');
+      console.error('Erro:', error);
+      setConversionError(error.message || 'Erro desconhecido na conversão');
       setConvertedFiles([]);
     }
   }, [selectedFiles, selectedConversion, convertFiles]);
 
   const clearFiles = useCallback(() => {
+    console.log('[ConversionTool] Limpando arquivos');
     setSelectedFiles([]);
     setConvertedFiles([]);
+    setConversionError(null);
   }, []);
 
   const downloadZip = useCallback(async () => {
     if (convertedFiles.length === 0) {
-      console.log('Nenhum arquivo convertido para download');
+      console.log('[ConversionTool] Nenhum arquivo convertido para download');
       return;
     }
 
     try {
-      console.log('Iniciando criação do ZIP...');
+      console.log('[ConversionTool] Iniciando criação do ZIP...');
       const JSZip = (await import('jszip')).default;
       const zip = new JSZip();
       
       for (const { file } of convertedFiles) {
-        console.log('Adicionando arquivo ao ZIP:', file.name, 'Tamanho:', file.size, 'Tipo:', file.type);
+        console.log('[ConversionTool] Adicionando arquivo ao ZIP:', file.name, 'Tamanho:', file.size, 'Tipo:', file.type);
         
         if (file.size === 0) {
-          console.warn('Arquivo vazio detectado:', file.name);
+          console.warn('[ConversionTool] Arquivo vazio detectado:', file.name);
           continue;
         }
         
@@ -123,20 +149,20 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
           const blob = new Blob([file], { type: file.type });
           const arrayBuffer = await blob.arrayBuffer();
           
-          console.log('Arquivo lido com sucesso:', file.name, 'Tamanho do buffer:', arrayBuffer.byteLength);
+          console.log('[ConversionTool] Arquivo lido com sucesso:', file.name, 'Tamanho do buffer:', arrayBuffer.byteLength);
           
           zip.file(file.name, arrayBuffer, { 
             binary: true,
             compression: 'STORE'
           });
         } catch (fileError) {
-          console.error('Erro ao processar arquivo:', file.name, fileError);
+          console.error('[ConversionTool] Erro ao processar arquivo:', file.name, fileError);
           const errorContent = `Erro ao processar o arquivo: ${file.name}`;
           zip.file(`ERROR_${file.name}.txt`, errorContent);
         }
       }
       
-      console.log('Gerando arquivo ZIP...');
+      console.log('[ConversionTool] Gerando arquivo ZIP...');
       
       const zipBlob = await zip.generateAsync({ 
         type: 'blob',
@@ -146,7 +172,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
         }
       });
       
-      console.log('ZIP gerado com sucesso. Tamanho:', zipBlob.size);
+      console.log('[ConversionTool] ZIP gerado com sucesso. Tamanho:', zipBlob.size);
       
       const url = URL.createObjectURL(zipBlob);
       const link = document.createElement('a');
@@ -158,7 +184,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       URL.revokeObjectURL(url);
       
     } catch (error) {
-      console.error('Erro ao criar ZIP:', error);
+      console.error('[ConversionTool] Erro ao criar ZIP:', error);
+      setConversionError('Erro ao criar arquivo ZIP para download');
     }
   }, [convertedFiles]);
 
@@ -214,10 +241,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     }
   };
 
-  // Debug: log do estado dos arquivos convertidos
-  console.log('Estado atual dos arquivos convertidos:', convertedFiles);
-  console.log('Número de arquivos convertidos:', convertedFiles.length);
-  console.log('Está convertendo?', isConverting);
+  const showDownloadButton = convertedFiles.length > 0 && !isConverting;
 
   return (
     <div className="flex flex-col items-center space-y-2 animate-fade-in">
@@ -311,7 +335,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
                 </div>
               ))}
             </div>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-2 flex-wrap">
               <Button
                 onClick={convertSelectedFiles}
                 disabled={isConverting}
@@ -333,8 +357,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
               >
                 Limpar
               </Button>
-              {/* Botão de download sempre visível quando há arquivos convertidos */}
-              {convertedFiles.length > 0 && !isConverting && (
+              {showDownloadButton && (
                 <Button
                   onClick={downloadZip}
                   className={`font-medium transition-all duration-300 ${isPngJpg ? 'text-black' : 'text-white'}`}
@@ -365,12 +388,22 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
         </Card>
       )}
 
-      {/* Status dos arquivos convertidos para debug */}
-      {convertedFiles.length > 0 && (
-        <div className="w-full max-w-3xl p-2 text-sm text-gray-600 bg-gray-50 rounded">
-          Debug: {convertedFiles.length} arquivo{convertedFiles.length > 1 ? 's' : ''} convertido{convertedFiles.length > 1 ? 's' : ''} pronto{convertedFiles.length > 1 ? 's' : ''} para download
-        </div>
+      {/* Error Message */}
+      {conversionError && (
+        <Card className="w-full max-w-3xl p-3 bg-red-50 border border-red-200">
+          <div className="text-red-700 text-sm">
+            <strong>Erro:</strong> {conversionError}
+          </div>
+        </Card>
       )}
+
+      {/* Status de debug */}
+      <div className="w-full max-w-3xl p-2 text-xs text-gray-500 bg-gray-50 rounded">
+        <strong>Debug:</strong> {selectedFiles.length} selecionado{selectedFiles.length !== 1 ? 's' : ''} | 
+        {convertedFiles.length} convertido{convertedFiles.length !== 1 ? 's' : ''} | 
+        Convertendo: {isConverting ? 'Sim' : 'Não'} | 
+        Botão visível: {showDownloadButton ? 'Sim' : 'Não'}
+      </div>
     </div>
   );
 };

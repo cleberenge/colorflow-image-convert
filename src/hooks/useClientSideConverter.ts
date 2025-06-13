@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { ConvertedFile } from '@/types/fileConverter';
 import { convertPngToJpg } from '@/utils/imageConverter';
@@ -20,6 +21,8 @@ export const useClientSideConverter = () => {
     const convertedFiles: ConvertedFile[] = [];
 
     try {
+      console.log(`[ClientSideConverter] Iniciando conversão: ${conversionType}, arquivos: ${files.length}`);
+      
       updateProgress(1);
       await new Promise(resolve => setTimeout(resolve, 100));
       updateProgress(3);
@@ -27,7 +30,7 @@ export const useClientSideConverter = () => {
       updateProgress(5);
       
       if (conversionType === 'merge-pdf') {
-        console.log('Mesclando PDFs no client-side');
+        console.log('[ClientSideConverter] Mesclando PDFs no client-side');
         updateProgress(8);
         await new Promise(resolve => setTimeout(resolve, 200));
         updateProgress(12);
@@ -37,9 +40,9 @@ export const useClientSideConverter = () => {
         
         updateProgress(90);
         await new Promise(resolve => setTimeout(resolve, 200));
-        console.log('Mesclagem de PDFs concluída com sucesso');
+        console.log('[ClientSideConverter] Mesclagem de PDFs concluída com sucesso');
       } else if (conversionType === 'reduce-pdf') {
-        console.log('Iniciando compressão de PDF usando ILoveAPI');
+        console.log('[ClientSideConverter] Iniciando compressão de PDF usando ILoveAPI');
         updateProgress(7);
         await new Promise(resolve => setTimeout(resolve, 200));
         updateProgress(10);
@@ -48,29 +51,32 @@ export const useClientSideConverter = () => {
           const file = files[i];
           const baseProgress = 10 + (i * 75 / files.length);
           
+          console.log(`[ClientSideConverter] Comprimindo arquivo ${i + 1}/${files.length}: ${file.name}`);
+          console.log(`[ClientSideConverter] Tamanho original: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
+          
           updateProgress(Math.min(baseProgress + 2, 85));
           await new Promise(resolve => setTimeout(resolve, 200));
           
           try {
-            console.log(`Comprimindo ${file.name} usando ILoveAPI`);
-            
             const results = await compressPdfWithILoveApi(file, (fileProgress) => {
               const totalProgress = baseProgress + ((fileProgress / 100) * (75 / files.length));
               updateProgress(Math.min(Math.max(totalProgress, baseProgress + 2), 85));
             });
             
+            console.log(`[ClientSideConverter] Arquivo comprimido com sucesso:`, results);
             convertedFiles.push(...results);
             
             const finalProgress = baseProgress + (75 / files.length);
             updateProgress(Math.min(finalProgress, 85));
             await new Promise(resolve => setTimeout(resolve, 200));
             
-            console.log(`${file.name} comprimido com sucesso`);
           } catch (error) {
-            console.error(`Erro ao comprimir ${file.name}:`, error);
-            throw error;
+            console.error(`[ClientSideConverter] Erro ao comprimir ${file.name}:`, error);
+            throw new Error(`Erro na compressão de ${file.name}: ${error.message}`);
           }
         }
+        
+        console.log(`[ClientSideConverter] Compressão finalizada. Total de arquivos convertidos: ${convertedFiles.length}`);
       } else {
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
@@ -137,8 +143,17 @@ export const useClientSideConverter = () => {
       await new Promise(resolve => setTimeout(resolve, 100));
       updateProgress(100);
       
-      console.log('Conversão finalizada, arquivos convertidos:', convertedFiles.length);
+      console.log(`[ClientSideConverter] Conversão finalizada com SUCESSO! Arquivos convertidos: ${convertedFiles.length}`);
+      console.log('[ClientSideConverter] Detalhes dos arquivos convertidos:', convertedFiles.map(cf => ({
+        name: cf.file.name,
+        size: `${(cf.file.size / 1024 / 1024).toFixed(2)} MB`,
+        type: cf.file.type
+      })));
+      
       return convertedFiles;
+    } catch (error) {
+      console.error('[ClientSideConverter] ERRO na conversão:', error);
+      throw error;
     } finally {
       setIsConverting(false);
     }
