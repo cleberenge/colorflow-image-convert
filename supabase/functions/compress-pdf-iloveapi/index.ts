@@ -13,7 +13,7 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Requisição de compressão PDF via ILoveAPI recebida');
+    console.log('[EdgeFunction] === REQUISIÇÃO DE COMPRESSÃO PDF ===');
     
     const formData = await req.formData();
     const file = formData.get('file') as File;
@@ -22,14 +22,17 @@ serve(async (req) => {
       throw new Error('Nenhum arquivo fornecido');
     }
 
-    console.log(`Processando arquivo: ${file.name}, tamanho: ${file.size} bytes, tipo: ${file.type}`);
+    console.log(`[EdgeFunction] Arquivo recebido: ${file.name}`);
+    console.log(`[EdgeFunction] Tamanho: ${file.size} bytes`);
+    console.log(`[EdgeFunction] Tipo: ${file.type}`);
     
     // Verificar se é um PDF válido
     const arrayBuffer = await file.arrayBuffer();
     const uint8Array = new Uint8Array(arrayBuffer);
     const header = new TextDecoder().decode(uint8Array.slice(0, 5));
     
-    console.log(`Header do arquivo recebido: ${header}`);
+    console.log(`[EdgeFunction] Header do arquivo: "${header}"`);
+    console.log(`[EdgeFunction] Primeiros 10 bytes:`, Array.from(uint8Array.slice(0, 10)).map(b => b.toString(16).padStart(2, '0')).join(' '));
     
     if (!header.startsWith('%PDF-')) {
       throw new Error('Arquivo não é um PDF válido');
@@ -45,10 +48,10 @@ serve(async (req) => {
       throw new Error('Chave da API ILoveAPI não configurada');
     }
 
-    console.log('Chave da API encontrada, iniciando processo...');
+    console.log('[EdgeFunction] Chave da API encontrada, iniciando processo...');
 
     // Primeira etapa: Iniciar tarefa de compressão
-    console.log('Iniciando tarefa de compressão...');
+    console.log('[EdgeFunction] === INICIANDO TAREFA ===');
     
     const startResponse = await fetch('https://api.ilovepdf.com/v1/start/compress', {
       method: 'POST',
@@ -58,20 +61,20 @@ serve(async (req) => {
       },
     });
 
-    console.log(`Status da resposta start: ${startResponse.status}`);
+    console.log(`[EdgeFunction] Start response status: ${startResponse.status}`);
 
     if (!startResponse.ok) {
       const errorText = await startResponse.text();
-      console.error('Erro ao iniciar tarefa:', errorText);
+      console.error('[EdgeFunction] Erro ao iniciar tarefa:', errorText);
       throw new Error(`Erro ao iniciar compressão: ${startResponse.status} - ${errorText}`);
     }
 
     const startData = await startResponse.json();
     const taskId = startData.task;
-    console.log(`Tarefa iniciada com ID: ${taskId}`);
+    console.log(`[EdgeFunction] Tarefa iniciada com ID: ${taskId}`);
 
     // Segunda etapa: Upload do arquivo
-    console.log('Fazendo upload do arquivo...');
+    console.log('[EdgeFunction] === FAZENDO UPLOAD ===');
     
     const uploadFormData = new FormData();
     uploadFormData.append('file', file);
@@ -85,19 +88,19 @@ serve(async (req) => {
       body: uploadFormData,
     });
 
-    console.log(`Status da resposta upload: ${uploadResponse.status}`);
+    console.log(`[EdgeFunction] Upload response status: ${uploadResponse.status}`);
 
     if (!uploadResponse.ok) {
       const errorText = await uploadResponse.text();
-      console.error('Erro no upload:', errorText);
+      console.error('[EdgeFunction] Erro no upload:', errorText);
       throw new Error(`Erro no upload: ${uploadResponse.status} - ${errorText}`);
     }
 
     const uploadData = await uploadResponse.json();
-    console.log('Upload concluído:', uploadData);
+    console.log('[EdgeFunction] Upload concluído:', uploadData);
 
     // Terceira etapa: Processar compressão
-    console.log('Processando compressão...');
+    console.log('[EdgeFunction] === PROCESSANDO COMPRESSÃO ===');
     
     const processResponse = await fetch('https://api.ilovepdf.com/v1/process', {
       method: 'POST',
@@ -111,19 +114,19 @@ serve(async (req) => {
       }),
     });
 
-    console.log(`Status da resposta process: ${processResponse.status}`);
+    console.log(`[EdgeFunction] Process response status: ${processResponse.status}`);
 
     if (!processResponse.ok) {
       const errorText = await processResponse.text();
-      console.error('Erro no processamento:', errorText);
+      console.error('[EdgeFunction] Erro no processamento:', errorText);
       throw new Error(`Erro no processamento: ${processResponse.status} - ${errorText}`);
     }
 
     const processData = await processResponse.json();
-    console.log('Processamento concluído:', processData);
+    console.log('[EdgeFunction] Processamento concluído:', processData);
 
     // Quarta etapa: Download do arquivo comprimido
-    console.log('Fazendo download do arquivo comprimido...');
+    console.log('[EdgeFunction] === FAZENDO DOWNLOAD ===');
     
     const downloadResponse = await fetch('https://api.ilovepdf.com/v1/download', {
       method: 'POST',
@@ -136,29 +139,49 @@ serve(async (req) => {
       }),
     });
 
-    console.log(`Status da resposta download: ${downloadResponse.status}`);
+    console.log(`[EdgeFunction] Download response status: ${downloadResponse.status}`);
+    console.log(`[EdgeFunction] Download response headers:`, Object.fromEntries(downloadResponse.headers.entries()));
 
     if (!downloadResponse.ok) {
       const errorText = await downloadResponse.text();
-      console.error('Erro no download:', errorText);
+      console.error('[EdgeFunction] Erro no download:', errorText);
       throw new Error(`Erro no download: ${downloadResponse.status} - ${errorText}`);
     }
 
     const compressedBuffer = await downloadResponse.arrayBuffer();
     const compressedSize = compressedBuffer.byteLength;
     
+    console.log(`[EdgeFunction] === ARQUIVO COMPRIMIDO RECEBIDO ===`);
+    console.log(`[EdgeFunction] Tamanho: ${compressedSize} bytes`);
+    
     if (compressedSize === 0) {
       throw new Error('Arquivo comprimido está vazio');
     }
     
-    // Removemos a validação rigorosa do header que estava causando problemas
-    // A API ILoveAPI já garante que o arquivo retornado é um PDF válido
-    console.log('Arquivo comprimido recebido com sucesso, pulando validação de header');
+    // Vamos verificar o conteúdo do arquivo comprimido
+    const compressedUint8Array = new Uint8Array(compressedBuffer);
+    const compressedHeader = new TextDecoder().decode(compressedUint8Array.slice(0, 10));
     
-    console.log(`Compressão concluída com sucesso:`);
-    console.log(`- Tamanho original: ${file.size} bytes`);
-    console.log(`- Tamanho comprimido: ${compressedSize} bytes`);
-    console.log(`- Redução: ${(((file.size - compressedSize) / file.size) * 100).toFixed(2)}%`);
+    console.log(`[EdgeFunction] Header do arquivo comprimido: "${compressedHeader}"`);
+    console.log(`[EdgeFunction] Primeiros 20 bytes:`, Array.from(compressedUint8Array.slice(0, 20)).map(b => b.toString(16).padStart(2, '0')).join(' '));
+    console.log(`[EdgeFunction] Últimos 10 bytes:`, Array.from(compressedUint8Array.slice(-10)).map(b => b.toString(16).padStart(2, '0')).join(' '));
+    
+    // Verificar se é realmente um PDF
+    if (!compressedHeader.startsWith('%PDF-')) {
+      console.error('[EdgeFunction] ERRO: Arquivo comprimido não é um PDF!');
+      console.error('[EdgeFunction] Header recebido:', compressedHeader);
+      
+      // Verificar se é uma resposta de erro da API
+      const textContent = new TextDecoder().decode(compressedUint8Array.slice(0, 500));
+      console.error('[EdgeFunction] Conteúdo como texto:', textContent);
+      
+      throw new Error('API retornou arquivo inválido - não é um PDF');
+    }
+    
+    console.log(`[EdgeFunction] === COMPRESSÃO CONCLUÍDA COM SUCESSO ===`);
+    console.log(`[EdgeFunction] Tamanho original: ${file.size} bytes`);
+    console.log(`[EdgeFunction] Tamanho comprimido: ${compressedSize} bytes`);
+    console.log(`[EdgeFunction] Redução: ${(((file.size - compressedSize) / file.size) * 100).toFixed(2)}%`);
 
     return new Response(compressedBuffer, {
       headers: {
@@ -172,13 +195,14 @@ serve(async (req) => {
     });
 
   } catch (error) {
-    console.error('Erro detalhado na compressão PDF via ILoveAPI:', error);
-    console.error('Stack trace:', error.stack);
+    console.error('[EdgeFunction] === ERRO NA COMPRESSÃO ===');
+    console.error('[EdgeFunction] Erro:', error);
+    console.error('[EdgeFunction] Stack trace:', error.stack);
     
     let errorMessage = 'Erro interno do servidor';
     let statusCode = 500;
     
-    if (error.message.includes('PDF válido')) {
+    if (error.message.includes('PDF válido') || error.message.includes('arquivo inválido')) {
       errorMessage = 'Arquivo não é um PDF válido';
       statusCode = 415;
     } else if (error.message.includes('muito grande')) {

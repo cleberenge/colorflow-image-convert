@@ -12,16 +12,19 @@ export const useILoveApiConverter = () => {
     setIsConverting(true);
     
     try {
-      console.log(`Iniciando compressão com ILoveAPI: ${file.name}, tamanho: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
-      console.log(`Tipo do arquivo: ${file.type}`);
-      console.log(`Última modificação: ${new Date(file.lastModified).toISOString()}`);
+      console.log(`[ILoveAPI] === INICIANDO COMPRESSÃO ===`);
+      console.log(`[ILoveAPI] Arquivo: ${file.name}`);
+      console.log(`[ILoveAPI] Tamanho: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
+      console.log(`[ILoveAPI] Tipo: ${file.type}`);
+      console.log(`[ILoveAPI] Última modificação: ${new Date(file.lastModified).toISOString()}`);
       
       // Verificar se é um PDF válido antes de enviar
       const arrayBuffer = await file.arrayBuffer();
       const uint8Array = new Uint8Array(arrayBuffer);
       const header = new TextDecoder().decode(uint8Array.slice(0, 5));
       
-      console.log(`Header do arquivo: ${header}`);
+      console.log(`[ILoveAPI] Header do arquivo original: "${header}"`);
+      console.log(`[ILoveAPI] Primeiros 20 bytes:`, Array.from(uint8Array.slice(0, 20)).map(b => b.toString(16).padStart(2, '0')).join(' '));
       
       if (!header.startsWith('%PDF-')) {
         throw new Error('O arquivo selecionado não é um PDF válido. Por favor, selecione um arquivo PDF.');
@@ -37,7 +40,7 @@ export const useILoveApiConverter = () => {
       formData.append('conversionType', 'reduce-pdf');
       
       updateProgress(15);
-      console.log('Enviando para compressão via ILoveAPI...');
+      console.log('[ILoveAPI] Enviando para compressão via edge function...');
       
       const response = await fetch('/api/compress-pdf-iloveapi', {
         method: 'POST',
@@ -48,12 +51,12 @@ export const useILoveApiConverter = () => {
       await new Promise(resolve => setTimeout(resolve, 300));
       updateProgress(75);
       
-      console.log(`Status da resposta: ${response.status}`);
-      console.log(`Headers da resposta:`, Object.fromEntries(response.headers.entries()));
+      console.log(`[ILoveAPI] Status da resposta: ${response.status}`);
+      console.log(`[ILoveAPI] Headers da resposta:`, Object.fromEntries(response.headers.entries()));
       
       if (!response.ok) {
         const errorText = await response.text();
-        console.error('Erro na resposta da API:', errorText);
+        console.error('[ILoveAPI] Erro na resposta da API:', errorText);
         
         // Mensagens de erro mais específicas
         if (response.status === 413) {
@@ -70,39 +73,61 @@ export const useILoveApiConverter = () => {
       updateProgress(85);
       
       const compressedBlob = await response.blob();
-      console.log(`Tamanho do blob recebido: ${compressedBlob.size} bytes`);
-      console.log(`Tipo do blob: ${compressedBlob.type}`);
+      console.log(`[ILoveAPI] Blob recebido:`);
+      console.log(`- Tamanho: ${compressedBlob.size} bytes`);
+      console.log(`- Tipo: ${compressedBlob.type}`);
       
       if (compressedBlob.size === 0) {
         throw new Error('O arquivo comprimido está vazio. Tente novamente ou use um arquivo diferente.');
       }
       
-      // Validação mais flexível do PDF comprimido - apenas verificar se não está vazio
-      // Removemos a validação rigorosa do header que estava causando problemas
-      console.log('Arquivo comprimido recebido com sucesso, pulando validação de header rigorosa');
+      // Vamos verificar os primeiros bytes do arquivo comprimido para debug
+      const compressedArrayBuffer = await compressedBlob.arrayBuffer();
+      const compressedUint8Array = new Uint8Array(compressedArrayBuffer);
+      const compressedHeader = new TextDecoder().decode(compressedUint8Array.slice(0, 10));
+      
+      console.log(`[ILoveAPI] Arquivo comprimido recebido:`);
+      console.log(`- Header: "${compressedHeader}"`);
+      console.log(`- Primeiros 20 bytes:`, Array.from(compressedUint8Array.slice(0, 20)).map(b => b.toString(16).padStart(2, '0')).join(' '));
+      console.log(`- Últimos 10 bytes:`, Array.from(compressedUint8Array.slice(-10)).map(b => b.toString(16).padStart(2, '0')).join(' '));
+      
+      // Verificar se parece ser um PDF válido
+      if (!compressedHeader.startsWith('%PDF-')) {
+        console.error('[ILoveAPI] ERRO: Arquivo comprimido não tem header de PDF válido!');
+        console.error('[ILoveAPI] Header recebido:', compressedHeader);
+        
+        // Vamos ver se é algum tipo de resposta de erro
+        const textContent = new TextDecoder().decode(compressedUint8Array.slice(0, 500));
+        console.error('[ILoveAPI] Conteúdo como texto:', textContent);
+        
+        throw new Error('Erro na compressão: arquivo resultante não é um PDF válido. Verifique se o arquivo original está íntegro.');
+      }
       
       updateProgress(95);
       
       const originalName = file.name.split('.')[0];
       const compressedFileName = `${originalName}_compressed.pdf`;
       
-      const compressedFile = new File([compressedBlob], compressedFileName, {
+      // Criar o arquivo a partir do arrayBuffer já lido
+      const compressedFile = new File([compressedArrayBuffer], compressedFileName, {
         type: 'application/pdf',
         lastModified: Date.now()
       });
       
-      console.log(`Compressão concluída com sucesso: ${compressedFile.name}`);
-      console.log(`Tamanho original: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
-      console.log(`Tamanho comprimido: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`);
-      console.log(`Redução: ${(((file.size - compressedFile.size) / file.size) * 100).toFixed(2)}%`);
+      console.log(`[ILoveAPI] === COMPRESSÃO CONCLUÍDA ===`);
+      console.log(`[ILoveAPI] Arquivo criado: ${compressedFile.name}`);
+      console.log(`[ILoveAPI] Tamanho original: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
+      console.log(`[ILoveAPI] Tamanho comprimido: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`);
+      console.log(`[ILoveAPI] Redução: ${(((file.size - compressedFile.size) / file.size) * 100).toFixed(2)}%`);
       
       updateProgress(100);
       
       return [{ file: compressedFile, originalName: file.name }];
       
     } catch (error) {
-      console.error('Erro detalhado na compressão com ILoveAPI:', error);
-      console.error('Stack trace:', error.stack);
+      console.error('[ILoveAPI] === ERRO NA COMPRESSÃO ===');
+      console.error('[ILoveAPI] Erro:', error);
+      console.error('[ILoveAPI] Stack trace:', error.stack);
       
       // Mensagens de erro mais amigáveis
       if (error.message.includes('PDF válido')) {
