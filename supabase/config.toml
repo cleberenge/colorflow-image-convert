@@ -15,3 +15,6 @@ verify_jwt = false
 
 [functions.compress-pdf-iloveapi]
 verify_jwt = false
+
+[functions.compress-pdf-pdfcpu]
+verify_jwt = false

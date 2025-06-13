@@ -7,6 +7,65 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Function to install pdfcpu if not available
+async function ensurePdfcpuInstalled(): Promise<boolean> {
+  try {
+    console.log('[PDFCPU] Verificando se pdfcpu está instalado...');
+    
+    // First, try to run pdfcpu to see if it's available
+    const testCommand = new Deno.Command("pdfcpu", {
+      args: ["version"],
+      stdout: "piped",
+      stderr: "piped",
+    });
+    
+    const { code } = await testCommand.output();
+    
+    if (code === 0) {
+      console.log('[PDFCPU] pdfcpu já está instalado');
+      return true;
+    }
+    
+    console.log('[PDFCPU] pdfcpu não encontrado, instalando...');
+    
+    // Install Go first
+    const goInstallCmd = new Deno.Command("sh", {
+      args: ["-c", "wget -q https://go.dev/dl/go1.21.0.linux-amd64.tar.gz && tar -C /tmp -xzf go1.21.0.linux-amd64.tar.gz"],
+      stdout: "piped",
+      stderr: "piped",
+    });
+    
+    const goResult = await goInstallCmd.output();
+    if (goResult.code !== 0) {
+      console.error('[PDFCPU] Falha ao baixar Go');
+      return false;
+    }
+    
+    // Set Go environment and install pdfcpu
+    const installCmd = new Deno.Command("sh", {
+      args: ["-c", "export PATH=/tmp/go/bin:$PATH && export GOPATH=/tmp/go-workspace && go install github.com/pdfcpu/pdfcpu/cmd/pdfcpu@latest"],
+      stdout: "piped",
+      stderr: "piped",
+    });
+    
+    const installResult = await installCmd.output();
+    console.log(`[PDFCPU] Instalação resultado código: ${installResult.code}`);
+    
+    if (installResult.code === 0) {
+      console.log('[PDFCPU] pdfcpu instalado com sucesso');
+      return true;
+    } else {
+      const errorOutput = new TextDecoder().decode(installResult.stderr);
+      console.error('[PDFCPU] Erro na instalação:', errorOutput);
+      return false;
+    }
+    
+  } catch (error) {
+    console.error('[PDFCPU] Erro durante instalação:', error);
+    return false;
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -37,7 +96,13 @@ serve(async (req) => {
       throw new Error('Arquivo não é um PDF válido');
     }
 
-    console.log('[PDFCPU] Arquivo PDF válido, iniciando compressão');
+    console.log('[PDFCPU] Arquivo PDF válido, verificando instalação do pdfcpu');
+
+    // Ensure pdfcpu is installed
+    const isPdfcpuReady = await ensurePdfcpuInstalled();
+    if (!isPdfcpuReady) {
+      throw new Error('Não foi possível instalar ou encontrar pdfcpu no servidor');
+    }
 
     // Escrever arquivo temporário
     const inputPath = `/tmp/input_${Date.now()}.pdf`;
@@ -46,8 +111,9 @@ serve(async (req) => {
     await Deno.writeFile(inputPath, uint8Array);
     console.log(`[PDFCPU] Arquivo salvo em: ${inputPath}`);
 
-    // Executar pdfcpu para compressão
-    const command = new Deno.Command("pdfcpu", {
+    // Executar pdfcpu para compressão com path completo
+    const pdfcpuPath = "/tmp/go-workspace/bin/pdfcpu";
+    const command = new Deno.Command(pdfcpuPath, {
       args: [
         "optimize",
         "-verbose",
@@ -57,6 +123,10 @@ serve(async (req) => {
       ],
       stdout: "piped",
       stderr: "piped",
+      env: {
+        "PATH": "/tmp/go/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+        "GOPATH": "/tmp/go-workspace"
+      }
     });
 
     console.log('[PDFCPU] Executando comando de compressão...');
@@ -137,6 +207,9 @@ serve(async (req) => {
     } else if (error.message.includes('Erro na compressão pdfcpu')) {
       errorMessage = 'Erro na compressão do arquivo';
       statusCode = 422;
+    } else if (error.message.includes('instalar ou encontrar pdfcpu')) {
+      errorMessage = 'Erro de instalação do pdfcpu no servidor';
+      statusCode = 500;
     }
     
     return new Response(
