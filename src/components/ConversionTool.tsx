@@ -38,10 +38,12 @@ const conversionOptions: ConversionOption[] = [
 ];
 
 const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propConversionType, conversionInfo }) => {
+  // All hooks must be called in the same order every render
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [convertedFiles, setConvertedFiles] = useState<ConvertedFile[]>([]);
   const [selectedConversion, setSelectedConversion] = useState<ConversionType>(propConversionType || 'png-jpg');
   const [conversionError, setConversionError] = useState<string | null>(null);
+  
   const { convertFiles, isConverting, progress } = useFileConverter();
 
   // Update selectedConversion when propConversionType changes
@@ -70,19 +72,20 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     const sortedFiles = files.sort((a, b) => a.name.localeCompare(b.name));
     
     console.log('[ConversionTool] Arquivos selecionados:', sortedFiles.map(f => f.name));
+    console.log('[ConversionTool] Tamanhos dos arquivos:', sortedFiles.map(f => `${f.name}: ${(f.size / 1024 / 1024).toFixed(2)} MB`));
     
     setSelectedFiles(sortedFiles);
     setConvertedFiles([]);
     setConversionError(null);
   }, []);
 
-  const handleConversionChange = (value: string) => {
+  const handleConversionChange = useCallback((value: string) => {
     console.log('[ConversionTool] Tipo de conversão alterado para:', value);
     setSelectedConversion(value as ConversionType);
     setSelectedFiles([]);
     setConvertedFiles([]);
     setConversionError(null);
-  };
+  }, []);
 
   const convertSelectedFiles = useCallback(async () => {
     if (selectedFiles.length === 0) {
@@ -93,6 +96,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     console.log('[ConversionTool] === INICIANDO CONVERSÃO ===');
     console.log('- Arquivos:', selectedFiles.length);
     console.log('- Tipo:', selectedConversion);
+    console.log('- Tamanhos originais:', selectedFiles.map(f => `${f.name}: ${(f.size / 1024 / 1024).toFixed(2)} MB`));
     
     setConversionError(null);
     setConvertedFiles([]); // Limpar arquivos convertidos anteriores
@@ -102,7 +106,20 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       
       console.log('[ConversionTool] === CONVERSÃO CONCLUÍDA ===');
       console.log('- Arquivos convertidos:', results.length);
-      console.log('- Detalhes:', results.map(r => ({ name: r.file.name, size: r.file.size })));
+      console.log('- Detalhes:', results.map(r => ({ 
+        name: r.file.name, 
+        size: `${(r.file.size / 1024 / 1024).toFixed(2)} MB`,
+        originalName: r.originalName 
+      })));
+      
+      // Para PDFs, verificar se houve redução de tamanho
+      if (selectedConversion === 'reduce-pdf') {
+        results.forEach((result, index) => {
+          const originalFile = selectedFiles[index];
+          const reduction = ((originalFile.size - result.file.size) / originalFile.size * 100).toFixed(1);
+          console.log(`[ConversionTool] Redução ${result.file.name}: ${reduction}% (${(originalFile.size / 1024 / 1024).toFixed(2)} MB → ${(result.file.size / 1024 / 1024).toFixed(2)} MB)`);
+        });
+      }
       
       setConvertedFiles(results);
       
@@ -189,7 +206,12 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     }
   }, [convertedFiles]);
 
+  // All calculations and derived state after hooks
   const conversionColor = getConversionColor(selectedConversion);
+  const isReducePdf = selectedConversion === 'reduce-pdf';
+  const isPngJpg = selectedConversion === 'png-jpg';
+  const textColor = isReducePdf ? 'text-white' : 'text-black';
+  const showDownloadButton = convertedFiles.length > 0 && !isConverting;
 
   const organizeFilesInColumns = (files: File[]) => {
     const filesPerColumn = 5;
@@ -225,10 +247,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     }
   };
 
-  const isReducePdf = selectedConversion === 'reduce-pdf';
-  const isPngJpg = selectedConversion === 'png-jpg';
-  const textColor = isReducePdf ? 'text-white' : 'text-black';
-
   const getUploadText = () => {
     if (selectedConversion === 'merge-pdf') {
       return 'PDFs para mesclar';
@@ -240,8 +258,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       return 'até 25 arquivos';
     }
   };
-
-  const showDownloadButton = convertedFiles.length > 0 && !isConverting;
 
   return (
     <div className="flex flex-col items-center space-y-2 animate-fade-in">
@@ -403,6 +419,9 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
         {convertedFiles.length} convertido{convertedFiles.length !== 1 ? 's' : ''} | 
         Convertendo: {isConverting ? 'Sim' : 'Não'} | 
         Botão visível: {showDownloadButton ? 'Sim' : 'Não'}
+        {selectedConversion === 'reduce-pdf' && selectedFiles.length > 0 && (
+          <span> | Tamanho total: {(selectedFiles.reduce((acc, f) => acc + f.size, 0) / 1024 / 1024).toFixed(2)} MB</span>
+        )}
       </div>
     </div>
   );
