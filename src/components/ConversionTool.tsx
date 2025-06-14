@@ -131,21 +131,23 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       console.error('[ConversionTool] === ERRO NA CONVERSÃO ===');
       console.error('Erro:', error);
       
-      // Mensagens de erro específicas para a API
+      // Mensagens de erro específicas e melhoradas
       let errorMessage = 'Erro desconhecido na conversão';
       
       if (error.message?.includes('muito grande')) {
-        errorMessage = 'Arquivo muito grande para a API de compressão (tente um arquivo menor)';
+        errorMessage = 'Arquivo muito grande para a API (limite: ~10MB)';
       } else if (error.message?.includes('PDF inválido')) {
         errorMessage = 'O arquivo PDF está inválido ou corrompido';
-      } else if (error.message?.includes('conexão')) {
-        errorMessage = 'Erro de conexão com o servidor - verifique sua internet';
-      } else if (error.message?.includes('tempo limite')) {
-        errorMessage = 'Compressão demorou muito - tente novamente ou use um arquivo menor';
-      } else if (error.message?.includes('indisponível')) {
-        errorMessage = 'Serviço de compressão temporariamente indisponível - tente novamente em alguns minutos';
+      } else if (error.message?.includes('não foi possível conectar') || error.message?.includes('CORS')) {
+        errorMessage = 'Não foi possível conectar com a API de compressão. A API pode estar bloqueada pelo navegador ou indisponível.';
+      } else if (error.message?.includes('tempo limite') || error.message?.includes('cancelada')) {
+        errorMessage = 'A compressão demorou muito (mais de 2 minutos). Tente com um arquivo menor ou aguarde e tente novamente.';
+      } else if (error.message?.includes('temporariamente indisponível') || error.message?.includes('dormindo')) {
+        errorMessage = 'A API está temporariamente indisponível (pode estar "dormindo"). Aguarde 1-2 minutos e tente novamente.';
       } else if (error.message?.includes('servidor')) {
-        errorMessage = 'Erro interno do servidor de compressão - tente novamente';
+        errorMessage = 'Erro interno do servidor de compressão - tente novamente em alguns minutos';
+      } else if (error.message?.includes('rede') || error.message?.includes('conexão')) {
+        errorMessage = 'Problema de conectividade. Verifique sua internet e tente novamente.';
       } else if (error.message) {
         errorMessage = error.message;
       }
@@ -423,18 +425,24 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
         </Card>
       )}
 
-      {/* Error Message - melhorado */}
+      {/* Error Message - melhorado com mais detalhes */}
       {conversionError && (
         <Card className="w-full max-w-3xl p-3 bg-red-50 border border-red-200">
           <div className="text-red-700 text-sm">
             <div className="flex items-start space-x-2">
               <span className="font-semibold text-red-800">⚠️ Erro:</span>
-              <div>
+              <div className="flex-1">
                 <p className="font-medium">{conversionError}</p>
                 {selectedConversion === 'reduce-pdf' && (
-                  <p className="text-xs mt-1 text-red-600">
-                    Dica: Alguns PDFs já estão otimizados ou contêm imagens altamente comprimidas.
-                  </p>
+                  <div className="text-xs mt-2 text-red-600 space-y-1">
+                    <p><strong>Possíveis soluções:</strong></p>
+                    <ul className="list-disc list-inside space-y-1 ml-2">
+                      <li>Se a API está "dormindo", aguarde 1-2 minutos e tente novamente</li>
+                      <li>Verifique se o arquivo PDF não está corrompido</li>
+                      <li>Tente com um arquivo menor (menos de 10MB)</li>
+                      <li>Recarregue a página se o problema persistir</li>
+                    </ul>
+                  </div>
                 )}
               </div>
             </div>
@@ -442,7 +450,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
         </Card>
       )}
 
-      {/* Status de debug */}
+      {/* Status de debug melhorado */}
       <div className="w-full max-w-3xl p-2 text-xs text-gray-500 bg-gray-50 rounded">
         <strong>Debug:</strong> {selectedFiles.length} selecionado{selectedFiles.length !== 1 ? 's' : ''} | 
         {convertedFiles.length} convertido{convertedFiles.length !== 1 ? 's' : ''} | 
@@ -451,6 +459,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
         {selectedConversion === 'reduce-pdf' && selectedFiles.length > 0 && (
           <span> | Tamanho total: {(selectedFiles.reduce((acc, f) => acc + f.size, 0) / 1024 / 1024).toFixed(2)} MB</span>
         )}
+        <br />
+        <strong>API Status:</strong> https://compressor-api-tj3z.onrender.com/ (Render free tier - pode "dormir")
       </div>
     </div>
   );
