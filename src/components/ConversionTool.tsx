@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -425,7 +426,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
         </Card>
       )}
 
-      {/* Error Message - melhorado com mais detalhes */}
+      {/* Error Message */}
       {conversionError && (
         <Card className="w-full max-w-3xl p-3 bg-red-50 border border-red-200">
           <div className="text-red-700 text-sm">
@@ -433,35 +434,11 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
               <span className="font-semibold text-red-800">⚠️ Erro:</span>
               <div className="flex-1">
                 <p className="font-medium">{conversionError}</p>
-                {selectedConversion === 'reduce-pdf' && (
-                  <div className="text-xs mt-2 text-red-600 space-y-1">
-                    <p><strong>Possíveis soluções:</strong></p>
-                    <ul className="list-disc list-inside space-y-1 ml-2">
-                      <li>Se a API está "dormindo", aguarde 1-2 minutos e tente novamente</li>
-                      <li>Verifique se o arquivo PDF não está corrompido</li>
-                      <li>Tente com um arquivo menor (menos de 10MB)</li>
-                      <li>Recarregue a página se o problema persistir</li>
-                    </ul>
-                  </div>
-                )}
               </div>
             </div>
           </div>
         </Card>
       )}
-
-      {/* Status de debug melhorado */}
-      <div className="w-full max-w-3xl p-2 text-xs text-gray-500 bg-gray-50 rounded">
-        <strong>Debug:</strong> {selectedFiles.length} selecionado{selectedFiles.length !== 1 ? 's' : ''} | 
-        {convertedFiles.length} convertido{convertedFiles.length !== 1 ? 's' : ''} | 
-        Convertendo: {isConverting ? 'Sim' : 'Não'} | 
-        Botão visível: {showDownloadButton ? 'Sim' : 'Não'}
-        {selectedConversion === 'reduce-pdf' && selectedFiles.length > 0 && (
-          <span> | Tamanho total: {(selectedFiles.reduce((acc, f) => acc + f.size, 0) / 1024 / 1024).toFixed(2)} MB</span>
-        )}
-        <br />
-        <strong>API Status:</strong> https://compressor-api-tj3z.onrender.com/ (Render free tier - pode "dormir")
-      </div>
     </div>
   );
 };
