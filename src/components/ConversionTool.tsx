@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -43,6 +42,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   const [convertedFiles, setConvertedFiles] = useState<ConvertedFile[]>([]);
   const [selectedConversion, setSelectedConversion] = useState<ConversionType>(propConversionType || 'png-jpg');
   const [conversionError, setConversionError] = useState<string | null>(null);
+  const [localProgress, setLocalProgress] = useState(0);
   
   const { convertFiles, isConverting, progress } = useFileConverter();
 
@@ -100,6 +100,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     
     setConversionError(null);
     setConvertedFiles([]);
+    setLocalProgress(0);
 
     try {
       // Improved progress tracking for reduce-pdf
@@ -109,16 +110,16 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
           if (progress <= 15) {
             // Gradual increase from 0 to 15
             const smoothProgress = Math.min(progress, 15);
-            setProgress(smoothProgress);
+            setLocalProgress(smoothProgress);
           } else {
             // Smooth progression from 15 to 100 with smaller increments
             const baseProgress = 15;
             const remainingProgress = progress - 15;
             const scaledProgress = baseProgress + (remainingProgress * 0.85);
-            setProgress(Math.min(scaledProgress, 100));
+            setLocalProgress(Math.min(scaledProgress, 100));
           }
         } else {
-          setProgress(progress);
+          setLocalProgress(progress);
         }
       };
 
@@ -254,6 +255,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   const isPngJpg = selectedConversion === 'png-jpg';
   const textColor = isReducePdf ? 'text-white' : 'text-black';
   const showDownloadButton = convertedFiles.length > 0 && !isConverting;
+  const currentProgress = selectedConversion === 'reduce-pdf' ? localProgress : progress;
 
   const organizeFilesInColumns = (files: File[]) => {
     const filesPerColumn = 5;
@@ -439,9 +441,9 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-800">Convertendo...</span>
-              <span className="text-sm font-medium" style={{ color: conversionColor }}>{progress}%</span>
+              <span className="text-sm font-medium" style={{ color: conversionColor }}>{currentProgress}%</span>
             </div>
-            <Progress value={progress} className="h-2" indicatorColor={conversionColor} />
+            <Progress value={currentProgress} className="h-2" indicatorColor={conversionColor} />
           </div>
         </Card>
       )}
