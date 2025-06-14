@@ -131,17 +131,21 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       console.error('[ConversionTool] === ERRO NA CONVERSÃO ===');
       console.error('Erro:', error);
       
-      // Mensagens de erro mais específicas
+      // Mensagens de erro específicas para a API
       let errorMessage = 'Erro desconhecido na conversão';
       
-      if (error.message?.includes('PDF inválido')) {
+      if (error.message?.includes('muito grande')) {
+        errorMessage = 'Arquivo muito grande para a API de compressão (tente um arquivo menor)';
+      } else if (error.message?.includes('PDF inválido')) {
         errorMessage = 'O arquivo PDF está inválido ou corrompido';
-      } else if (error.message?.includes('protegido por senha')) {
-        errorMessage = 'Não é possível comprimir PDFs protegidos por senha';
-      } else if (error.message?.includes('metadados')) {
-        errorMessage = 'Erro nos metadados do PDF. Tente outro arquivo.';
-      } else if (error.message?.includes('muito grande')) {
-        errorMessage = 'Arquivo muito grande. Tente um arquivo menor.';
+      } else if (error.message?.includes('conexão')) {
+        errorMessage = 'Erro de conexão com o servidor - verifique sua internet';
+      } else if (error.message?.includes('tempo limite')) {
+        errorMessage = 'Compressão demorou muito - tente novamente ou use um arquivo menor';
+      } else if (error.message?.includes('indisponível')) {
+        errorMessage = 'Serviço de compressão temporariamente indisponível - tente novamente em alguns minutos';
+      } else if (error.message?.includes('servidor')) {
+        errorMessage = 'Erro interno do servidor de compressão - tente novamente';
       } else if (error.message) {
         errorMessage = error.message;
       }
