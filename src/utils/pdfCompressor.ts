@@ -1,3 +1,4 @@
+
 export interface CompressionOptions {
   quality?: number;
   removeMetadata?: boolean;
@@ -10,99 +11,110 @@ export const compressPdfClientSide = async (
 ): Promise<File> => {
   console.log('[PDFCompressor] === INICIANDO COMPRESSÃO COM API ===');
   console.log(`[PDFCompressor] Arquivo: ${file.name}, Tamanho: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
+  console.log(`[PDFCompressor] Tipo do arquivo: ${file.type}`);
   
-  // Validar se é um arquivo PDF
-  if (!file.name.toLowerCase().endsWith('.pdf')) {
+  // Validação mais flexível do arquivo PDF
+  const fileName = file.name.toLowerCase();
+  const isValidPdf = fileName.endsWith('.pdf') || file.type === 'application/pdf' || file.type.includes('pdf');
+  
+  if (!isValidPdf) {
     throw new Error('Por favor, envie um arquivo PDF válido.');
   }
 
   try {
-    console.log('[PDFCompressor] Preparando envio para API...');
+    console.log('[PDFCompressor] Preparando FormData...');
     
-    // Criar FormData para envio
+    // Criar FormData simples
     const formData = new FormData();
-    formData.append("file", file);
+    formData.append("file", file, file.name);
     
-    console.log('[PDFCompressor] Enviando para API de compressão...');
-    console.log('[PDFCompressor] URL da API: https://compressor-api-tj3z.onrender.com/compress');
+    console.log('[PDFCompressor] Enviando para API...');
+    console.log('[PDFCompressor] URL:', 'https://compressor-api-tj3z.onrender.com/compress');
     
-    // Fazer requisição para a API com timeout aumentado
-    const controller = new AbortController();
-    const timeoutId = setTimeout(() => controller.abort(), 120000); // 2 minutos
-    
+    // Requisição mais simples e direta
     const response = await fetch("https://compressor-api-tj3z.onrender.com/compress", {
       method: "POST",
       body: formData,
-      signal: controller.signal,
-      headers: {
-        // Não definir Content-Type para permitir boundary automático do FormData
-      }
+      // Remover headers personalizados - deixar o browser definir automaticamente
+      mode: 'cors', // Explicitamente definir modo CORS
     });
     
-    clearTimeout(timeoutId);
-    
     console.log('[PDFCompressor] Status da resposta:', response.status);
-    console.log('[PDFCompressor] Headers da resposta:', Object.fromEntries(response.headers.entries()));
+    console.log('[PDFCompressor] OK?', response.ok);
     
     if (!response.ok) {
-      console.error('[PDFCompressor] Erro na API:', response.status, response.statusText);
+      console.error('[PDFCompressor] Resposta não OK:', response.status, response.statusText);
       
-      // Tentar ler o corpo da resposta para mais detalhes
+      // Tentar ler detalhes do erro
       let errorDetails = '';
       try {
-        const errorText = await response.text();
-        console.error('[PDFCompressor] Detalhes do erro:', errorText);
-        errorDetails = errorText;
+        const contentType = response.headers.get('content-type');
+        console.log('[PDFCompressor] Content-Type da resposta:', contentType);
+        
+        if (contentType && contentType.includes('application/json')) {
+          const errorJson = await response.json();
+          errorDetails = errorJson.detail || errorJson.message || JSON.stringify(errorJson);
+        } else {
+          errorDetails = await response.text();
+        }
+        console.error('[PDFCompressor] Detalhes do erro:', errorDetails);
       } catch (e) {
-        console.error('[PDFCompressor] Não foi possível ler detalhes do erro');
+        console.error('[PDFCompressor] Não foi possível ler detalhes do erro:', e);
       }
       
-      // Mensagens de erro mais específicas baseadas no status
-      if (response.status === 413) {
-        throw new Error('Arquivo muito grande para compressão (limite da API: ~10MB)');
-      } else if (response.status === 400) {
-        throw new Error('Arquivo PDF inválido ou corrompido');
-      } else if (response.status === 500) {
-        throw new Error('Erro interno do servidor de compressão');
-      } else if (response.status === 503 || response.status === 502) {
-        throw new Error('Servidor de compressão temporariamente indisponível (API pode estar "dormindo" - tente novamente em 1 minuto)');
-      } else if (response.status === 429) {
-        throw new Error('Muitas requisições - aguarde um momento e tente novamente');
-      } else {
-        throw new Error(`Erro na API de compressão (${response.status}): ${errorDetails || response.statusText}`);
+      // Mensagens de erro específicas
+      switch (response.status) {
+        case 413:
+          throw new Error('Arquivo muito grande para compressão (limite da API excedido)');
+        case 400:
+          throw new Error(`Arquivo PDF inválido: ${errorDetails || 'formato não suportado'}`);
+        case 422:
+          throw new Error(`Erro de validação: ${errorDetails || 'dados inválidos'}`);
+        case 500:
+          throw new Error('Erro interno do servidor de compressão');
+        case 503:
+        case 502:
+          throw new Error('Servidor temporariamente indisponível (pode estar inicializando)');
+        case 429:
+          throw new Error('Muitas requisições - aguarde e tente novamente');
+        default:
+          throw new Error(`Erro da API (${response.status}): ${errorDetails || response.statusText}`);
       }
     }
     
-    console.log('[PDFCompressor] Recebendo arquivo comprimido...');
+    console.log('[PDFCompressor] Processando resposta...');
     
-    // Receber o blob comprimido
+    // Verificar content-type da resposta
+    const contentType = response.headers.get('content-type');
+    console.log('[PDFCompressor] Content-Type da resposta:', contentType);
+    
     const compressedBlob = await response.blob();
+    console.log('[PDFCompressor] Blob recebido - Tamanho:', compressedBlob.size, 'Tipo:', compressedBlob.type);
     
-    // Verificar se recebemos um arquivo válido
+    // Verificações de segurança
     if (compressedBlob.size === 0) {
-      throw new Error('Arquivo comprimido está vazio - possível erro na API');
+      throw new Error('Arquivo comprimido está vazio');
     }
     
-    // Verificar se recebemos realmente um PDF
-    if (compressedBlob.type && !compressedBlob.type.includes('pdf')) {
-      console.warn('[PDFCompressor] Tipo de arquivo recebido:', compressedBlob.type);
+    if (compressedBlob.size >= file.size) {
+      console.warn('[PDFCompressor] Arquivo comprimido é maior ou igual ao original');
     }
     
-    // Calcular redução de tamanho
+    // Calcular estatísticas
     const originalSize = file.size;
     const compressedSize = compressedBlob.size;
-    const reduction = ((originalSize - compressedSize) / originalSize * 100);
+    const reduction = originalSize > 0 ? ((originalSize - compressedSize) / originalSize * 100) : 0;
     
     console.log(`[PDFCompressor] === RESULTADO ===`);
     console.log(`[PDFCompressor] Original: ${(originalSize / 1024 / 1024).toFixed(2)} MB`);
     console.log(`[PDFCompressor] Comprimido: ${(compressedSize / 1024 / 1024).toFixed(2)} MB`);
     console.log(`[PDFCompressor] Redução: ${reduction.toFixed(1)}%`);
     
-    // Criar nome do arquivo comprimido
+    // Criar nome do arquivo final
     const nameWithoutExt = file.name.replace(/\.pdf$/i, '');
     const compressedFileName = `${nameWithoutExt}_comprimido.pdf`;
     
-    // Criar o arquivo final
+    // Criar arquivo final com tipo correto
     const resultFile = new File([compressedBlob], compressedFileName, { 
       type: 'application/pdf',
       lastModified: Date.now()
@@ -110,50 +122,45 @@ export const compressPdfClientSide = async (
 
     console.log(`[PDFCompressor] === SUCESSO ===`);
     console.log(`[PDFCompressor] Arquivo final: ${resultFile.name}`);
-    console.log(`[PDFCompressor] Redução final: ${reduction.toFixed(1)}%`);
-    
-    if (reduction < 1) {
-      console.warn('[PDFCompressor] AVISO: Redução mínima - PDF já estava otimizado');
-    }
     
     return resultFile;
 
   } catch (error) {
-    console.error('[PDFCompressor] === ERRO ===');
-    console.error('[PDFCompressor] Tipo do erro:', error.name);
+    console.error('[PDFCompressor] === ERRO CAPTURADO ===');
+    console.error('[PDFCompressor] Nome do erro:', error.name);
     console.error('[PDFCompressor] Mensagem:', error.message);
-    console.error('[PDFCompressor] Detalhes completos:', error);
+    console.error('[PDFCompressor] Stack:', error.stack);
     
-    // Tratamento de erros de rede mais específico
-    if (error.name === 'AbortError') {
-      throw new Error('Compressão cancelada - tempo limite de 2 minutos excedido. A API pode estar lenta.');
-    } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
-      // Erro de rede
-      if (error.message.includes('Failed to fetch')) {
-        throw new Error('Não foi possível conectar com a API. Verifique se a URL está correta ou se há bloqueio de CORS.');
-      } else {
-        throw new Error('Erro de conexão de rede - verifique sua internet ou tente novamente');
+    // Tratamento de erros específicos
+    if (error.name === 'TypeError') {
+      if (error.message.includes('Failed to fetch') || error.message.includes('fetch')) {
+        throw new Error('Não foi possível conectar com a API. Verifique se a URL está acessível.');
       }
-    } else if (error.message && error.message.includes('NetworkError')) {
-      throw new Error('Erro de rede - a API pode estar indisponível ou bloqueada pelo navegador');
-    } else if (error.message) {
-      throw error; // Repassar erros já tratados
-    } else {
-      throw new Error('Erro desconhecido na compressão do PDF');
     }
+    
+    if (error.name === 'NetworkError') {
+      throw new Error('Erro de rede - verifique sua conexão com a internet');
+    }
+    
+    // Se já é um erro tratado, repassa
+    if (error.message && typeof error.message === 'string') {
+      throw error;
+    }
+    
+    // Erro genérico
+    throw new Error('Erro desconhecido na compressão do PDF');
   }
 };
 
 export const getEstimatedCompressionInfo = (fileSize: number) => {
   const sizeMB = fileSize / 1024 / 1024;
   
-  // Estimativas mais realistas para compressão server-side
-  let estimatedReduction = 20; // API geralmente consegue melhor compressão
+  let estimatedReduction = 25; // Estimativa realista para API externa
   
   if (sizeMB > 10) {
-    estimatedReduction = 30;
+    estimatedReduction = 35;
   } else if (sizeMB > 5) {
-    estimatedReduction = 25;
+    estimatedReduction = 30;
   }
   
   const estimatedSizeMB = sizeMB * (1 - estimatedReduction / 100);
