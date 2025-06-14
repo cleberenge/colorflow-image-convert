@@ -20,7 +20,7 @@ export const useFileConverter = () => {
     }
   };
 
-  const convertFiles = async (files: File[], conversionType: ConversionType) => {
+  const convertFiles = async (files: File[], conversionType: ConversionType, progressCallback?: (progress: number) => void) => {
     try {
       // Reset progress
       currentProgress = 0;
@@ -29,14 +29,17 @@ export const useFileConverter = () => {
       // Validate file count
       validateFileCount(files);
 
+      // Use custom progress callback if provided, otherwise use default
+      const progressUpdate = progressCallback || updateProgress;
+
       // Initial progress
-      updateProgress(5);
+      progressUpdate(5);
 
       let convertedFiles: ConvertedFile[];
 
       // All conversions now handled client-side only
       if (['png-jpg', 'jpg-pdf', 'split-pdf', 'merge-pdf', 'reduce-pdf'].includes(conversionType)) {
-        convertedFiles = await convertClientSide(files, conversionType, updateProgress);
+        convertedFiles = await convertClientSide(files, conversionType, progressUpdate);
       } else {
         throw new Error(`Tipo de conversão não suportado: ${conversionType}`);
       }

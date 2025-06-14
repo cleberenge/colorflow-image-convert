@@ -102,7 +102,27 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     setConvertedFiles([]);
 
     try {
-      const results = await convertFiles(selectedFiles, selectedConversion);
+      // Improved progress tracking for reduce-pdf
+      const progressCallback = (progress: number) => {
+        if (selectedConversion === 'reduce-pdf') {
+          // More granular progress updates for PDF compression
+          if (progress <= 15) {
+            // Gradual increase from 0 to 15
+            const smoothProgress = Math.min(progress, 15);
+            setProgress(smoothProgress);
+          } else {
+            // Smooth progression from 15 to 100 with smaller increments
+            const baseProgress = 15;
+            const remainingProgress = progress - 15;
+            const scaledProgress = baseProgress + (remainingProgress * 0.85);
+            setProgress(Math.min(scaledProgress, 100));
+          }
+        } else {
+          setProgress(progress);
+        }
+      };
+
+      const results = await convertFiles(selectedFiles, selectedConversion, progressCallback);
       
       console.log('[ConversionTool] === CONVERSÃO CONCLUÍDA ===');
       console.log('- Arquivos convertidos:', results.length);
@@ -405,7 +425,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
                   }}
                 >
                   <Download className="w-4 h-4 mr-2" />
-                  Baixar ({convertedFiles.length} arquivo{convertedFiles.length > 1 ? 's' : ''})
+                  {isReducePdf ? 'Baixar' : `Baixar (${convertedFiles.length} arquivo${convertedFiles.length > 1 ? 's' : ''})`}
                 </Button>
               )}
             </div>
