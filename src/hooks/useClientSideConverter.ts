@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { ConvertedFile, ConversionType } from '@/types/fileConverter';
 import { convertPngToJpg } from '@/utils/imageConverter';
@@ -35,7 +36,11 @@ export const useClientSideConverter = () => {
           };
           
           const compressedFile = await compressPdfClientSide(file, {}, fileProgressCallback);
-          convertedFiles.push({ file: compressedFile, originalName: file.name });
+          // Correctly create ConvertedFile object
+          convertedFiles.push({ 
+            file: compressedFile, 
+            originalName: file.name 
+          });
         }
       } else if (conversionType === 'png-jpg') {
         for (let i = 0; i < files.length; i++) {
