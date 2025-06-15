@@ -71,8 +71,8 @@ export const useClientSideConverter = () => {
         const splitFiles = await splitPdf(file);
         updateProgress(80);
         
-        splitFiles.forEach((splitFile, index) => {
-          // splitFile is already a File object from splitPdf
+        splitFiles.forEach((splitFile: File, index: number) => {
+          // splitFile is a File object from splitPdf
           convertedFiles.push({ 
             file: splitFile, 
             originalName: `${file.name}-page-${index + 1}` 
