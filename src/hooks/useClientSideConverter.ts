@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { ConvertedFile, ConversionType } from '@/types/fileConverter';
 import { convertPngToJpg } from '@/utils/imageConverter';
@@ -68,26 +67,21 @@ export const useClientSideConverter = () => {
         const file = files[0];
         updateProgress(20);
         
-        const splitFiles = await splitPdf(file);
+        // splitPdf returns ConvertedFile[], so we use it directly
+        const splitResult = await splitPdf(file);
         updateProgress(80);
         
-        splitFiles.forEach((splitFile: File, index: number) => {
-          // splitFile is a File object from splitPdf
-          convertedFiles.push({ 
-            file: splitFile, 
-            originalName: `${file.name}-page-${index + 1}` 
-          });
-        });
+        // splitResult is already ConvertedFile[], so we add them directly
+        convertedFiles.push(...splitResult);
       } else if (conversionType === 'merge-pdf') {
         updateProgress(20);
-        const mergedFile = await mergePdfs(files);
+        
+        // mergePdfs returns ConvertedFile[], so we use it directly
+        const mergeResult = await mergePdfs(files);
         updateProgress(80);
         
-        // mergedFile is a File object from mergePdfs
-        convertedFiles.push({ 
-          file: mergedFile, 
-          originalName: 'merged.pdf' 
-        });
+        // mergeResult is already ConvertedFile[], so we add them directly
+        convertedFiles.push(...mergeResult);
       }
 
       updateProgress(100);
