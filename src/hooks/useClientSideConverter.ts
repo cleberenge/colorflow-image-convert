@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { ConvertedFile, ConversionType } from '@/types/fileConverter';
 import { convertPngToJpg } from '@/utils/imageConverter';
@@ -75,7 +74,7 @@ export const useClientSideConverter = () => {
           convertedFiles.push({ 
             file: splitFile, 
             originalName: `${file.name}-page-${index + 1}` 
-          });
+          } as ConvertedFile);
         });
       } else if (conversionType === 'merge-pdf') {
         updateProgress(20);
@@ -85,7 +84,7 @@ export const useClientSideConverter = () => {
         convertedFiles.push({ 
           file: mergedFile, 
           originalName: 'merged.pdf' 
-        });
+        } as ConvertedFile);
       }
 
       updateProgress(100);
