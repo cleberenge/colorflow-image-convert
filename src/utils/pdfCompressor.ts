@@ -41,6 +41,7 @@ export const compressPdfClientSide = async (
     });
     
     console.log('[PDFCompressor] Resposta recebida - Status:', response.status, 'StatusText:', response.statusText);
+    console.log('[PDFCompressor] Content-Type da resposta:', response.headers.get('content-type'));
     
     if (!response.ok) {
       console.error('[PDFCompressor] Erro na resposta HTTP:', {
@@ -62,8 +63,85 @@ export const compressPdfClientSide = async (
       throw new Error(`Erro ao enviar o arquivo para compressão - ${errorMessage}`);
     }
     
-    const data = await response.json();
-    console.log('[PDFCompressor] Dados JSON recebidos:', data);
+    // Verificar o content-type para decidir como processar a resposta
+    const contentType = response.headers.get('content-type') || '';
+    console.log('[PDFCompressor] Content-Type detectado:', contentType);
+    
+    // Se for PDF direto, processar como blob
+    if (contentType.includes('application/pdf') || contentType.includes('application/octet-stream')) {
+      console.log('[PDFCompressor] Resposta é PDF direto, processando como blob...');
+      
+      if (progressCallback) progressCallback(90);
+      
+      const blob = await response.blob();
+      
+      console.log('[PDFCompressor] Blob recebido:', {
+        size: blob.size,
+        type: blob.type
+      });
+      
+      // Verificação básica
+      if (blob.size === 0) {
+        console.error('[PDFCompressor] Arquivo comprimido está vazio');
+        throw new Error('Arquivo comprimido está vazio');
+      }
+      
+      if (progressCallback) progressCallback(95);
+      
+      // Criar nome do arquivo
+      const compressedFileName = "compressed_" + file.name;
+      
+      // Criar arquivo final
+      const resultFile = new File([blob], compressedFileName, { 
+        type: 'application/pdf',
+        lastModified: Date.now()
+      });
+
+      // Log de estatísticas
+      const originalSize = file.size;
+      const compressedSize = resultFile.size;
+      const reduction = originalSize > 0 ? ((originalSize - compressedSize) / originalSize * 100) : 0;
+      
+      console.log(`[PDFCompressor] === RESULTADO FINAL (DIRETO) ===`);
+      console.log(`[PDFCompressor] Original: ${(originalSize / 1024 / 1024).toFixed(2)} MB`);
+      console.log(`[PDFCompressor] Comprimido: ${(compressedSize / 1024 / 1024).toFixed(2)} MB`);
+      console.log(`[PDFCompressor] Redução: ${reduction.toFixed(1)}%`);
+      console.log(`[PDFCompressor] === SUCESSO ===`);
+      
+      if (progressCallback) progressCallback(100);
+      
+      return resultFile;
+    }
+    
+    // Se for JSON, processar como task
+    let data;
+    try {
+      const responseText = await response.text();
+      console.log('[PDFCompressor] Texto da resposta:', responseText.substring(0, 200) + '...');
+      
+      data = JSON.parse(responseText);
+      console.log('[PDFCompressor] Dados JSON recebidos:', data);
+    } catch (jsonError) {
+      console.error('[PDFCompressor] Erro ao fazer parse do JSON:', jsonError);
+      console.error('[PDFCompressor] Resposta não é JSON válido, tentando como texto...');
+      
+      // Se não conseguir fazer parse, talvez seja um PDF com content-type errado
+      const blob = await response.blob();
+      if (blob.size > 0) {
+        console.log('[PDFCompressor] Tratando resposta como PDF (fallback)...');
+        
+        const compressedFileName = "compressed_" + file.name;
+        const resultFile = new File([blob], compressedFileName, { 
+          type: 'application/pdf',
+          lastModified: Date.now()
+        });
+        
+        if (progressCallback) progressCallback(100);
+        return resultFile;
+      }
+      
+      throw new Error('Resposta da API não é nem JSON nem PDF válido');
+    }
     
     if (!data.task_id) {
       console.error('[PDFCompressor] task_id não encontrado na resposta:', data);
@@ -208,6 +286,10 @@ export const compressPdfClientSide = async (
     
     if (error.message && error.message.includes('status')) {
       throw error; // Re-throw erros de status HTTP
+    }
+    
+    if (error.message && error.message.includes('JSON')) {
+      throw new Error('Erro na resposta da API: formato de dados inválido');
     }
     
     // Erro genérico com mais detalhes
