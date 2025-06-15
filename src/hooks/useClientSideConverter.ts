@@ -72,22 +72,20 @@ export const useClientSideConverter = () => {
         updateProgress(80);
         
         splitFiles.forEach((splitFile, index) => {
-          const convertedFile: ConvertedFile = { 
+          convertedFiles.push({ 
             file: splitFile, 
             originalName: `${file.name}-page-${index + 1}` 
-          };
-          convertedFiles.push(convertedFile);
+          });
         });
       } else if (conversionType === 'merge-pdf') {
         updateProgress(20);
         const mergedFile = await mergePdfs(files);
         updateProgress(80);
         
-        const convertedFile: ConvertedFile = { 
+        convertedFiles.push({ 
           file: mergedFile, 
           originalName: 'merged.pdf' 
-        };
-        convertedFiles.push(convertedFile);
+        });
       }
 
       updateProgress(100);
