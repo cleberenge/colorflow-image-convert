@@ -24,23 +24,14 @@ const MainContent: React.FC<MainContentProps> = ({
   const { t } = useLanguage();
 
   return (
-    <main className="flex-grow max-w-4xl mx-auto px-4 py-12" style={{ margin: '0 auto' }}>
-      <div className="text-center mb-12">
-        <h1 className="text-4xl font-bold mb-6 text-gray-700 animate-fade-in">
-          O melhor e mais rápido conversor
-        </h1>
-        <p className="text-xl text-gray-600 max-w-2xl mx-auto animate-fade-in">
-          {t.subtitle}
-        </p>
-      </div>
-      
+    <main className="flex-grow max-w-4xl mx-auto px-4 py-8" style={{ margin: '0 auto' }}>
       <ConversionSelector
         orderedConversions={orderedConversions}
         activeConversion={activeConversion}
         onConversionChange={onConversionChange}
       />
       
-      <div className="bg-white rounded-xl p-6">
+      <div className="bg-white rounded-xl p-6 mb-8">
         <ConversionTool 
           key={activeConversion}
           conversionType={activeConversion} 
