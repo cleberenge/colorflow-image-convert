@@ -25,7 +25,7 @@ const MainContent: React.FC<MainContentProps> = ({
 
   return (
     <main className="flex-grow max-w-4xl mx-auto px-4 py-12" style={{ margin: '0 auto' }}>
-      <div className="mb-12 max-w-3xl">
+      <div className="mb-12 max-w-3xl mx-auto">
         <h1 className="text-4xl font-bold mb-6 text-gray-700 animate-fade-in">
           O melhor e mais rápido conversor
         </h1>
