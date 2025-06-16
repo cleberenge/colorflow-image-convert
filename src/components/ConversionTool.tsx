@@ -43,6 +43,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   const [selectedConversion, setSelectedConversion] = useState<ConversionType>(propConversionType || 'png-jpg');
   const [conversionError, setConversionError] = useState<string | null>(null);
   const [localProgress, setLocalProgress] = useState(0);
+  const [progressMessage, setProgressMessage] = useState('');
   
   const { convertFiles, isConverting, progress } = useFileConverter();
 
@@ -87,6 +88,11 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     setConversionError(null);
   }, []);
 
+  const updateProgressWithMessage = useCallback((progress: number, message: string = '') => {
+    setLocalProgress(progress);
+    setProgressMessage(message);
+  }, []);
+
   const convertSelectedFiles = useCallback(async () => {
     if (selectedFiles.length === 0) {
       console.log('[ConversionTool] Nenhum arquivo selecionado para conversão');
@@ -101,25 +107,29 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     setConversionError(null);
     setConvertedFiles([]);
     setLocalProgress(0);
+    setProgressMessage('');
 
     try {
-      // Improved progress tracking for reduce-pdf
+      // Enhanced progress tracking for reduce-pdf with messages
       const progressCallback = (progress: number) => {
         if (selectedConversion === 'reduce-pdf') {
-          // More granular progress updates for PDF compression
-          if (progress <= 15) {
-            // Gradual increase from 0 to 15
-            const smoothProgress = Math.min(progress, 15);
-            setLocalProgress(smoothProgress);
+          // Detailed progress messages for PDF compression
+          if (progress <= 5) {
+            updateProgressWithMessage(progress, 'Enviando...');
+          } else if (progress <= 15) {
+            updateProgressWithMessage(progress, 'Processando...');
+          } else if (progress <= 50) {
+            updateProgressWithMessage(progress, 'Comprimindo...');
+          } else if (progress <= 85) {
+            updateProgressWithMessage(progress, 'Otimizando...');
+          } else if (progress <= 95) {
+            updateProgressWithMessage(progress, 'Finalizando...');
           } else {
-            // Smooth progression from 15 to 100 with smaller increments
-            const baseProgress = 15;
-            const remainingProgress = progress - 15;
-            const scaledProgress = baseProgress + (remainingProgress * 0.85);
-            setLocalProgress(Math.min(scaledProgress, 100));
+            updateProgressWithMessage(progress, 'Pronto para download');
           }
         } else {
           setLocalProgress(progress);
+          setProgressMessage('');
         }
       };
 
@@ -140,6 +150,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
           const reduction = ((originalFile.size - result.file.size) / originalFile.size * 100).toFixed(1);
           console.log(`[ConversionTool] Redução ${result.file.name}: ${reduction}% (${(originalFile.size / 1024 / 1024).toFixed(2)} MB → ${(result.file.size / 1024 / 1024).toFixed(2)} MB)`);
         });
+        updateProgressWithMessage(100, 'Pronto para download');
       }
       
       setConvertedFiles(results);
@@ -176,14 +187,16 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       
       setConversionError(errorMessage);
       setConvertedFiles([]);
+      setProgressMessage('');
     }
-  }, [selectedFiles, selectedConversion, convertFiles]);
+  }, [selectedFiles, selectedConversion, convertFiles, updateProgressWithMessage]);
 
   const clearFiles = useCallback(() => {
     console.log('[ConversionTool] Limpando arquivos');
     setSelectedFiles([]);
     setConvertedFiles([]);
     setConversionError(null);
+    setProgressMessage('');
   }, []);
 
   const downloadZip = useCallback(async () => {
@@ -435,15 +448,45 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
         </Card>
       )}
 
-      {/* Progress */}
+      {/* Enhanced Progress for PDF Compression */}
       {isConverting && (
-        <Card className="w-full max-w-3xl p-2 bg-white">
-          <div className="space-y-2">
+        <Card className="w-full max-w-3xl p-4 bg-white border border-gray-200">
+          <div className="space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-800">Convertendo...</span>
-              <span className="text-sm font-medium" style={{ color: conversionColor }}>{currentProgress}%</span>
+              <span className="text-sm font-medium text-gray-800">
+                {isReducePdf ? 'Comprimindo PDF' : 'Convertendo...'}
+              </span>
+              <span className="text-sm font-medium" style={{ color: conversionColor }}>
+                {currentProgress}%
+              </span>
             </div>
-            <Progress value={currentProgress} className="h-2" indicatorColor={conversionColor} />
+            
+            {/* Enhanced progress bar with custom styling for PDF compression */}
+            <div className="relative">
+              <Progress 
+                value={currentProgress} 
+                className="h-2 bg-gray-200 rounded-full overflow-hidden" 
+                indicatorColor={conversionColor} 
+              />
+              {isReducePdf && (
+                <div 
+                  className="absolute top-0 left-0 h-2 bg-gradient-to-r from-transparent to-white/20 rounded-full transition-all duration-300 ease-in-out"
+                  style={{ 
+                    width: `${currentProgress}%`,
+                    backgroundColor: conversionColor 
+                  }}
+                />
+              )}
+            </div>
+            
+            {/* Progress message for PDF compression */}
+            {isReducePdf && progressMessage && (
+              <div className="text-center">
+                <span className="text-xs text-gray-600 font-medium">
+                  {progressMessage}
+                </span>
+              </div>
+            )}
           </div>
         </Card>
       )}
