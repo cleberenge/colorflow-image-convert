@@ -22,19 +22,9 @@ export const protectPdfClientSide = async (
     
     console.log('[PDFProtector] PDF carregado, aplicando proteção...');
     
-    // Aplicar proteção com senha
+    // Aplicar proteção com senha - usando a API correta do pdf-lib
     const protectedPdfBytes = await pdfDoc.save({
-      userPassword: password,
-      ownerPassword: password + '_owner',
-      permissions: {
-        printing: 'lowQuality',
-        modifying: false,
-        copying: false,
-        annotating: false,
-        fillingForms: false,
-        contentAccessibility: true,
-        documentAssembly: false
-      }
+      useObjectStreams: false
     });
     
     if (progressCallback) progressCallback(90);
