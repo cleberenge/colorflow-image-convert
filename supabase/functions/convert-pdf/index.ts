@@ -1,3 +1,4 @@
+
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { PDFDocument } from "https://cdn.skypack.dev/pdf-lib@^1.17.1";
@@ -20,13 +21,19 @@ serve(async (req) => {
     
     console.log(`PDF operation type: ${conversionType}`);
 
-    if (conversionType === 'reduce-pdf') {
+    if (conversionType === 'protect-pdf') {
       const file = formData.get('file') as File;
+      const password = formData.get('password') as string;
+      
       if (!file) {
         throw new Error('No file provided');
       }
+      
+      if (!password) {
+        throw new Error('No password provided');
+      }
 
-      console.log('Iniciando compressão PDF');
+      console.log('Iniciando proteção PDF');
       console.log('Arquivo original:', file.name, 'Tamanho:', file.size, 'bytes');
       
       try {
@@ -44,44 +51,52 @@ serve(async (req) => {
         const originalPdf = await PDFDocument.load(arrayBuffer);
         console.log(`PDF carregado com ${originalPdf.getPageCount()} páginas`);
         
-        // Compressão otimizada
-        console.log('Aplicando compressão...');
-        const compressedBytes = await originalPdf.save({
-          useObjectStreams: true,
-          addDefaultPage: false,
-          updateFieldAppearances: false,
+        // Aplicar proteção com senha
+        console.log('Aplicando proteção com senha...');
+        const protectedBytes = await originalPdf.save({
+          userPassword: password,
+          ownerPassword: password + '_owner',
+          permissions: {
+            printing: 'lowQuality',
+            modifying: false,
+            copying: false,
+            annotating: false,
+            fillingForms: false,
+            contentAccessibility: true,
+            documentAssembly: false
+          }
         });
         
-        const finalSize = compressedBytes.length;
-        const compressionRatio = ((file.size - finalSize) / file.size * 100);
+        const finalSize = protectedBytes.length;
         
-        console.log('Compressão concluída:');
+        console.log('Proteção concluída:');
         console.log('- Tamanho original:', file.size, 'bytes');
-        console.log('- Tamanho comprimido:', finalSize, 'bytes');
-        console.log('- Redução:', compressionRatio.toFixed(2) + '%');
+        console.log('- Tamanho protegido:', finalSize, 'bytes');
         
-        // Validar se o PDF comprimido é válido
+        // Validar se o PDF protegido é válido
         if (finalSize < 200) {
-          throw new Error('PDF comprimido muito pequeno, possível corrupção');
+          throw new Error('PDF protegido muito pequeno, possível corrupção');
         }
         
         // Verificar se ainda é um PDF válido
-        const compressedHeader = new TextDecoder().decode(compressedBytes.slice(0, 5));
-        if (!compressedHeader.startsWith('%PDF-')) {
-          throw new Error('PDF comprimido não é válido');
+        const protectedHeader = new TextDecoder().decode(protectedBytes.slice(0, 5));
+        if (!protectedHeader.startsWith('%PDF-')) {
+          throw new Error('PDF protegido não é válido');
         }
         
-        console.log('PDF comprimido validado com sucesso');
+        console.log('PDF protegido validado com sucesso');
         
-        return new Response(compressedBytes, {
+        const originalName = file.name.replace(/\.pdf$/i, '');
+        const protectedFileName = `${originalName}_protegido.pdf`;
+        
+        return new Response(protectedBytes, {
           headers: {
             ...corsHeaders,
             'Content-Type': 'application/pdf',
             'Content-Length': finalSize.toString(),
-            'Content-Disposition': 'attachment; filename="compressed.pdf"',
-            'X-Compression-Ratio': compressionRatio.toFixed(2),
+            'Content-Disposition': `attachment; filename="${protectedFileName}"`,
             'X-Original-Size': file.size.toString(),
-            'X-Compressed-Size': finalSize.toString(),
+            'X-Protected-Size': finalSize.toString(),
           },
         });
 

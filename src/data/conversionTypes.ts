@@ -43,14 +43,14 @@ export const conversionTypes = [
     icon: '🔗' 
   },
   { 
-    id: 'reduce-pdf', 
+    id: 'protect-pdf', 
     label: { 
-      pt: 'Reduzir PDF', en: 'Reduce PDF', zh: '压缩PDF', es: 'Reducir PDF', 
-      fr: 'Réduire PDF', de: 'PDF reduzieren', hi: 'PDF कम करें', ar: 'تقليل PDF', 
-      ko: 'PDF 축소', ja: 'PDFを削減', ru: 'Уменьшить PDF'
+      pt: 'Proteger PDF', en: 'Protect PDF', zh: '保护PDF', es: 'Proteger PDF', 
+      fr: 'Protéger PDF', de: 'PDF schützen', hi: 'PDF सुरक्षित करें', ar: 'حماية PDF', 
+      ko: 'PDF 보호', ja: 'PDFを保護', ru: 'Защитить PDF'
     }, 
-    from: 'PDF', to: 'PDF Comprimido', 
-    icon: '📦' 
+    from: 'PDF', to: 'PDF Protegido', 
+    icon: '🔒' 
   }
 ];
 
@@ -60,6 +60,6 @@ export const getOrderedConversions = () => {
     conversionTypes[1], // JPG para PDF  
     conversionTypes[2], // Dividir PDF
     conversionTypes[3], // Juntar PDF
-    conversionTypes[4]  // Reduzir PDF
+    conversionTypes[4]  // Proteger PDF
   ];
 };

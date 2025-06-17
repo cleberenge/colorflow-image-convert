@@ -5,7 +5,7 @@ import { convertPngToJpg } from '@/utils/imageConverter';
 import { convertJpgToPdf } from '@/utils/pdfConverter';
 import { splitPdf } from '@/utils/pdfSplitter';
 import { mergePdfs } from '@/utils/pdfMerger';
-import { compressPdfClientSide } from '@/utils/pdfCompressor';
+import { protectPdfClientSide } from '@/utils/pdfProtector';
 
 export const useClientSideConverter = () => {
   const [isConverting, setIsConverting] = useState(false);
@@ -13,7 +13,8 @@ export const useClientSideConverter = () => {
   const convertClientSide = async (
     files: File[],
     conversionType: ConversionType,
-    updateProgress: (progress: number) => void
+    updateProgress: (progress: number) => void,
+    options?: { password?: string }
   ): Promise<ConvertedFile[]> => {
     setIsConverting(true);
     const convertedFiles: ConvertedFile[] = [];
@@ -21,11 +22,11 @@ export const useClientSideConverter = () => {
     try {
       updateProgress(5);
 
-      if (conversionType === 'reduce-pdf') {
-        // Para redução de PDF, processar um arquivo por vez
+      if (conversionType === 'protect-pdf') {
+        // Para proteção de PDF, processar um arquivo por vez
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
-          console.log(`[ClientSideConverter] Comprimindo PDF ${i + 1}/${files.length}: ${file.name}`);
+          console.log(`[ClientSideConverter] Protegendo PDF ${i + 1}/${files.length}: ${file.name}`);
           
           // Callback de progresso específico para este arquivo
           const fileProgressCallback = (progress: number) => {
@@ -35,10 +36,10 @@ export const useClientSideConverter = () => {
             updateProgress(Math.min(baseProgress + fileProgress, 95));
           };
           
-          const compressedFile = await compressPdfClientSide(file, {}, fileProgressCallback);
+          const protectedFile = await protectPdfClientSide(file, options?.password || '', fileProgressCallback);
           // Correctly create ConvertedFile object
           convertedFiles.push({ 
-            file: compressedFile, 
+            file: protectedFile, 
             originalName: file.name 
           });
         }
