@@ -6,7 +6,7 @@ const conversionColors: Record<ConversionType, string> = {
   'jpg-pdf': '#FF6B6B',
   'split-pdf': '#4ECDC4',
   'merge-pdf': '#45B7D1',
-  'protect-pdf': '#9B59B6'
+  'protect-pdf': '#D81159'
 };
 
 export const getConversionColor = (conversionType: ConversionType): string => {
