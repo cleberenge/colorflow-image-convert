@@ -14,9 +14,9 @@ interface MainContentProps {
   conversionTypes: any[];
 }
 
-const PayPalIcon = ({ className }: { className?: string }) => (
+const QRCodeIcon = ({ className }: { className?: string }) => (
   <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M7.076 21.337H2.47a.641.641 0 0 1-.633-.74L4.944.901C5.026.382 5.474 0 5.998 0h7.46c2.57 0 4.578.543 5.69 1.81 1.01 1.15 1.304 2.42 1.012 4.287-.023.143-.047.288-.077.437-.983 5.05-4.349 6.797-8.647 6.797h-2.19c-.524 0-.968.382-1.05.9l-1.12 7.106zm14.146-14.42a.17.17 0 0 0-.17-.17H18.15c-.092 0-.17.077-.17.17v2.383c0 .092.078.17.17.17h2.902c.092 0 .17-.078.17-.17V6.917z"/>
+    <path d="M3 3h6v6H3V3zm2 2v2h2V5H5zM3 15h6v6H3v-6zm2 2v2h2v-2H5zM15 3h6v6h-6V3zm2 2v2h2V5h-2zM11 5h2v2h-2V5zM5 11h2v2H5v-2zM11 11h2v2h-2v-2zM17 11h2v2h-2v-2zM11 17h2v2h-2v-2zM17 15h2v2h-2v-2zM19 17h2v2h-2v-2z"/>
   </svg>
 );
 
@@ -36,13 +36,12 @@ const MainContent: React.FC<MainContentProps> = ({
           <h1 className="text-4xl font-bold text-gray-700 animate-fade-in flex-1">
             O melhor e mais rápido conversor
           </h1>
-          <PayPalIcon className="w-16 h-16 text-gray-600 ml-4" />
+          <QRCodeIcon className="w-20 h-20 text-gray-600 ml-4" />
         </div>
         <div className="flex items-center justify-between">
           <p className="text-xl text-gray-600 animate-fade-in flex-1">
             {t.subtitle}
           </p>
-          <PayPalIcon className="w-12 h-12 text-gray-600 ml-4" />
         </div>
       </div>
       
