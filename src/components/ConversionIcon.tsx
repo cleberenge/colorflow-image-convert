@@ -81,12 +81,12 @@ const ConversionIcon: React.FC<ConversionIconProps> = ({ conversionType, classNa
             </svg>
           )
         };
-      case 'protect-pdf':
+      case 'reduce-pdf':
         return {
           color: '#D81159', // rosa escuro
           icon: (
             <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11V12z"/>
+              <path d="M6 2c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h7v-2H6V4h7v5h5v6h2V8l-6-6H6zm9.5 12L12 17.5 8.5 14 12 10.5 15.5 14z"/>
             </svg>
           )
         };
