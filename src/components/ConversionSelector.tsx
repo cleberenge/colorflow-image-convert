@@ -26,9 +26,7 @@ const ConversionSelector: React.FC<ConversionSelectorProps> = ({
           <button
             key={type.id}
             onClick={() => onConversionChange(type.id as ConversionType)}
-            className={`px-2 py-2 mx-0 flex items-center justify-center transition-all duration-300 flex-1 rounded-md relative hover:shadow-lg ${
-              activeConversion === type.id ? 'shadow-lg' : ''
-            }`}
+            className="px-2 py-2 mx-0 flex items-center justify-center transition-all duration-300 flex-1 rounded-md relative"
             style={{
               boxShadow: activeConversion === type.id 
                 ? `0 0 20px ${conversionColor}60, 0 0 40px ${conversionColor}30` 
