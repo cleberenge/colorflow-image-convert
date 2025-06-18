@@ -26,8 +26,8 @@ const ConversionSelector: React.FC<ConversionSelectorProps> = ({
           <button
             key={type.id}
             onClick={() => onConversionChange(type.id as ConversionType)}
-            className={`px-0 py-2 mx-0 flex items-center justify-center transition-all duration-300 hover:bg-white flex-1 rounded-md relative ${
-              activeConversion === type.id ? 'bg-white' : 'bg-transparent'
+            className={`px-0 py-2 mx-0 flex items-center justify-center transition-all duration-300 flex-1 rounded-md relative ${
+              activeConversion === type.id ? '' : 'bg-transparent'
             }`}
             style={{
               filter: activeConversion === type.id ? `drop-shadow(0 0 8px ${conversionColor}40)` : 'none'
