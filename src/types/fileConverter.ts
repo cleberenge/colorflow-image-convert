@@ -9,4 +9,4 @@ export type ConversionType =
   | 'jpg-pdf' 
   | 'split-pdf' 
   | 'merge-pdf' 
-  | 'protect-pdf';
+  | 'reduce-pdf';

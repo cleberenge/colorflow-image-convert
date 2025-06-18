@@ -33,7 +33,7 @@ const conversionOptions: ConversionOption[] = [
   { value: 'jpg-pdf', label: 'JPG para PDF', description: '' },
   { value: 'split-pdf', label: 'Dividir PDF', description: '' },
   { value: 'merge-pdf', label: 'Juntar PDF', description: '' },
-  { value: 'protect-pdf', label: 'Proteger PDF', description: '' },
+  { value: 'reduce-pdf', label: 'Reduzir PDF', description: '' },
 ];
 
 const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propConversionType, conversionInfo }) => {
@@ -44,7 +44,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   const [conversionError, setConversionError] = useState<string | null>(null);
   const [localProgress, setLocalProgress] = useState(0);
   const [progressMessage, setProgressMessage] = useState('');
-  const [password, setPassword] = useState('');
   
   const { convertFiles, isConverting, progress } = useFileConverter();
 
@@ -87,7 +86,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     setSelectedFiles([]);
     setConvertedFiles([]);
     setConversionError(null);
-    setPassword('');
   }, []);
 
   const updateProgressWithMessage = useCallback((progress: number, message: string = '') => {
@@ -98,12 +96,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   const convertSelectedFiles = useCallback(async () => {
     if (selectedFiles.length === 0) {
       console.log('[ConversionTool] Nenhum arquivo selecionado para conversão');
-      return;
-    }
-
-    // Validar senha para proteção de PDF
-    if (selectedConversion === 'protect-pdf' && !password.trim()) {
-      setConversionError('É necessário definir uma senha para proteger o PDF');
       return;
     }
 
@@ -118,18 +110,18 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     setProgressMessage('');
 
     try {
-      // Enhanced progress tracking for protect-pdf with messages
+      // Enhanced progress tracking for reduce-pdf with messages
       const progressCallback = (progress: number) => {
-        if (selectedConversion === 'protect-pdf') {
-          // Detailed progress messages for PDF protection
+        if (selectedConversion === 'reduce-pdf') {
+          // Detailed progress messages for PDF compression
           if (progress <= 5) {
             updateProgressWithMessage(progress, 'Enviando...');
           } else if (progress <= 15) {
             updateProgressWithMessage(progress, 'Processando...');
           } else if (progress <= 50) {
-            updateProgressWithMessage(progress, 'Protegendo...');
+            updateProgressWithMessage(progress, 'Comprimindo...');
           } else if (progress <= 85) {
-            updateProgressWithMessage(progress, 'Aplicando senha...');
+            updateProgressWithMessage(progress, 'Otimizando...');
           } else if (progress <= 95) {
             updateProgressWithMessage(progress, 'Finalizando...');
           } else {
@@ -141,7 +133,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
         }
       };
 
-      const results = await convertFiles(selectedFiles, selectedConversion, progressCallback, { password });
+      const results = await convertFiles(selectedFiles, selectedConversion, progressCallback);
       
       console.log('[ConversionTool] === CONVERSÃO CONCLUÍDA ===');
       console.log('- Arquivos convertidos:', results.length);
@@ -151,7 +143,13 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
         originalName: r.originalName 
       })));
       
-      if (selectedConversion === 'protect-pdf') {
+      // Para PDFs, verificar se houve redução de tamanho
+      if (selectedConversion === 'reduce-pdf') {
+        results.forEach((result, index) => {
+          const originalFile = selectedFiles[index];
+          const reduction = ((originalFile.size - result.file.size) / originalFile.size * 100).toFixed(1);
+          console.log(`[ConversionTool] Redução ${result.file.name}: ${reduction}% (${(originalFile.size / 1024 / 1024).toFixed(2)} MB → ${(result.file.size / 1024 / 1024).toFixed(2)} MB)`);
+        });
         updateProgressWithMessage(100, 'Pronto para download');
       }
       
@@ -174,13 +172,13 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       } else if (error.message?.includes('PDF inválido')) {
         errorMessage = 'O arquivo PDF está inválido ou corrompido';
       } else if (error.message?.includes('não foi possível conectar') || error.message?.includes('CORS')) {
-        errorMessage = 'Não foi possível conectar com a API de proteção. A API pode estar bloqueada pelo navegador ou indisponível.';
+        errorMessage = 'Não foi possível conectar com a API de compressão. A API pode estar bloqueada pelo navegador ou indisponível.';
       } else if (error.message?.includes('tempo limite') || error.message?.includes('cancelada')) {
-        errorMessage = 'A proteção demorou muito (mais de 2 minutos). Tente com um arquivo menor ou aguarde e tente novamente.';
+        errorMessage = 'A compressão demorou muito (mais de 2 minutos). Tente com um arquivo menor ou aguarde e tente novamente.';
       } else if (error.message?.includes('temporariamente indisponível') || error.message?.includes('dormindo')) {
         errorMessage = 'A API está temporariamente indisponível (pode estar "dormindo"). Aguarde 1-2 minutos e tente novamente.';
       } else if (error.message?.includes('servidor')) {
-        errorMessage = 'Erro interno do servidor de proteção - tente novamente em alguns minutos';
+        errorMessage = 'Erro interno do servidor de compressão - tente novamente em alguns minutos';
       } else if (error.message?.includes('rede') || error.message?.includes('conexão')) {
         errorMessage = 'Problema de conectividade. Verifique sua internet e tente novamente.';
       } else if (error.message) {
@@ -191,7 +189,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       setConvertedFiles([]);
       setProgressMessage('');
     }
-  }, [selectedFiles, selectedConversion, convertFiles, updateProgressWithMessage, password]);
+  }, [selectedFiles, selectedConversion, convertFiles, updateProgressWithMessage]);
 
   const clearFiles = useCallback(() => {
     console.log('[ConversionTool] Limpando arquivos');
@@ -199,7 +197,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     setConvertedFiles([]);
     setConversionError(null);
     setProgressMessage('');
-    setPassword('');
   }, []);
 
   const downloadZip = useCallback(async () => {
@@ -267,11 +264,11 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
 
   // All calculations and derived state after hooks
   const conversionColor = getConversionColor(selectedConversion);
-  const isProtectPdf = selectedConversion === 'protect-pdf';
+  const isReducePdf = selectedConversion === 'reduce-pdf';
   const isPngJpg = selectedConversion === 'png-jpg';
-  const textColor = isProtectPdf ? 'text-white' : 'text-black';
+  const textColor = isReducePdf ? 'text-white' : 'text-black';
   const showDownloadButton = convertedFiles.length > 0 && !isConverting;
-  const currentProgress = selectedConversion === 'protect-pdf' ? localProgress : progress;
+  const currentProgress = selectedConversion === 'reduce-pdf' ? localProgress : progress;
 
   const organizeFilesInColumns = (files: File[]) => {
     const filesPerColumn = 5;
@@ -299,7 +296,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       case 'jpg-pdf':
         return '.jpg,.jpeg';
       case 'split-pdf':
-      case 'protect-pdf':
+      case 'reduce-pdf':
       case 'merge-pdf':
         return '.pdf';
       default:
@@ -310,8 +307,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   const getUploadText = () => {
     if (selectedConversion === 'merge-pdf') {
       return 'PDFs para mesclar';
-    } else if (selectedConversion === 'protect-pdf') {
-      return 'PDF para proteger';
+    } else if (selectedConversion === 'reduce-pdf') {
+      return 'PDF para reduzir';
     } else if (selectedConversion === 'split-pdf') {
       return 'PDF para dividir';
     } else {
@@ -332,7 +329,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
         <div className="text-center">
           <input
             type="file"
-            multiple={selectedConversion !== 'protect-pdf' && selectedConversion !== 'split-pdf'}
+            multiple={selectedConversion !== 'reduce-pdf' && selectedConversion !== 'split-pdf'}
             accept={getAcceptedFileTypes()}
             onChange={handleFileSelect}
             className="hidden"
@@ -377,26 +374,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
                 ))}
               </SelectContent>
             </Select>
-            
-            {/* Password input for PDF protection */}
-            {selectedConversion === 'protect-pdf' && (
-              <div className="mt-2">
-                <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-1">
-                  Senha para proteger o PDF
-                </label>
-                <input
-                  type="password"
-                  id="password"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  placeholder="Digite uma senha segura"
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Esta senha será necessária para abrir o PDF protegido
-                </p>
-              </div>
-            )}
           </div>
         </Card>
       )}
@@ -434,14 +411,14 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
             <div className="flex items-center space-x-2 flex-wrap">
               <Button
                 onClick={convertSelectedFiles}
-                disabled={isConverting || (selectedConversion === 'protect-pdf' && !password.trim())}
+                disabled={isConverting}
                 className={`font-medium transition-all duration-300 ${isPngJpg ? 'text-black' : 'text-white'}`}
                 style={{ 
                   backgroundColor: conversionColor,
                   borderColor: conversionColor
                 }}
               >
-                {isConverting ? 'Convertendo...' : selectedConversion === 'protect-pdf' ? 'Proteger' : 'Converter'}
+                {isConverting ? 'Convertendo...' : 'Converter'}
               </Button>
               <Button
                 onClick={clearFiles}
@@ -463,7 +440,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
                   }}
                 >
                   <Download className="w-4 h-4 mr-2" />
-                  {isProtectPdf ? 'Baixar' : `Baixar (${convertedFiles.length} arquivo${convertedFiles.length > 1 ? 's' : ''})`}
+                  {isReducePdf ? 'Baixar' : `Baixar (${convertedFiles.length} arquivo${convertedFiles.length > 1 ? 's' : ''})`}
                 </Button>
               )}
             </div>
@@ -471,27 +448,27 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
         </Card>
       )}
 
-      {/* Enhanced Progress for PDF Protection */}
+      {/* Enhanced Progress for PDF Compression */}
       {isConverting && (
         <Card className="w-full max-w-3xl p-4 bg-white border border-gray-200">
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-800">
-                {isProtectPdf ? 'Protegendo PDF' : 'Convertendo...'}
+                {isReducePdf ? 'Comprimindo PDF' : 'Convertendo...'}
               </span>
               <span className="text-sm font-medium" style={{ color: conversionColor }}>
                 {currentProgress}%
               </span>
             </div>
             
-            {/* Enhanced progress bar with custom styling for PDF protection */}
+            {/* Enhanced progress bar with custom styling for PDF compression */}
             <div className="relative">
               <Progress 
                 value={currentProgress} 
                 className="h-2 bg-gray-200 rounded-full overflow-hidden" 
                 indicatorColor={conversionColor} 
               />
-              {isProtectPdf && (
+              {isReducePdf && (
                 <div 
                   className="absolute top-0 left-0 h-2 bg-gradient-to-r from-transparent to-white/20 rounded-full transition-all duration-300 ease-in-out"
                   style={{ 
@@ -502,8 +479,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
               )}
             </div>
             
-            {/* Progress message for PDF protection */}
-            {isProtectPdf && progressMessage && (
+            {/* Progress message for PDF compression */}
+            {isReducePdf && progressMessage && (
               <div className="text-center">
                 <span className="text-xs text-gray-600 font-medium">
                   {progressMessage}
