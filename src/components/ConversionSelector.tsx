@@ -19,7 +19,7 @@ const ConversionSelector: React.FC<ConversionSelectorProps> = ({
   const { language } = useLanguage();
 
   return (
-    <div className="flex justify-center mb-6 max-w-3xl mx-auto bg-gray-50 rounded-lg p-0.5">
+    <div className="flex justify-center mb-6 max-w-3xl mx-auto">
       {orderedConversions.map((type) => {
         const conversionColor = getConversionColor(type.id);
         return (
