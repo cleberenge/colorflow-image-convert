@@ -5,6 +5,7 @@ import ConversionSelector from '@/components/ConversionSelector';
 import PageLinksGrid from '@/components/PageLinksGrid';
 import { useLanguage } from '@/hooks/useLanguage';
 import { ConversionType } from '@/types/fileConverter';
+import { QrCode } from 'lucide-react';
 
 interface MainContentProps {
   orderedConversions: any[];
@@ -13,12 +14,6 @@ interface MainContentProps {
   pageLinks: any[];
   conversionTypes: any[];
 }
-
-const QRCodeIcon = ({ className }: { className?: string }) => (
-  <svg className={className} viewBox="0 0 24 24" fill="currentColor">
-    <path d="M3 3h6v6H3V3zm2 2v2h2V5H5zM3 15h6v6H3v-6zm2 2v2h2v-2H5zM15 3h6v6h-6V3zm2 2v2h2V5h-2zM11 5h2v2h-2V5zM5 11h2v2H5v-2zM11 11h2v2h-2v-2zM17 11h2v2h-2v-2zM11 17h2v2h-2v-2zM17 15h2v2h-2v-2zM19 17h2v2h-2v-2z"/>
-  </svg>
-);
 
 const MainContent: React.FC<MainContentProps> = ({
   orderedConversions,
@@ -36,7 +31,7 @@ const MainContent: React.FC<MainContentProps> = ({
           <h1 className="text-4xl font-bold text-gray-700 animate-fade-in flex-1">
             O melhor e mais rápido conversor
           </h1>
-          <QRCodeIcon className="w-20 h-20 text-gray-600 ml-4" />
+          <QrCode className="w-20 h-20 text-gray-600 ml-4" />
         </div>
         <div className="flex items-center justify-between">
           <p className="text-xl text-gray-600 animate-fade-in flex-1">
@@ -51,7 +46,7 @@ const MainContent: React.FC<MainContentProps> = ({
         onConversionChange={onConversionChange}
       />
       
-      <div className="bg-white rounded-xl p-6">
+      <div className="rounded-xl p-6">
         <ConversionTool 
           key={activeConversion}
           conversionType={activeConversion} 
