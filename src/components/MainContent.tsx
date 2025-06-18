@@ -5,7 +5,6 @@ import ConversionSelector from '@/components/ConversionSelector';
 import PageLinksGrid from '@/components/PageLinksGrid';
 import { useLanguage } from '@/hooks/useLanguage';
 import { ConversionType } from '@/types/fileConverter';
-import { QrCode } from 'lucide-react';
 
 interface MainContentProps {
   orderedConversions: any[];
@@ -27,17 +26,12 @@ const MainContent: React.FC<MainContentProps> = ({
   return (
     <main className="flex-grow max-w-4xl mx-auto px-4 py-12" style={{ margin: '0 auto' }}>
       <div className="mb-12 max-w-3xl mx-auto">
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-4xl font-bold text-gray-700 animate-fade-in flex-1">
-            O melhor e mais rápido conversor
-          </h1>
-          <QrCode className="w-20 h-20 text-gray-600 ml-4" />
-        </div>
-        <div className="flex items-center justify-between">
-          <p className="text-xl text-gray-600 animate-fade-in flex-1">
-            {t.subtitle}
-          </p>
-        </div>
+        <h1 className="text-4xl font-bold mb-6 text-gray-700 animate-fade-in">
+          O melhor e mais rápido conversor
+        </h1>
+        <p className="text-xl text-gray-600 animate-fade-in">
+          {t.subtitle}
+        </p>
       </div>
       
       <ConversionSelector
@@ -46,7 +40,7 @@ const MainContent: React.FC<MainContentProps> = ({
         onConversionChange={onConversionChange}
       />
       
-      <div className="rounded-xl p-6">
+      <div className="bg-white rounded-xl p-6">
         <ConversionTool 
           key={activeConversion}
           conversionType={activeConversion} 

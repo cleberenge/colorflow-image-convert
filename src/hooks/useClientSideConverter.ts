@@ -21,11 +21,11 @@ export const useClientSideConverter = () => {
     try {
       updateProgress(5);
 
-      if (conversionType === 'protect-pdf') {
-        // Para proteção de PDF, processar um arquivo por vez
+      if (conversionType === 'reduce-pdf') {
+        // Para redução de PDF, processar um arquivo por vez
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
-          console.log(`[ClientSideConverter] Protegendo PDF ${i + 1}/${files.length}: ${file.name}`);
+          console.log(`[ClientSideConverter] Comprimindo PDF ${i + 1}/${files.length}: ${file.name}`);
           
           // Callback de progresso específico para este arquivo
           const fileProgressCallback = (progress: number) => {
@@ -35,10 +35,10 @@ export const useClientSideConverter = () => {
             updateProgress(Math.min(baseProgress + fileProgress, 95));
           };
           
-          const protectedFile = await compressPdfClientSide(file, {}, fileProgressCallback);
+          const compressedFile = await compressPdfClientSide(file, {}, fileProgressCallback);
           // Correctly create ConvertedFile object
           convertedFiles.push({ 
-            file: protectedFile, 
+            file: compressedFile, 
             originalName: file.name 
           });
         }
