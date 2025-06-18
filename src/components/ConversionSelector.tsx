@@ -26,9 +26,18 @@ const ConversionSelector: React.FC<ConversionSelectorProps> = ({
           <button
             key={type.id}
             onClick={() => onConversionChange(type.id as ConversionType)}
-            className={`px-0 py-2 mx-0 flex items-center justify-center transition-all duration-300 hover:bg-white flex-1 rounded-md ${
+            className={`px-0 py-2 mx-0 flex items-center justify-center transition-all duration-300 hover:bg-white flex-1 rounded-md relative ${
               activeConversion === type.id ? 'bg-white' : 'bg-transparent'
             }`}
+            style={{
+              filter: activeConversion === type.id ? `drop-shadow(0 0 8px ${conversionColor}40)` : 'none'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.filter = `drop-shadow(0 0 12px ${conversionColor}60)`;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.filter = activeConversion === type.id ? `drop-shadow(0 0 8px ${conversionColor}40)` : 'none';
+            }}
           >
             <ConversionIcon conversionType={type.id} className="w-4 h-4 flex-shrink-0 mr-0.5" />
             <span 

@@ -9,7 +9,7 @@ export const getConversionColor = (conversionType: string) => {
     'compress-video': '#8B5CF6', // roxo
     'split-pdf': '#559cad', // azul claro (era do pdf-word)
     'merge-pdf': '#F59E0B', // âmbar
-    'reduce-pdf': '#D81159' // rosa escuro (era do png-jpg)
+    'protect-pdf': '#D81159' // rosa escuro (mantendo a cor anterior do reduce-pdf)
   };
   
   return colorMap[conversionType] || '#6B7280';
@@ -25,7 +25,7 @@ export const getConversionColorHover = (conversionType: string) => {
     'compress-video': '#7C3AED', // roxo hover
     'split-pdf': '#4a8a9b', // azul claro hover (era do pdf-word)
     'merge-pdf': '#D97706',
-    'reduce-pdf': '#c70e4f' // rosa escuro hover (era do png-jpg)
+    'protect-pdf': '#c70e4f' // rosa escuro hover (mantendo a cor anterior do reduce-pdf)
   };
   
   return colorMap[conversionType] || '#4B5563';
