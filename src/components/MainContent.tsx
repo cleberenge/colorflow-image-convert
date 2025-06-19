@@ -25,13 +25,22 @@ const MainContent: React.FC<MainContentProps> = ({
 
   return (
     <main className="flex-grow max-w-4xl mx-auto px-4 py-12" style={{ margin: '0 auto' }}>
-      <div className="mb-12 max-w-3xl mx-auto">
-        <h1 className="text-4xl font-bold mb-6 text-gray-700 animate-fade-in">
-          O melhor e mais rápido conversor
-        </h1>
-        <p className="text-xl text-gray-600 animate-fade-in">
-          {t.subtitle}
-        </p>
+      <div className="mb-12 max-w-3xl mx-auto flex items-start gap-6">
+        <div className="flex-1">
+          <h1 className="text-4xl font-bold mb-6 text-gray-700 animate-fade-in">
+            O melhor e mais rápido conversor
+          </h1>
+          <p className="text-xl text-gray-600 animate-fade-in">
+            {t.subtitle}
+          </p>
+        </div>
+        <div className="flex-shrink-0 p-2">
+          <img 
+            src="/lovable-uploads/77d50457-0828-475f-95e6-d7265d0390fa.png" 
+            alt="QR Code" 
+            className="w-24 h-24 object-contain"
+          />
+        </div>
       </div>
       
       <ConversionSelector
