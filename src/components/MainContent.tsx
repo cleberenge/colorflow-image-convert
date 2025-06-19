@@ -38,16 +38,18 @@ const MainContent: React.FC<MainContentProps> = ({
           <img 
             src="/lovable-uploads/77d50457-0828-475f-95e6-d7265d0390fa.png" 
             alt="QR Code" 
-            className="w-32 h-32 object-contain"
+            className="w-40 h-40 object-contain"
           />
         </div>
       </div>
       
-      <ConversionSelector
-        orderedConversions={orderedConversions}
-        activeConversion={activeConversion}
-        onConversionChange={onConversionChange}
-      />
+      <div className="mt-5">
+        <ConversionSelector
+          orderedConversions={orderedConversions}
+          activeConversion={activeConversion}
+          onConversionChange={onConversionChange}
+        />
+      </div>
       
       <div className="bg-white rounded-xl p-6">
         <ConversionTool 
