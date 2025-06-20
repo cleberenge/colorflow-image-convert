@@ -28,7 +28,7 @@ const MainContent: React.FC<MainContentProps> = ({
       <div className="mb-12 max-w-3xl mx-auto flex items-start gap-6">
         <div className="flex-1">
           <h1 className="text-4xl font-bold mb-6 text-gray-700 animate-fade-in">
-            O melhor e mais rápido conversor
+            O melhor e mais rápido conversor de arquivos online
           </h1>
           <p className="text-xl text-gray-600 animate-fade-in">
             {t.subtitle}
