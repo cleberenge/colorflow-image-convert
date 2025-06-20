@@ -31,7 +31,7 @@ const MainContent: React.FC<MainContentProps> = ({
             O melhor e mais rápido conversor
           </h1>
           <p className="text-xl text-gray-600 animate-fade-in">
-            {t.subtitle}
+            Ferramenta gratuita e segura para conversão de arquivos online
           </p>
         </div>
         <div className="flex-shrink-0 p-2">
