@@ -1,4 +1,3 @@
-
 import React from 'react';
 import ConversionTool from '@/components/ConversionTool';
 import ConversionSelector from '@/components/ConversionSelector';
@@ -27,10 +26,10 @@ const MainContent: React.FC<MainContentProps> = ({
     <main className="flex-grow max-w-4xl mx-auto px-4 py-12" style={{ margin: '0 auto' }}>
       <div className="mb-12 max-w-3xl mx-auto flex items-start gap-6">
         <div className="flex-1">
-          <h1 className="text-4xl font-bold mb-2 text-gray-700 animate-fade-in">
+          <h1 className="text-4xl font-bold mb-2 text-gray-700 animate-fade-in block">
             O melhor e mais rápido conversor
           </h1>
-          <h2 className="text-xl text-gray-600 animate-fade-in mb-6">
+          <h2 className="text-xl text-gray-600 animate-fade-in mb-6 block">
             Ferramenta gratuita e segura para conversão de arquivos online
           </h2>
         </div>
