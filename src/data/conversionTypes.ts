@@ -51,6 +51,16 @@ export const conversionTypes = [
     }, 
     from: 'PDF', to: 'PDF Comprimido', 
     icon: '📦' 
+  },
+  { 
+    id: 'video-mp3', 
+    label: { 
+      pt: 'MP4 para MP3', en: 'MP4 to MP3', zh: 'MP4转MP3', es: 'MP4 a MP3', 
+      fr: 'MP4 vers MP3', de: 'MP4 zu MP3', hi: 'MP4 से MP3', ar: 'MP4 إلى MP3', 
+      ko: 'MP4를 MP3로', ja: 'MP4をMP3へ', ru: 'MP4 в MP3'
+    }, 
+    from: 'MP4', to: 'MP3', 
+    icon: '🎵' 
   }
 ];
 
@@ -60,6 +70,7 @@ export const getOrderedConversions = () => {
     conversionTypes[1], // JPG para PDF  
     conversionTypes[2], // Dividir PDF
     conversionTypes[3], // Juntar PDF
-    conversionTypes[4]  // Reduzir PDF
+    conversionTypes[4], // Reduzir PDF
+    conversionTypes[5]  // MP4 para MP3
   ];
 };

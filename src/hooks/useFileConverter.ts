@@ -3,13 +3,15 @@ import { useState } from 'react';
 import { ConvertedFile, ConversionType } from '@/types/fileConverter';
 import { validateFileCount } from '@/utils/fileValidation';
 import { useClientSideConverter } from '@/hooks/useClientSideConverter';
+import { useVideoConverter } from '@/hooks/useVideoConverter';
 
 export const useFileConverter = () => {
   const [progress, setProgress] = useState(0);
   
   const { convertClientSide, isConverting: isClientConverting } = useClientSideConverter();
+  const { convertVideoFiles, isConverting: isVideoConverting } = useVideoConverter();
 
-  const isConverting = isClientConverting;
+  const isConverting = isClientConverting || isVideoConverting;
 
   // Progress update function that ensures always increasing values
   let currentProgress = 0;
@@ -37,8 +39,10 @@ export const useFileConverter = () => {
 
       let convertedFiles: ConvertedFile[];
 
-      // All conversions now handled client-side only
-      if (['png-jpg', 'jpg-pdf', 'split-pdf', 'merge-pdf', 'reduce-pdf'].includes(conversionType)) {
+      // Handle video conversions separately
+      if (conversionType === 'video-mp3') {
+        convertedFiles = await convertVideoFiles(files, conversionType, progressUpdate);
+      } else if (['png-jpg', 'jpg-pdf', 'split-pdf', 'merge-pdf', 'reduce-pdf'].includes(conversionType)) {
         convertedFiles = await convertClientSide(files, conversionType, progressUpdate);
       } else {
         throw new Error(`Tipo de conversão não suportado: ${conversionType}`);

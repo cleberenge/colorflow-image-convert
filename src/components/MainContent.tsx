@@ -43,7 +43,7 @@ const MainContent: React.FC<MainContentProps> = ({
         </div>
       </div>
       
-      <div className="mt-1">
+      <div className="mt-0">
         <ConversionSelector
           orderedConversions={orderedConversions}
           activeConversion={activeConversion}
@@ -51,7 +51,7 @@ const MainContent: React.FC<MainContentProps> = ({
         />
       </div>
       
-      <div className="bg-white rounded-xl p-6 mt-1">
+      <div className="bg-white rounded-xl p-6 mt-0">
         <ConversionTool 
           key={activeConversion}
           conversionType={activeConversion} 
@@ -59,7 +59,7 @@ const MainContent: React.FC<MainContentProps> = ({
         />
       </div>
       
-      <div className="mt-1">
+      <div className="mt-0">
         <PageLinksGrid pageLinks={pageLinks} />
       </div>
     </main>

@@ -9,4 +9,5 @@ export type ConversionType =
   | 'jpg-pdf' 
   | 'split-pdf' 
   | 'merge-pdf' 
-  | 'reduce-pdf';
+  | 'reduce-pdf'
+  | 'video-mp3';

@@ -34,6 +34,7 @@ const conversionOptions: ConversionOption[] = [
   { value: 'split-pdf', label: 'Dividir PDF', description: '' },
   { value: 'merge-pdf', label: 'Juntar PDF', description: '' },
   { value: 'reduce-pdf', label: 'Reduzir PDF', description: '' },
+  { value: 'video-mp3', label: 'MP4 para MP3', description: '' },
 ];
 
 const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propConversionType, conversionInfo }) => {
@@ -299,6 +300,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       case 'reduce-pdf':
       case 'merge-pdf':
         return '.pdf';
+      case 'video-mp3':
+        return '.mp4,.avi,.mov,.wmv,.flv,.webm,.mkv,.m4v,.3gp';
       default:
         return '*';
     }
@@ -311,6 +314,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       return 'PDF para reduzir';
     } else if (selectedConversion === 'split-pdf') {
       return 'PDF para dividir';
+    } else if (selectedConversion === 'video-mp3') {
+      return 'vídeos para converter';
     } else {
       return 'até 25 arquivos';
     }
