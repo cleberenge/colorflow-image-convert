@@ -25,8 +25,8 @@ const MainContent: React.FC<MainContentProps> = ({
 
   return (
     <main className="flex-grow max-w-4xl mx-auto px-4 py-4" style={{ margin: '0 auto' }}>
-      <div className="mb-4 max-w-3xl mx-auto flex items-start gap-6">
-        <div className="flex-1">
+      <div className="mb-1 max-w-3xl mx-auto flex items-start gap-6">
+        <div className="flex-1 mt-8">
           <h1 className="text-4xl font-bold text-gray-700 animate-fade-in mb-1 leading-tight">
             O melhor e mais rápido
           </h1>
@@ -43,7 +43,7 @@ const MainContent: React.FC<MainContentProps> = ({
         </div>
       </div>
       
-      <div className="mt-2">
+      <div className="mt-1">
         <ConversionSelector
           orderedConversions={orderedConversions}
           activeConversion={activeConversion}
@@ -51,7 +51,7 @@ const MainContent: React.FC<MainContentProps> = ({
         />
       </div>
       
-      <div className="bg-white rounded-xl p-6 mt-2">
+      <div className="bg-white rounded-xl p-6 mt-1">
         <ConversionTool 
           key={activeConversion}
           conversionType={activeConversion} 
@@ -59,7 +59,7 @@ const MainContent: React.FC<MainContentProps> = ({
         />
       </div>
       
-      <div className="mt-2">
+      <div className="mt-1">
         <PageLinksGrid pageLinks={pageLinks} />
       </div>
     </main>
