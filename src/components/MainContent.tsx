@@ -24,9 +24,9 @@ const MainContent: React.FC<MainContentProps> = ({
   const { t } = useLanguage();
 
   return (
-    <main className="flex-grow max-w-4xl mx-auto px-4 py-2" style={{ margin: '0 auto' }}>
-      <div className="mb-2 max-w-3xl mx-auto flex items-start gap-6">
-        <div className="flex-1 mt-8">
+    <main className="flex-grow max-w-4xl mx-auto px-4 py-1" style={{ margin: '0 auto' }}>
+      <div className="mb-1 max-w-3xl mx-auto flex items-start gap-6">
+        <div className="flex-1 mt-6">
           <h1 className="text-4xl font-bold text-gray-700 animate-fade-in mb-0 leading-tight">
             O melhor e mais rápido
           </h1>
@@ -34,16 +34,16 @@ const MainContent: React.FC<MainContentProps> = ({
             Ferramenta gratuita e segura para conversão de arquivos
           </h2>
         </div>
-        <div className="flex-shrink-0 p-2">
+        <div className="flex-shrink-0 p-1">
           <img 
-            src="/lovable-uploads/77d50457-0828-475f-95e6-d7265d0390fa.png" 
+            src="/lovable-uploads/af40c844-9779-4d1b-8d71-02916751b93d.png" 
             alt="QR Code" 
             className="w-40 h-40 object-contain"
           />
         </div>
       </div>
       
-      <div className="-mt-2">
+      <div className="-mt-4">
         <ConversionSelector
           orderedConversions={orderedConversions}
           activeConversion={activeConversion}
@@ -51,7 +51,7 @@ const MainContent: React.FC<MainContentProps> = ({
         />
       </div>
       
-      <div className="bg-white rounded-xl p-6 -mt-2">
+      <div className="bg-white rounded-xl p-6 -mt-4">
         <ConversionTool 
           key={activeConversion}
           conversionType={activeConversion} 
@@ -59,7 +59,7 @@ const MainContent: React.FC<MainContentProps> = ({
         />
       </div>
       
-      <div className="-mt-2">
+      <div className="-mt-4">
         <PageLinksGrid pageLinks={pageLinks} />
       </div>
     </main>
