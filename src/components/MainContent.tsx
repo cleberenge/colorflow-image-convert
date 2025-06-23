@@ -34,23 +34,16 @@ const MainContent: React.FC<MainContentProps> = ({
             Ferramenta gratuita e segura para conversão de arquivos
           </h2>
         </div>
-        <div className="flex-shrink-0 p-1 relative">
+        <div className="flex-shrink-0 p-1">
           <img 
             src="/lovable-uploads/af40c844-9779-4d1b-8d71-02916751b93d.png" 
             alt="QR Code" 
             className="w-40 h-40 object-contain"
           />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <img 
-              src="/lovable-uploads/qr-center-logo.png" 
-              alt="Logo" 
-              className="w-8 h-8 object-contain bg-white rounded-sm p-1"
-            />
-          </div>
         </div>
       </div>
       
-      <div className="-mt-6">
+      <div className="-mt-3">
         <ConversionSelector
           orderedConversions={orderedConversions}
           activeConversion={activeConversion}
