@@ -34,28 +34,25 @@ const MainContent: React.FC<MainContentProps> = ({
             Ferramenta gratuita e segura para conversão de arquivos
           </h2>
         </div>
-        <div className="flex-shrink-0 p-1 relative flex flex-col items-center">
-          <div className="relative">
-            <img 
-              src="/lovable-uploads/af40c844-9779-4d1b-8d71-02916751b93d.png" 
-              alt="QR Code" 
-              className="w-40 h-40 object-contain"
-            />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-8 h-8 bg-white rounded-sm flex items-center justify-center" style={{ margin: '0.5px' }}>
-                <img 
-                  src="/lovable-uploads/7e61da39-146d-44c0-a98a-35e4e5c02466.png" 
-                  alt="Logo" 
-                  className="w-6 h-6 object-contain"
-                />
-              </div>
+        <div className="flex-shrink-0 p-1 relative">
+          <img 
+            src="/lovable-uploads/af40c844-9779-4d1b-8d71-02916751b93d.png" 
+            alt="QR Code" 
+            className="w-40 h-40 object-contain"
+          />
+          <div className="absolute inset-0 flex items-center justify-center">
+            <div className="w-8 h-8 bg-white rounded-sm flex items-center justify-center" style={{ margin: '1px' }}>
+              <img 
+                src="/lovable-uploads/7e61da39-146d-44c0-a98a-35e4e5c02466.png" 
+                alt="Logo" 
+                className="w-6 h-6 object-contain"
+              />
             </div>
           </div>
-          <p className="text-xs text-gray-500 mt-1">Donation</p>
         </div>
       </div>
       
-      <div className="mt-2">
+      <div className="-mt-3">
         <ConversionSelector
           orderedConversions={orderedConversions}
           activeConversion={activeConversion}
