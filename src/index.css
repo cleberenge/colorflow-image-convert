@@ -97,13 +97,22 @@
   }
 
   body {
-    background-color: #DBEAFE;
+    background-color: #DBEAFE !important;
     @apply text-foreground;
   }
 
   /* Área de upload personalizada */
   .upload-area {
     background-color: #986C6A !important;
+    color: #784F41 !important;
+  }
+
+  .upload-area svg {
+    color: #784F41 !important;
+  }
+
+  .upload-area * {
+    color: #784F41 !important;
   }
 }
 

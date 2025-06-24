@@ -34,9 +34,9 @@ const MainContent: React.FC<MainContentProps> = ({
             <h2 className="text-xl text-gray-600 animate-fade-in mb-0 leading-tight">
               Ferramenta gratuita e segura para conversão de arquivos
             </h2>
-            <p className="text-sm text-gray-500 mt-2">
+            <h2 className="text-xl text-gray-600 animate-fade-in mb-0 leading-tight mt-0">
               Mantenha esse projeto livre com uma doação
-            </p>
+            </h2>
           </div>
           <div className="flex-shrink-0 p-1 relative">
             <img 
@@ -45,7 +45,7 @@ const MainContent: React.FC<MainContentProps> = ({
               className="w-40 h-40 object-contain"
             />
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-8 h-8 bg-white rounded-sm flex items-center justify-center" style={{ margin: '1.5px' }}>
+              <div className="w-8 h-8 bg-white rounded-sm flex items-center justify-center" style={{ margin: '2px' }}>
                 <img 
                   src="/lovable-uploads/7e61da39-146d-44c0-a98a-35e4e5c02466.png" 
                   alt="Logo" 
