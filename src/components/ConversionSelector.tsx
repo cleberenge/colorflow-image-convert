@@ -19,16 +19,17 @@ const ConversionSelector: React.FC<ConversionSelectorProps> = ({
   const { language } = useLanguage();
 
   return (
-    <div className="flex justify-center mb-6 max-w-3xl mx-auto bg-gray-50 rounded-lg p-0.5">
+    <div className="flex justify-center mb-6 max-w-3xl mx-auto rounded-lg p-0.5" style={{ backgroundColor: '#DBEAFE' }}>
       {orderedConversions.map((type) => {
         const conversionColor = getConversionColor(type.id);
         return (
           <button
             key={type.id}
             onClick={() => onConversionChange(type.id as ConversionType)}
-            className={`px-0 py-2 mx-0 flex items-center justify-center transition-all duration-300 hover:bg-white flex-1 rounded-md ${
-              activeConversion === type.id ? 'bg-white' : 'bg-transparent'
+            className={`px-0 py-2 mx-0 flex items-center justify-center transition-all duration-300 flex-1 rounded-md ${
+              activeConversion === type.id ? 'hover:bg-gray-100' : 'bg-transparent hover:bg-gray-100'
             }`}
+            style={{ backgroundColor: activeConversion === type.id ? '#DBEAFE' : 'transparent' }}
           >
             <ConversionIcon conversionType={type.id} className="w-4 h-4 flex-shrink-0 mr-0.5" />
             <span 

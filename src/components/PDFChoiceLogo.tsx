@@ -10,14 +10,11 @@ const PDFChoiceLogo: React.FC<PDFChoiceLogoProps> = ({ className = "w-8 h-8", sh
   return (
     <div className="flex items-center space-x-3">
       <div className={`${className} flex items-center justify-center relative overflow-hidden`}>
-        <div className="w-full h-full flex items-center justify-center">
-          <div className="w-1 h-5 bg-red-500"></div>
-          <div className="w-1 h-5 bg-orange-500"></div>
-          <div className="w-1 h-5 bg-yellow-500"></div>
-          <div className="w-1 h-5 bg-blue-500"></div>
-          <div className="w-1 h-5 bg-purple-400"></div>
-          <div className="w-1 h-5 bg-pink-500"></div>
-        </div>
+        <img 
+          src="/lovable-uploads/61301c73-295a-4acd-8a69-c87c01ecda74.png" 
+          alt="ChoicePDF Logo" 
+          className="w-full h-full object-contain"
+        />
       </div>
       {showText && (
         <span className="text-black font-bold text-xl tracking-tight" style={{ fontFamily: '"Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>

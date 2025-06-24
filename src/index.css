@@ -114,6 +114,15 @@
   .upload-area * {
     color: #784F41 !important;
   }
+
+  /* Remove todos os backgrounds brancos */
+  .bg-white {
+    background-color: #DBEAFE !important;
+  }
+
+  .bg-gray-50 {
+    background-color: #DBEAFE !important;
+  }
 }
 
 a[href*="lovable.dev"], iframe[src*="lovable.dev"], div[style*="Edit with Lovable"], .lovable-badge {
