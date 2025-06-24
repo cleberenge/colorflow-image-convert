@@ -24,8 +24,8 @@ const MainContent: React.FC<MainContentProps> = ({
   const { t } = useLanguage();
 
   return (
-    <div className="min-h-screen" style={{ backgroundColor: '#DBEAFE' }}>
-      <main className="flex-grow max-w-4xl mx-auto px-4 py-1">
+    <div className="min-h-screen flex justify-center" style={{ backgroundColor: '#DBEAFE' }}>
+      <main className="flex-grow max-w-4xl px-4 py-1">
         <div className="mb-1 max-w-3xl mx-auto flex items-start gap-6">
           <div className="flex-1 mt-6">
             <h1 className="text-4xl font-bold text-gray-700 animate-fade-in mb-0 leading-tight">
@@ -40,12 +40,12 @@ const MainContent: React.FC<MainContentProps> = ({
           </div>
           <div className="flex-shrink-0 p-1 relative">
             <img 
-              src="/lovable-uploads/08f415a2-9728-4a96-bc37-7c407b25247e.png" 
-              alt="QR Code Background" 
+              src="/lovable-uploads/af40c844-9779-4d1b-8d71-02916751b93d.png" 
+              alt="QR Code" 
               className="w-40 h-40 object-contain"
             />
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-8 h-8 rounded-sm flex items-center justify-center bg-white" style={{ margin: '3px' }}>
+              <div className="w-8 h-8 rounded-sm flex items-center justify-center" style={{ backgroundColor: '#DBEAFE', margin: '3px' }}>
                 <img 
                   src="/lovable-uploads/7e61da39-146d-44c0-a98a-35e4e5c02466.png" 
                   alt="Logo" 
