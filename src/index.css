@@ -1,3 +1,4 @@
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -96,7 +97,13 @@
   }
 
   body {
-    @apply bg-background text-foreground;
+    background-color: #DBEAFE;
+    @apply text-foreground;
+  }
+
+  /* Área de upload personalizada */
+  .upload-area {
+    background-color: #986C6A !important;
   }
 }
 
