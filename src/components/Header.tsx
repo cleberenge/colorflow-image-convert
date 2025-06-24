@@ -10,7 +10,7 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ activeConversion = 'png-jpg' }) => {
   return (
-    <header className="w-full py-5 px-6 flex justify-start items-center bg-white">
+    <header className="w-full py-5 px-6 flex justify-start items-center" style={{ backgroundColor: '#DBEAFE' }}>
       <Link to="/" onClick={() => window.location.href = '/'}>
         <PDFChoiceLogo />
       </Link>

@@ -45,7 +45,7 @@ const MainContent: React.FC<MainContentProps> = ({
               className="w-40 h-40 object-contain"
             />
             <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-8 h-8 bg-white rounded-sm flex items-center justify-center" style={{ margin: '2px' }}>
+              <div className="w-8 h-8 bg-white rounded-sm flex items-center justify-center" style={{ margin: '2.5px' }}>
                 <img 
                   src="/lovable-uploads/7e61da39-146d-44c0-a98a-35e4e5c02466.png" 
                   alt="Logo" 
@@ -64,7 +64,7 @@ const MainContent: React.FC<MainContentProps> = ({
           />
         </div>
         
-        <div className="bg-white rounded-xl p-6 -mt-6">
+        <div className="rounded-xl p-6 -mt-6" style={{ backgroundColor: '#DBEAFE' }}>
           <ConversionTool 
             key={activeConversion}
             conversionType={activeConversion} 

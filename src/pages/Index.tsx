@@ -29,7 +29,7 @@ const Index = () => {
         <link rel="canonical" href="https://choicepdf.com/" />
       </Helmet>
       
-      <div className="min-h-screen bg-white text-gray-700">
+      <div className="min-h-screen text-gray-700" style={{ backgroundColor: '#DBEAFE' }}>
         <Header activeConversion={activeConversion} />
         
         <div className="flex">
@@ -58,7 +58,7 @@ const Index = () => {
         </div>
         
         {/* Footer */}
-        <footer className="w-full py-4 px-6 bg-gray-50">
+        <footer className="w-full py-4 px-6" style={{ backgroundColor: '#DBEAFE' }}>
           <div className="text-center">
             <p className="text-sm text-gray-600">
               © {new Date().getFullYear()} ChoicePDF. Todos os direitos reservados.
