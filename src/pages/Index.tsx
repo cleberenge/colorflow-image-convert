@@ -32,25 +32,13 @@ const Index = () => {
       <div className="min-h-screen text-gray-700" style={{ backgroundColor: '#DBEAFE' }}>
         <Header activeConversion={activeConversion} />
         
-        <div className="flex">
-          {/* Left ad space */}
-          <div className="hidden md:block w-[160px] h-full fixed left-0">
-            <div className="h-full" />
-          </div>
-          
-          <MainContent
-            orderedConversions={orderedConversions}
-            activeConversion={activeConversion}
-            onConversionChange={handleConversionChange}
-            pageLinks={pageLinks}
-            conversionTypes={conversionTypes}
-          />
-          
-          {/* Right ad space */}
-          <div className="hidden md:block w-[160px] h-full fixed right-0">
-            <div className="h-full" />
-          </div>
-        </div>
+        <MainContent
+          orderedConversions={orderedConversions}
+          activeConversion={activeConversion}
+          onConversionChange={handleConversionChange}
+          pageLinks={pageLinks}
+          conversionTypes={conversionTypes}
+        />
         
         {/* Bottom ad space */}
         <div className="w-full h-[90px] mt-8">

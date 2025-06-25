@@ -24,8 +24,8 @@ const MainContent: React.FC<MainContentProps> = ({
   const { t } = useLanguage();
 
   return (
-    <div className="min-h-screen flex justify-center" style={{ backgroundColor: '#DBEAFE' }}>
-      <main className="flex-grow max-w-4xl px-4 py-1">
+    <div className="min-h-screen" style={{ backgroundColor: '#DBEAFE' }}>
+      <main className="max-w-4xl mx-auto px-4 py-1">
         <div className="mb-1 max-w-3xl mx-auto flex items-start gap-6">
           <div className="flex-1 mt-6">
             <h1 className="text-4xl font-bold text-gray-700 animate-fade-in mb-0 leading-tight">
