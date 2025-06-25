@@ -30,7 +30,8 @@ export const conversionTypes = [
       ko: 'PDF 분할', ja: 'PDFを分割', ru: 'Разделить PDF'
     }, 
     from: 'PDF', to: 'PDFs Separados', 
-    icon: '✂️' 
+    icon: '✂️',
+    color: '#47E5BC'
   },
   { 
     id: 'merge-pdf', 

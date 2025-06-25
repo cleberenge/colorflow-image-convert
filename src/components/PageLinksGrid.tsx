@@ -30,7 +30,7 @@ const PageLinksGrid: React.FC<PageLinksGridProps> = ({ pageLinks }) => {
             e.currentTarget.style.backgroundColor = '#F7F9F9';
           }}
         >
-          <h3 className="font-semibold mb-1 text-base" style={{ color: '#B3B6B7' }}>
+          <h3 className="font-semibold mb-1 text-base" style={{ color: '#979A9A' }}>
             {link.title[language]}
           </h3>
           <p className="text-gray-600 text-xs leading-snug">{link.description[language]}</p>

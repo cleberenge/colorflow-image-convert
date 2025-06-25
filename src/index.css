@@ -101,7 +101,7 @@
     @apply text-foreground;
   }
 
-  /* Área de upload personalizada */
+  /* Área de upload personalizada - cor corrigida */
   .upload-area {
     background-color: #784F41 !important;
     color: #FFFFFF !important;

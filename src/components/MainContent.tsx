@@ -35,7 +35,7 @@ const MainContent: React.FC<MainContentProps> = ({
               Ferramenta gratuita e segura para conversão de arquivos
             </h2>
             <h2 className="text-xl text-gray-600 animate-fade-in mb-0 leading-tight mt-0">
-              Mantenha esse projeto livre com uma doação
+              Mantenha esse projeto livre com qualquer doação
             </h2>
           </div>
           <div className="flex-shrink-0 p-1 relative">
