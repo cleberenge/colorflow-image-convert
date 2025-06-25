@@ -101,7 +101,7 @@
     @apply text-foreground;
   }
 
-  /* Área de upload personalizada - cor corrigida para #784F41 */
+  /* Área de upload personalizada - cor corrigida */
   .upload-area {
     background-color: #784F41 !important;
     color: #FFFFFF !important;
@@ -113,13 +113,6 @@
 
   .upload-area * {
     color: #FFFFFF !important;
-  }
-
-  /* Cores do ConversionTool - área de upload #784F41 */
-  .conversion-tool .upload-area,
-  .conversion-tool [style*="background-color: #784F41"],
-  .conversion-tool div[class*="upload"] {
-    background-color: #784F41 !important;
   }
 
   /* Remove todos os backgrounds brancos */
