@@ -45,21 +45,21 @@ export const conversionTypes = [
   { 
     id: 'reduce-pdf', 
     label: { 
-      pt: 'Reduzir PDF', en: 'Reduce PDF', zh: '压缩PDF', es: 'Reducir PDF', 
-      fr: 'Réduire PDF', de: 'PDF reduzieren', hi: 'PDF कम करें', ar: 'تقليل PDF', 
-      ko: 'PDF 축소', ja: 'PDFを削減', ru: 'Уменьшить PDF'
+      pt: 'Reduzir JPG', en: 'Reduce JPG', zh: '压缩JPG', es: 'Reducir JPG', 
+      fr: 'Réduire JPG', de: 'JPG reduzieren', hi: 'JPG कम करें', ar: 'تقليل JPG', 
+      ko: 'JPG 축소', ja: 'JPGを削減', ru: 'Уменьшить JPG'
     }, 
-    from: 'PDF', to: 'PDF Comprimido', 
+    from: 'JPG', to: 'JPG Comprimido', 
     icon: '📦' 
   },
   { 
     id: 'video-mp3', 
     label: { 
-      pt: 'MP4 para MP3', en: 'MP4 to MP3', zh: 'MP4转MP3', es: 'MP4 a MP3', 
-      fr: 'MP4 vers MP3', de: 'MP4 zu MP3', hi: 'MP4 से MP3', ar: 'MP4 إلى MP3', 
-      ko: 'MP4를 MP3로', ja: 'MP4をMP3へ', ru: 'MP4 в MP3'
+      pt: 'Reduzir PNG', en: 'Reduce PNG', zh: '压缩PNG', es: 'Reducir PNG', 
+      fr: 'Réduire PNG', de: 'PNG reduzieren', hi: 'PNG कम करें', ar: 'تقليل PNG', 
+      ko: 'PNG 축소', ja: 'PNGを削減', ru: 'Уменьшить PNG'
     }, 
-    from: 'MP4', to: 'MP3', 
+    from: 'PNG', to: 'PNG Comprimido', 
     icon: '🎵' 
   }
 ];
@@ -70,7 +70,7 @@ export const getOrderedConversions = () => {
     conversionTypes[1], // JPG para PDF  
     conversionTypes[2], // Dividir PDF
     conversionTypes[3], // Juntar PDF
-    conversionTypes[4], // Reduzir PDF
-    conversionTypes[5]  // MP4 para MP3
+    conversionTypes[4], // Reduzir JPG
+    conversionTypes[5]  // Reduzir PNG
   ];
 };

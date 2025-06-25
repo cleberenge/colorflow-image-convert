@@ -103,16 +103,16 @@
 
   /* Área de upload personalizada */
   .upload-area {
-    background-color: #986C6A !important;
-    color: #784F41 !important;
+    background-color: #784F41 !important;
+    color: #FFFFFF !important;
   }
 
   .upload-area svg {
-    color: #784F41 !important;
+    color: #FFFFFF !important;
   }
 
   .upload-area * {
-    color: #784F41 !important;
+    color: #FFFFFF !important;
   }
 
   /* Remove todos os backgrounds brancos */

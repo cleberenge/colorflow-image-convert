@@ -40,19 +40,10 @@ const MainContent: React.FC<MainContentProps> = ({
           </div>
           <div className="flex-shrink-0 p-1 relative">
             <img 
-              src="/lovable-uploads/af40c844-9779-4d1b-8d71-02916751b93d.png" 
+              src="/lovable-uploads/fe65fafd-f469-4412-b9e0-489b1ccd3ad2.png" 
               alt="QR Code" 
               className="w-40 h-40 object-contain"
             />
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-8 h-8 rounded-sm flex items-center justify-center" style={{ backgroundColor: '#DBEAFE', margin: '3px' }}>
-                <img 
-                  src="/lovable-uploads/7e61da39-146d-44c0-a98a-35e4e5c02466.png" 
-                  alt="Logo" 
-                  className="w-6 h-6 object-contain"
-                />
-              </div>
-            </div>
           </div>
         </div>
         
