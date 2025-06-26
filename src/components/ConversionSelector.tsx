@@ -18,9 +18,13 @@ const ConversionSelector: React.FC<ConversionSelectorProps> = ({
 }) => {
   const { language } = useLanguage();
 
-  return (
-    <div className="flex justify-center mb-6 max-w-3xl mx-auto rounded-lg p-0.5" style={{ backgroundColor: '#DBEAFE' }}>
-      {orderedConversions.map((type) => {
+  // Dividir conversões em duas linhas
+  const firstRow = orderedConversions.slice(0, 6);
+  const secondRow = orderedConversions.slice(6, 12);
+
+  const renderRow = (conversions: any[]) => (
+    <div className="flex justify-center mb-2 max-w-3xl mx-auto rounded-lg p-0.5" style={{ backgroundColor: '#DBEAFE' }}>
+      {conversions.map((type) => {
         const conversionColor = getConversionColor(type.id);
         return (
           <button
@@ -42,6 +46,13 @@ const ConversionSelector: React.FC<ConversionSelectorProps> = ({
           </button>
         );
       })}
+    </div>
+  );
+
+  return (
+    <div className="mb-6">
+      {renderRow(firstRow)}
+      {secondRow.length > 0 && renderRow(secondRow)}
     </div>
   );
 };

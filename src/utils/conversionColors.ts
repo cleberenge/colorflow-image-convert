@@ -7,9 +7,16 @@ export const getConversionColor = (conversionType: string) => {
     'word-pdf': '#DC2626', // crimson
     'video-mp3': '#820263', // roxo escuro (trocado com png-jpg)
     'compress-video': '#8B5CF6', // roxo
-    'split-pdf': '#559cad', // azul claro (era do pdf-word)
+    'split-pdf': '#47E5BC', // cor atualizada
     'merge-pdf': '#F59E0B', // âmbar
-    'reduce-pdf': '#D81159' // rosa escuro (era do png-jpg)
+    'reduce-pdf': '#D81159', // rosa escuro (era do png-jpg)
+    // Novas conversões
+    'svg-png': '#10B981', // verde esmeralda
+    'jpg-webp': '#3B82F6', // azul
+    'svg-jpg': '#EF4444', // vermelho
+    'html-pdf': '#8B5CF6', // roxo
+    'csv-json': '#F59E0B', // dourado
+    'csv-excel': '#059669' // verde escuro
   };
   
   return colorMap[conversionType] || '#6B7280';
@@ -23,9 +30,16 @@ export const getConversionColorHover = (conversionType: string) => {
     'word-pdf': '#B91C1C',
     'video-mp3': '#6e0254', // roxo escuro hover (trocado com png-jpg)
     'compress-video': '#7C3AED', // roxo hover
-    'split-pdf': '#4a8a9b', // azul claro hover (era do pdf-word)
+    'split-pdf': '#3dd4aa', // hover para nova cor
     'merge-pdf': '#D97706',
-    'reduce-pdf': '#c70e4f' // rosa escuro hover (era do png-jpg)
+    'reduce-pdf': '#c70e4f', // rosa escuro hover (era do png-jpg)
+    // Novas conversões hover
+    'svg-png': '#059669', // verde esmeralda hover
+    'jpg-webp': '#2563EB', // azul hover
+    'svg-jpg': '#DC2626', // vermelho hover
+    'html-pdf': '#7C3AED', // roxo hover
+    'csv-json': '#D97706', // dourado hover
+    'csv-excel': '#047857' // verde escuro hover
   };
   
   return colorMap[conversionType] || '#4B5563';

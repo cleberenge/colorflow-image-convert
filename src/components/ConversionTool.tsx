@@ -35,6 +35,12 @@ const conversionOptions: ConversionOption[] = [
   { value: 'merge-pdf', label: 'Juntar PDF', description: '' },
   { value: 'reduce-pdf', label: 'Reduzir PDF', description: '' },
   { value: 'video-mp3', label: 'MP4 para MP3', description: '' },
+  { value: 'svg-png', label: 'SVG para PNG', description: '' },
+  { value: 'jpg-webp', label: 'JPG para WebP', description: '' },
+  { value: 'svg-jpg', label: 'SVG para JPG', description: '' },
+  { value: 'html-pdf', label: 'HTML para PDF', description: '' },
+  { value: 'csv-json', label: 'CSV para JSON', description: '' },
+  { value: 'csv-excel', label: 'CSV para Excel', description: '' },
 ];
 
 const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propConversionType, conversionInfo }) => {
@@ -295,6 +301,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       case 'png-jpg':
         return '.png';
       case 'jpg-pdf':
+      case 'jpg-webp':
         return '.jpg,.jpeg';
       case 'split-pdf':
       case 'reduce-pdf':
@@ -302,6 +309,14 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
         return '.pdf';
       case 'video-mp3':
         return '.mp4,.avi,.mov,.wmv,.flv,.webm,.mkv,.m4v,.3gp';
+      case 'svg-png':
+      case 'svg-jpg':
+        return '.svg';
+      case 'html-pdf':
+        return '.html,.htm';
+      case 'csv-json':
+      case 'csv-excel':
+        return '.csv';
       default:
         return '*';
     }
@@ -316,6 +331,14 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       return 'PDF para dividir';
     } else if (selectedConversion === 'video-mp3') {
       return 'vídeos para converter';
+    } else if (selectedConversion === 'svg-png' || selectedConversion === 'svg-jpg') {
+      return 'arquivos SVG';
+    } else if (selectedConversion === 'html-pdf') {
+      return 'arquivos HTML';
+    } else if (selectedConversion === 'csv-json' || selectedConversion === 'csv-excel') {
+      return 'arquivos CSV';
+    } else if (selectedConversion === 'jpg-webp') {
+      return 'imagens JPG';
     } else {
       return 'até 25 arquivos';
     }
