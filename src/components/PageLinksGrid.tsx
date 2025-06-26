@@ -16,7 +16,7 @@ const PageLinksGrid: React.FC<PageLinksGridProps> = ({ pageLinks }) => {
         <Link
           key={link.path}
           to={link.path}
-          className="text-center bg-gray-50 p-2 animate-fade-in transition-all duration-300 block rounded-lg hover:shadow-xl active:bg-opacity-100"
+          className="text-left bg-gray-50 p-2 animate-fade-in transition-all duration-300 block rounded-lg hover:shadow-xl active:bg-opacity-100"
           style={{
             backgroundColor: '#DBEAFE'
           }}
@@ -30,10 +30,10 @@ const PageLinksGrid: React.FC<PageLinksGridProps> = ({ pageLinks }) => {
             e.currentTarget.style.backgroundColor = '#F7F9F9';
           }}
         >
-          <h3 className="font-semibold mb-1 text-base" style={{ color: '#979A9A' }}>
+          <h3 className="font-semibold mb-1 text-base text-left" style={{ color: '#979A9A' }}>
             {link.title[language]}
           </h3>
-          <p className="text-gray-600 text-xs leading-snug">{link.description[language]}</p>
+          <p className="text-gray-600 text-xs leading-snug text-left">{link.description[language]}</p>
         </Link>
       ))}
     </div>
