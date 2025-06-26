@@ -6,6 +6,7 @@ import { convertJpgToPdf } from '@/utils/pdfConverter';
 import { splitPdf } from '@/utils/pdfSplitter';
 import { mergePdfs } from '@/utils/pdfMerger';
 import { compressPdfClientSide } from '@/utils/pdfCompressor';
+import { convertSvgToPng, convertSvgToJpg, convertJpgToWebp } from '@/utils/advancedImageConverter';
 
 export const useClientSideConverter = () => {
   const [isConverting, setIsConverting] = useState(false);
@@ -61,6 +62,39 @@ export const useClientSideConverter = () => {
           
           const pdfFile = await convertJpgToPdf(file);
           convertedFiles.push({ file: pdfFile, originalName: file.name });
+          
+          updateProgress(baseProgress + (70 / files.length));
+        }
+      } else if (conversionType === 'svg-png') {
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const baseProgress = 10 + (i * 70 / files.length);
+          updateProgress(baseProgress);
+          
+          const pngFile = await convertSvgToPng(file);
+          convertedFiles.push({ file: pngFile, originalName: file.name });
+          
+          updateProgress(baseProgress + (70 / files.length));
+        }
+      } else if (conversionType === 'svg-jpg') {
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const baseProgress = 10 + (i * 70 / files.length);
+          updateProgress(baseProgress);
+          
+          const jpgFile = await convertSvgToJpg(file);
+          convertedFiles.push({ file: jpgFile, originalName: file.name });
+          
+          updateProgress(baseProgress + (70 / files.length));
+        }
+      } else if (conversionType === 'jpg-webp') {
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const baseProgress = 10 + (i * 70 / files.length);
+          updateProgress(baseProgress);
+          
+          const webpFile = await convertJpgToWebp(file);
+          convertedFiles.push({ file: webpFile, originalName: file.name });
           
           updateProgress(baseProgress + (70 / files.length));
         }
