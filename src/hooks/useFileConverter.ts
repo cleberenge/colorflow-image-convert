@@ -42,7 +42,7 @@ export const useFileConverter = () => {
       // Handle video conversions separately
       if (conversionType === 'video-mp3') {
         convertedFiles = await convertVideoFiles(files, conversionType, progressUpdate);
-      } else if (['png-jpg', 'jpg-pdf', 'split-pdf', 'merge-pdf', 'reduce-pdf', 'svg-png', 'svg-jpg', 'jpg-webp'].includes(conversionType)) {
+      } else if (['png-jpg', 'jpg-pdf', 'split-pdf', 'merge-pdf', 'reduce-pdf', 'svg-png', 'svg-jpg', 'jpg-webp', 'html-pdf', 'csv-json', 'csv-excel'].includes(conversionType)) {
         convertedFiles = await convertClientSide(files, conversionType, progressUpdate);
       } else {
         throw new Error(`Tipo de conversão não suportado: ${conversionType}`);
@@ -52,7 +52,6 @@ export const useFileConverter = () => {
 
     } catch (error) {
       console.error('Conversion error:', error);
-      // Remove toast notification for errors
       throw error;
     }
   };

@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -14,8 +13,8 @@ const ImageConverter = () => {
   const [progress, setProgress] = useState(0);
   const { toast } = useToast();
 
-  // Changed color from original brown to a blue tone
-  const conversionColor = '#3B82F6'; // Blue color instead of brown
+  // Changed color to #7EBDC2 (light teal/cyan color)
+  const conversionColor = '#7EBDC2';
 
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);

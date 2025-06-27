@@ -6,6 +6,7 @@ import { splitPdf } from '@/utils/pdfSplitter';
 import { mergePdfs } from '@/utils/pdfMerger';
 import { compressPdfClientSide } from '@/utils/pdfCompressor';
 import { convertSvgToPng, convertSvgToJpg, convertJpgToWebp } from '@/utils/advancedImageConverter';
+import { convertHtmlToPdf, convertCsvToJson, convertCsvToExcel } from '@/utils/documentConverter';
 
 export const useClientSideConverter = () => {
   const [isConverting, setIsConverting] = useState(false);
@@ -94,6 +95,39 @@ export const useClientSideConverter = () => {
           
           const webpFile = await convertJpgToWebp(file);
           convertedFiles.push({ file: webpFile, originalName: file.name });
+          
+          updateProgress(baseProgress + (70 / files.length));
+        }
+      } else if (conversionType === 'html-pdf') {
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const baseProgress = 10 + (i * 70 / files.length);
+          updateProgress(baseProgress);
+          
+          const pdfFile = await convertHtmlToPdf(file);
+          convertedFiles.push({ file: pdfFile, originalName: file.name });
+          
+          updateProgress(baseProgress + (70 / files.length));
+        }
+      } else if (conversionType === 'csv-json') {
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const baseProgress = 10 + (i * 70 / files.length);
+          updateProgress(baseProgress);
+          
+          const jsonFile = await convertCsvToJson(file);
+          convertedFiles.push({ file: jsonFile, originalName: file.name });
+          
+          updateProgress(baseProgress + (70 / files.length));
+        }
+      } else if (conversionType === 'csv-excel') {
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const baseProgress = 10 + (i * 70 / files.length);
+          updateProgress(baseProgress);
+          
+          const excelFile = await convertCsvToExcel(file);
+          convertedFiles.push({ file: excelFile, originalName: file.name });
           
           updateProgress(baseProgress + (70 / files.length));
         }
