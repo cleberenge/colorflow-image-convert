@@ -1,4 +1,3 @@
-
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -195,13 +194,13 @@ const ImageConverter = () => {
               className="w-12 h-12 rounded-full flex items-center justify-center"
               style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
             >
-              <Upload className="w-6 h-6" style={{ color: conversionColor }} />
+              <Upload className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="text-base font-medium mb-1" style={{ color: conversionColor }}>
+              <p className="text-base font-medium mb-1 text-white">
                 Click to select up to 25 PNG files
               </p>
-              <p className="text-sm" style={{ color: conversionColor, opacity: 0.8 }}>
+              <p className="text-sm text-white opacity-80">
                 or drag and drop here
               </p>
             </div>
