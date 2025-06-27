@@ -1,3 +1,4 @@
+
 import Papa from 'papaparse';
 import * as XLSX from 'xlsx';
 import jsPDF from 'jspdf';
@@ -92,8 +93,7 @@ export const convertCsvToExcel = async (file: File): Promise<File> => {
         
         // Create workbook
         const workbook = XLSX.utils.book_new();
-        // Fix: Cast parsedData.data to string[][] which is what aoa_to_sheet expects
-        const worksheet = XLSX.utils.aoa_to_sheet(parsedData.data as string[][]);
+        const worksheet = XLSX.utils.aoa_to_sheet(parsedData.data);
         
         // Add worksheet to workbook
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
