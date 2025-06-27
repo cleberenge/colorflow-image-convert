@@ -14,8 +14,8 @@ const ImageConverter = () => {
   const [progress, setProgress] = useState(0);
   const { toast } = useToast();
 
-  // Changed color from original brown to a blue tone
-  const conversionColor = '#3B82F6'; // Blue color instead of brown
+  // Using yellow color as requested
+  const conversionColor = '#FDEE00'; // Yellow color for PNG to JPG
 
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
@@ -38,7 +38,6 @@ const ImageConverter = () => {
     }
 
     if (validFiles.length > 0) {
-      // Sort files by name in ascending order
       const sortedFiles = validFiles.sort((a, b) => a.name.localeCompare(b.name));
       setSelectedFiles(sortedFiles);
       setConvertedFiles([]);
@@ -61,10 +60,11 @@ const ImageConverter = () => {
       
       for (let i = 0; i < selectedFiles.length; i++) {
         const file = selectedFiles[i];
+        console.log(`Converting file ${i + 1}/${selectedFiles.length}: ${file.name}`);
+        
         const jpgFile = await convertPngToJpg(file, 0.9);
         convertedResults.push(jpgFile);
         
-        // Update progress
         const progressPercent = Math.round(((i + 1) / selectedFiles.length) * 80) + 20;
         setProgress(progressPercent);
       }
@@ -93,7 +93,6 @@ const ImageConverter = () => {
     if (convertedFiles.length === 0) return;
 
     if (convertedFiles.length === 1) {
-      // Download single file
       const file = convertedFiles[0];
       const link = document.createElement('a');
       link.href = URL.createObjectURL(file);
@@ -107,7 +106,6 @@ const ImageConverter = () => {
         description: "Your JPG file is being downloaded.",
       });
     } else {
-      // Download multiple files as ZIP
       try {
         const JSZip = (await import('jszip')).default;
         const zip = new JSZip();
@@ -148,7 +146,6 @@ const ImageConverter = () => {
     setProgress(0);
   }, []);
 
-  // Organize files in vertical columns
   const organizeFilesInColumns = (files: File[]) => {
     const filesPerColumn = 5;
     const numColumns = Math.ceil(files.length / filesPerColumn);
@@ -172,7 +169,7 @@ const ImageConverter = () => {
     <div className="flex flex-col items-center space-y-2 animate-fade-in">
       {/* Upload Area */}
       <Card 
-        className="w-full max-w-3xl p-2 border-2 border-dashed hover:border-opacity-60 transition-all duration-300"
+        className="w-full max-w-3xl p-2 border-2 border-dashed transition-all duration-300 hover:border-opacity-60"
         style={{ 
           backgroundColor: conversionColor,
           borderColor: conversionColor,
@@ -191,14 +188,14 @@ const ImageConverter = () => {
             htmlFor="file-input"
             className="cursor-pointer flex flex-col items-center space-y-2"
           >
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-              <Upload className="w-6 h-6 text-white" />
+            <div className="w-12 h-12 bg-black/10 rounded-full flex items-center justify-center">
+              <Upload className="w-6 h-6 text-black" />
             </div>
             <div>
-              <p className="text-base font-medium text-white mb-1">
+              <p className="text-base font-medium text-black mb-1">
                 Click to select up to 25 PNG files
               </p>
-              <p className="text-sm text-white/80">
+              <p className="text-sm text-black/70">
                 or drag and drop here
               </p>
             </div>
@@ -234,20 +231,18 @@ const ImageConverter = () => {
               <Button
                 onClick={convertToJPG}
                 disabled={isConverting}
-                className="text-white font-medium transition-all duration-300"
+                className="text-black font-medium transition-all duration-300 hover:opacity-90"
                 style={{ 
                   backgroundColor: conversionColor,
-                  borderColor: conversionColor
                 }}
               >
                 {isConverting ? 'Converting...' : 'Convert to JPG'}
               </Button>
               <Button
                 onClick={clearFiles}
-                className="text-white font-medium transition-all duration-300"
+                className="text-black font-medium transition-all duration-300 hover:opacity-90"
                 style={{ 
                   backgroundColor: conversionColor,
-                  borderColor: conversionColor
                 }}
               >
                 Clear
@@ -256,10 +251,9 @@ const ImageConverter = () => {
                 <Button
                   onClick={downloadFiles}
                   disabled={isConverting}
-                  className="text-white font-medium transition-all duration-300"
+                  className="text-black font-medium transition-all duration-300 hover:opacity-90"
                   style={{ 
                     backgroundColor: conversionColor,
-                    borderColor: conversionColor
                   }}
                 >
                   <Download className="w-4 h-4 mr-2" />
@@ -277,9 +271,9 @@ const ImageConverter = () => {
           <div className="space-y-2">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium text-gray-800">Converting...</span>
-              <span className="text-sm font-medium" style={{ color: conversionColor }}>{progress}%</span>
+              <span className="text-sm font-medium text-black">{progress}%</span>
             </div>
-            <Progress value={progress} className="h-2" indicatorColor={conversionColor} />
+            <Progress value={progress} className="h-2" />
           </div>
         </Card>
       )}
