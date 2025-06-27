@@ -6,7 +6,6 @@ import { Progress } from '@/components/ui/progress';
 import { Upload, Download, Image as ImageIcon } from 'lucide-react';
 import { useToast } from '@/hooks/use-toast';
 import { convertPngToJpg } from '@/utils/imageConverter';
-import { getConversionColor } from '@/utils/conversionColors';
 
 const ImageConverter = () => {
   const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
@@ -15,15 +14,15 @@ const ImageConverter = () => {
   const [progress, setProgress] = useState(0);
   const { toast } = useToast();
 
-  // Get conversion color for PNG to JPG
-  const conversionColor = getConversionColor('png-jpg');
+  // Changed color from original brown to a blue tone
+  const conversionColor = '#3B82F6'; // Blue color instead of brown
 
   const handleFileSelect = useCallback((event: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(event.target.files || []);
     if (files.length > 25) {
       toast({
-        title: "Limite excedido",
-        description: "Selecione no máximo 25 arquivos.",
+        title: "Limit exceeded",
+        description: "Select up to 25 files maximum.",
         variant: "destructive",
       });
       return;
@@ -32,21 +31,21 @@ const ImageConverter = () => {
     const validFiles = files.filter(file => file.type === 'image/png');
     if (validFiles.length !== files.length) {
       toast({
-        title: "Formato inválido",
-        description: "Por favor, selecione apenas arquivos PNG.",
+        title: "Invalid format",
+        description: "Please select only PNG files.",
         variant: "destructive",
       });
     }
 
     if (validFiles.length > 0) {
-      // Ordenar arquivos por nome em ordem crescente
+      // Sort files by name in ascending order
       const sortedFiles = validFiles.sort((a, b) => a.name.localeCompare(b.name));
       setSelectedFiles(sortedFiles);
       setConvertedFiles([]);
       setProgress(0);
       toast({
-        title: `${sortedFiles.length} arquivo(s) PNG selecionado(s)`,
-        description: `Pronto(s) para conversão.`,
+        title: `${sortedFiles.length} PNG file(s) selected`,
+        description: `Ready for conversion.`,
       });
     }
   }, [toast]);
@@ -74,14 +73,14 @@ const ImageConverter = () => {
       setProgress(100);
 
       toast({
-        title: "Conversão concluída!",
-        description: `${selectedFiles.length} arquivo(s) convertido(s) para JPG com sucesso.`,
+        title: "Conversion completed!",
+        description: `${selectedFiles.length} file(s) converted to JPG successfully.`,
       });
     } catch (error) {
-      console.error('Erro na conversão:', error);
+      console.error('Conversion error:', error);
       toast({
-        title: "Erro na conversão",
-        description: "Ocorreu um erro ao converter os arquivos. Tente novamente.",
+        title: "Conversion error",
+        description: "An error occurred while converting the files. Please try again.",
         variant: "destructive",
       });
     } finally {
@@ -104,8 +103,8 @@ const ImageConverter = () => {
       document.body.removeChild(link);
       
       toast({
-        title: "Download iniciado",
-        description: "Seu arquivo JPG está sendo baixado.",
+        title: "Download started",
+        description: "Your JPG file is being downloaded.",
       });
     } else {
       // Download multiple files as ZIP
@@ -129,14 +128,14 @@ const ImageConverter = () => {
         URL.revokeObjectURL(url);
         
         toast({
-          title: "Download concluído",
-          description: `ZIP com ${convertedFiles.length} arquivo(s) baixado com sucesso.`,
+          title: "Download completed",
+          description: `ZIP with ${convertedFiles.length} file(s) downloaded successfully.`,
         });
       } catch (error) {
-        console.error('Erro ao criar ZIP:', error);
+        console.error('Error creating ZIP:', error);
         toast({
-          title: "Erro no download",
-          description: "Ocorreu um erro ao criar o arquivo ZIP.",
+          title: "Download error",
+          description: "An error occurred while creating the ZIP file.",
           variant: "destructive",
         });
       }
@@ -149,7 +148,7 @@ const ImageConverter = () => {
     setProgress(0);
   }, []);
 
-  // Organizar arquivos em colunas verticais
+  // Organize files in vertical columns
   const organizeFilesInColumns = (files: File[]) => {
     const filesPerColumn = 5;
     const numColumns = Math.ceil(files.length / filesPerColumn);
@@ -192,15 +191,15 @@ const ImageConverter = () => {
             htmlFor="file-input"
             className="cursor-pointer flex flex-col items-center space-y-2"
           >
-            <div className="w-12 h-12 bg-black/10 rounded-full flex items-center justify-center">
-              <Upload className="w-6 h-6 text-black" />
+            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
+              <Upload className="w-6 h-6 text-white" />
             </div>
             <div>
-              <p className="text-base font-medium text-black mb-1">
-                Clique para selecionar até 25 arquivos PNG
+              <p className="text-base font-medium text-white mb-1">
+                Click to select up to 25 PNG files
               </p>
-              <p className="text-sm text-black/80">
-                ou arraste e solte aqui
+              <p className="text-sm text-white/80">
+                or drag and drop here
               </p>
             </div>
           </label>
@@ -211,7 +210,7 @@ const ImageConverter = () => {
       {selectedFiles.length > 0 && (
         <Card className="w-full max-w-3xl p-4 bg-white border border-gray-200">
           <div className="space-y-2">
-            <h2 className="text-base font-semibold text-gray-800">Arquivos Selecionados</h2>
+            <h2 className="text-base font-semibold text-gray-800">Selected Files</h2>
             <div className="flex gap-4 overflow-x-auto">
               {organizeFilesInColumns(selectedFiles).map((column, columnIndex) => (
                 <div key={columnIndex} className="flex flex-col gap-2 min-w-0 flex-1">
@@ -235,36 +234,36 @@ const ImageConverter = () => {
               <Button
                 onClick={convertToJPG}
                 disabled={isConverting}
-                className="text-black font-medium transition-all duration-300"
+                className="text-white font-medium transition-all duration-300"
                 style={{ 
                   backgroundColor: conversionColor,
                   borderColor: conversionColor
                 }}
               >
-                {isConverting ? 'Convertendo...' : 'Converter para JPG'}
+                {isConverting ? 'Converting...' : 'Convert to JPG'}
               </Button>
               <Button
                 onClick={clearFiles}
-                className="text-black font-medium transition-all duration-300"
+                className="text-white font-medium transition-all duration-300"
                 style={{ 
                   backgroundColor: conversionColor,
                   borderColor: conversionColor
                 }}
               >
-                Limpar
+                Clear
               </Button>
               {convertedFiles.length > 0 && (
                 <Button
                   onClick={downloadFiles}
                   disabled={isConverting}
-                  className="text-black font-medium transition-all duration-300"
+                  className="text-white font-medium transition-all duration-300"
                   style={{ 
                     backgroundColor: conversionColor,
                     borderColor: conversionColor
                   }}
                 >
                   <Download className="w-4 h-4 mr-2" />
-                  Baixar {convertedFiles.length === 1 ? 'JPG' : 'ZIP'}
+                  Download {convertedFiles.length === 1 ? 'JPG' : 'ZIP'}
                 </Button>
               )}
             </div>
@@ -277,7 +276,7 @@ const ImageConverter = () => {
         <Card className="w-full max-w-3xl p-2 bg-white">
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-800">Convertendo...</span>
+              <span className="text-sm font-medium text-gray-800">Converting...</span>
               <span className="text-sm font-medium" style={{ color: conversionColor }}>{progress}%</span>
             </div>
             <Progress value={progress} className="h-2" indicatorColor={conversionColor} />
