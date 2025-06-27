@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -190,14 +191,17 @@ const ImageConverter = () => {
             htmlFor="file-input"
             className="cursor-pointer flex flex-col items-center space-y-2"
           >
-            <div className="w-12 h-12 bg-white/20 rounded-full flex items-center justify-center">
-              <Upload className="w-6 h-6 text-white" />
+            <div 
+              className="w-12 h-12 rounded-full flex items-center justify-center"
+              style={{ backgroundColor: 'rgba(255,255,255,0.2)' }}
+            >
+              <Upload className="w-6 h-6" style={{ color: conversionColor }} />
             </div>
             <div>
-              <p className="text-base font-medium text-white mb-1">
+              <p className="text-base font-medium mb-1" style={{ color: conversionColor }}>
                 Click to select up to 25 PNG files
               </p>
-              <p className="text-sm text-white/80">
+              <p className="text-sm" style={{ color: conversionColor, opacity: 0.8 }}>
                 or drag and drop here
               </p>
             </div>
@@ -278,7 +282,7 @@ const ImageConverter = () => {
               <span className="text-sm font-medium text-gray-800">Converting...</span>
               <span className="text-sm font-medium" style={{ color: conversionColor }}>{progress}%</span>
             </div>
-            <Progress value={progress} className="h-2" indicatorColor={conversionColor} />
+            <Progress value={progress} className="h-2" />
           </div>
         </Card>
       )}
