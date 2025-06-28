@@ -9,7 +9,7 @@ export const getConversionColor = (conversionType: string) => {
     'compress-video': '#8B5CF6', // roxo
     'split-pdf': '#73D2DE', // cor atualizada
     'merge-pdf': '#FF0097', // âmbar
-    'reduce-pdf': '#F9F9F9', // rosa escuro (era do png-jpg)
+    'reduce-pdf': '#784F41', // rosa escuro (era do png-jpg)
     'reduce-png': '#784F41', // rosa escuro (era do png-jpg)
     // Novas conversões
     'svg-png': '#10B981', // verde esmeralda
