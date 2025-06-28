@@ -1,7 +1,7 @@
 
 export const getConversionColor = (conversionType: string) => {
   const colorMap: Record<string, string> = {
-    'png-jpg': '#FDEE0000', // amarelo claro (cor solicitada)
+    'png-jpg': '#FDEE00', // amarelo claro (cor solicitada)
     'jpg-pdf': '#F97316', // laranja
     'pdf-word': '#6366F1', // índigo (era do split-pdf)
     'word-pdf': '#DC2626', // crimson
