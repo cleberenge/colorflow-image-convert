@@ -46,15 +46,15 @@ export const conversionTypes = [
   { 
     id: 'reduce-pdf', 
     label: { 
-      pt: 'Reduzir PDF', en: 'Reduce PDF', zh: '压缩PDF', es: 'Reducir PDF', 
-      fr: 'Réduire PDF', de: 'PDF reduzieren', hi: 'PDF कम करें', ar: 'تقليل PDF', 
-      ko: 'PDF 축소', ja: 'PDFを削減', ru: 'Уменьшить PDF'
+      pt: 'Reduzir JPG', en: 'Reduce JPG', zh: '压缩JPG', es: 'Reducir JPG', 
+      fr: 'Réduire JPG', de: 'JPG reduzieren', hi: 'JPG कम करें', ar: 'تقليل JPG', 
+      ko: 'JPG 축소', ja: 'JPGを削減', ru: 'Уменьшить JPG'
     }, 
-    from: 'PDF', to: 'PDF Comprimido', 
+    from: 'JPG', to: 'JPG Comprimido', 
     icon: '📦' 
   },
   { 
-    id: 'compress-png', 
+    id: 'video-mp3', 
     label: { 
       pt: 'Reduzir PNG', en: 'Reduce PNG', zh: '压缩PNG', es: 'Reducir PNG', 
       fr: 'Réduire PNG', de: 'PNG reduzieren', hi: 'PNG कम करें', ar: 'تقليل PNG', 
@@ -133,7 +133,7 @@ export const getOrderedConversions = () => {
     conversionTypes[1], // JPG para PDF  
     conversionTypes[2], // Dividir PDF
     conversionTypes[3], // Juntar PDF
-    conversionTypes[4], // Reduzir PDF
+    conversionTypes[4], // Reduzir JPG
     conversionTypes[5], // Reduzir PNG
     // Segunda linha (novas conversões)
     conversionTypes[6], // SVG para PNG
