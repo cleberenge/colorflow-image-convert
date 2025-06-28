@@ -1,3 +1,4 @@
+
 import { useState } from 'react';
 import { ConvertedFile, ConversionType } from '@/types/fileConverter';
 import { convertPngToJpg } from '@/utils/imageConverter';
@@ -5,6 +6,7 @@ import { convertJpgToPdf } from '@/utils/pdfConverter';
 import { splitPdf } from '@/utils/pdfSplitter';
 import { mergePdfs } from '@/utils/pdfMerger';
 import { compressPdfClientSide } from '@/utils/pdfCompressor';
+import { compressPngClientSide } from '@/utils/pngCompressor';
 import { convertSvgToPng, convertSvgToJpg, convertJpgToWebp } from '@/utils/advancedImageConverter';
 import { convertHtmlToPdf, convertCsvToJson, convertCsvToExcel } from '@/utils/documentConverter';
 
@@ -28,16 +30,31 @@ export const useClientSideConverter = () => {
           const file = files[i];
           console.log(`[ClientSideConverter] Comprimindo PDF ${i + 1}/${files.length}: ${file.name}`);
           
-          // Callback de progresso específico para este arquivo
           const fileProgressCallback = (progress: number) => {
-            // Distribuir o progresso entre os arquivos
             const baseProgress = 5 + (i * 85 / files.length);
             const fileProgress = (progress / 100) * (85 / files.length);
             updateProgress(Math.min(baseProgress + fileProgress, 95));
           };
           
           const compressedFile = await compressPdfClientSide(file, {}, fileProgressCallback);
-          // Correctly create ConvertedFile object
+          convertedFiles.push({ 
+            file: compressedFile, 
+            originalName: file.name 
+          });
+        }
+      } else if (conversionType === 'compress-png') {
+        // Para compressão de PNG, processar um arquivo por vez
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          console.log(`[ClientSideConverter] Comprimindo PNG ${i + 1}/${files.length}: ${file.name}`);
+          
+          const fileProgressCallback = (progress: number) => {
+            const baseProgress = 5 + (i * 85 / files.length);
+            const fileProgress = (progress / 100) * (85 / files.length);
+            updateProgress(Math.min(baseProgress + fileProgress, 95));
+          };
+          
+          const compressedFile = await compressPngClientSide(file, {}, fileProgressCallback);
           convertedFiles.push({ 
             file: compressedFile, 
             originalName: file.name 

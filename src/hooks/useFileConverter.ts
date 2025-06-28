@@ -3,15 +3,13 @@ import { useState } from 'react';
 import { ConvertedFile, ConversionType } from '@/types/fileConverter';
 import { validateFileCount } from '@/utils/fileValidation';
 import { useClientSideConverter } from '@/hooks/useClientSideConverter';
-import { useVideoConverter } from '@/hooks/useVideoConverter';
 
 export const useFileConverter = () => {
   const [progress, setProgress] = useState(0);
   
   const { convertClientSide, isConverting: isClientConverting } = useClientSideConverter();
-  const { convertVideoFiles, isConverting: isVideoConverting } = useVideoConverter();
 
-  const isConverting = isClientConverting || isVideoConverting;
+  const isConverting = isClientConverting;
 
   // Progress update function that ensures always increasing values
   let currentProgress = 0;
@@ -39,10 +37,8 @@ export const useFileConverter = () => {
 
       let convertedFiles: ConvertedFile[];
 
-      // Handle video conversions separately
-      if (conversionType === 'video-mp3') {
-        convertedFiles = await convertVideoFiles(files, conversionType, progressUpdate);
-      } else if (['png-jpg', 'jpg-pdf', 'split-pdf', 'merge-pdf', 'reduce-pdf', 'svg-png', 'svg-jpg', 'jpg-webp', 'html-pdf', 'csv-json', 'csv-excel'].includes(conversionType)) {
+      // Handle all conversions through client-side converter
+      if (['png-jpg', 'jpg-pdf', 'split-pdf', 'merge-pdf', 'reduce-pdf', 'compress-png', 'svg-png', 'svg-jpg', 'jpg-webp', 'html-pdf', 'csv-json', 'csv-excel'].includes(conversionType)) {
         convertedFiles = await convertClientSide(files, conversionType, progressUpdate);
       } else {
         throw new Error(`Tipo de conversão não suportado: ${conversionType}`);

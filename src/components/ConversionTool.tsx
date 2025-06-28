@@ -34,7 +34,7 @@ const conversionOptions: ConversionOption[] = [
   { value: 'split-pdf', label: 'Dividir PDF', description: '' },
   { value: 'merge-pdf', label: 'Juntar PDF', description: '' },
   { value: 'reduce-pdf', label: 'Reduzir PDF', description: '' },
-  { value: 'video-mp3', label: 'MP4 para MP3', description: '' },
+  { value: 'compress-png', label: 'Reduzir PNG', description: '' },
   { value: 'svg-png', label: 'SVG para PNG', description: '' },
   { value: 'jpg-webp', label: 'JPG para WebP', description: '' },
   { value: 'svg-jpg', label: 'SVG para JPG', description: '' },
@@ -300,6 +300,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     switch (selectedConversion) {
       case 'png-jpg':
         return '.png';
+      case 'compress-png':
+        return '.png';
       case 'jpg-pdf':
       case 'jpg-webp':
         return '.jpg,.jpeg';
@@ -307,8 +309,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       case 'reduce-pdf':
       case 'merge-pdf':
         return '.pdf';
-      case 'video-mp3':
-        return '.mp4,.avi,.mov,.wmv,.flv,.webm,.mkv,.m4v,.3gp';
       case 'svg-png':
       case 'svg-jpg':
         return '.svg';
@@ -327,10 +327,10 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       return 'PDFs para mesclar';
     } else if (selectedConversion === 'reduce-pdf') {
       return 'PDF para reduzir';
+    } else if (selectedConversion === 'compress-png') {
+      return 'PNG para reduzir';
     } else if (selectedConversion === 'split-pdf') {
       return 'PDF para dividir';
-    } else if (selectedConversion === 'video-mp3') {
-      return 'vídeos para converter';
     } else if (selectedConversion === 'svg-png' || selectedConversion === 'svg-jpg') {
       return 'arquivos SVG';
     } else if (selectedConversion === 'html-pdf') {
