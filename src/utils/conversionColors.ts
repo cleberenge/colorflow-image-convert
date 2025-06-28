@@ -5,13 +5,12 @@ export const getConversionColor = (conversionType: string) => {
     'jpg-pdf': '#FDEE00', // laranja
     'pdf-word': '#6366F1', // índigo (era do split-pdf)
     'word-pdf': '#DC2626', // crimson
-    'video-mp3': '#820263', // roxo escuro (trocado com png-jpg)
+     //'video-mp3': '#820263', // roxo escuro (trocado com png-jpg)
     'compress-video': '#8B5CF6', // roxo
     'split-pdf': '#73D2DE', // cor atualizada
     'merge-pdf': '#FF0097', // âmbar
     'reduce-pdf': '#784F41', // rosa escuro (era do png-jpg)
-    'reduce-png': '#FDEE00', // rosa escuro (era do png-jpg)
-    // Novas conversões
+     // Novas conversões
     'svg-png': '#10B981', // verde esmeralda
     'jpg-webp': '#3B82F6', // azul
     'svg-jpg': '#EF4444', // vermelho
