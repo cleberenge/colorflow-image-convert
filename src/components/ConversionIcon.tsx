@@ -11,7 +11,7 @@ const ConversionIcon: React.FC<ConversionIconProps> = ({ conversionType, classNa
     switch (conversionType) {
       case 'png-jpg':
         return {
-          color: '#FDEE00', // amarelo claro (cor solicitada)
+          color: '#47E5BC', // atualizado conforme solicitado
           icon: (
             <svg className="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 24 24">
               <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17l2.5-3.5L14 17H9zm0-9c0-1.1.9-2 2-2s2 .9 2 2-.9 2-2 2-2-.9-2-2z"/>
@@ -20,9 +20,9 @@ const ConversionIcon: React.FC<ConversionIconProps> = ({ conversionType, classNa
         };
       case 'jpg-pdf':
         return {
-          color: '#F97316',
+          color: '#FDEE00', // atualizado conforme solicitado
           icon: (
-            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 24 24">
               <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.11 0 2-.9 2-2V8l-6-6zm4 18H6V4h7v5h5v11zm-3-7H9v2h6v-2zm0 4H9v2h6v-2z"/>
             </svg>
           )
@@ -47,9 +47,9 @@ const ConversionIcon: React.FC<ConversionIconProps> = ({ conversionType, classNa
         };
       case 'video-mp3':
         return {
-          color: '#820263', // roxo escuro (trocado com png-jpg)
+          color: '#F9F9F9', // atualizado conforme solicitado (Reduzir PNG)
           icon: (
-            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
             </svg>
           )
@@ -65,7 +65,7 @@ const ConversionIcon: React.FC<ConversionIconProps> = ({ conversionType, classNa
         };
       case 'split-pdf':
         return {
-          color: '#47E5BC',
+          color: '#73D2DE',
           icon: (
             <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
               <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-8 16H5V5h6v14zm8 0h-6V5h6v14z"/>
@@ -74,7 +74,7 @@ const ConversionIcon: React.FC<ConversionIconProps> = ({ conversionType, classNa
         };
       case 'merge-pdf':
         return {
-          color: '#F59E0B',
+          color: '#FF0097', // atualizado conforme solicitado
           icon: (
             <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
               <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.11 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
@@ -83,7 +83,7 @@ const ConversionIcon: React.FC<ConversionIconProps> = ({ conversionType, classNa
         };
       case 'reduce-pdf':
         return {
-          color: '#D81159', // rosa escuro
+          color: '#784F41',
           icon: (
             <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
               <path d="M6 2c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h7v-2H6V4h7v5h5v6h2V8l-6-6H6zm9.5 12L12 17.5 8.5 14 12 10.5 15.5 14z"/>
