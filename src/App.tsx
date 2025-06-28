@@ -26,6 +26,18 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/png-to-jpg" element={<Index />} />
+            <Route path="/jpg-to-pdf" element={<Index />} />
+            <Route path="/split-pdf" element={<Index />} />
+            <Route path="/merge-pdf" element={<Index />} />
+            <Route path="/reduce-jpg" element={<Index />} />
+            <Route path="/reduce-png" element={<Index />} />
+            <Route path="/svg-to-png" element={<Index />} />
+            <Route path="/jpg-to-webp" element={<Index />} />
+            <Route path="/svg-to-jpg" element={<Index />} />
+            <Route path="/html-to-pdf" element={<Index />} />
+            <Route path="/csv-to-json" element={<Index />} />
+            <Route path="/csv-to-excel" element={<Index />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/privacy" element={<Privacy />} />

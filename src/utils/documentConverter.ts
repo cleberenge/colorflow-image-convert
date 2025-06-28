@@ -93,7 +93,7 @@ export const convertCsvToExcel = async (file: File): Promise<File> => {
         
         // Create workbook
         const workbook = XLSX.utils.book_new();
-        const worksheet = XLSX.utils.aoa_to_sheet(parsedData.data);
+        const worksheet = XLSX.utils.aoa_to_sheet(parsedData.data as unknown[][]);
         
         // Add worksheet to workbook
         XLSX.utils.book_append_sheet(workbook, worksheet, 'Sheet1');
