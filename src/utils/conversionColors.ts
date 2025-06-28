@@ -10,6 +10,7 @@ export const getConversionColor = (conversionType: string) => {
     'split-pdf': '#73D2DE', // cor atualizada
     'merge-pdf': '#EB5160', // âmbar
     'reduce-pdf': '#F9F9F9', // rosa escuro (era do png-jpg)
+    'reduce-png': '#FD9869', // rosa escuro (era do png-jpg)
     // Novas conversões
     'svg-png': '#10B981', // verde esmeralda
     'jpg-webp': '#3B82F6', // azul
