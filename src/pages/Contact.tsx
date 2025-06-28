@@ -9,8 +9,7 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-white text-gray-700">
-      style={{ backgroundColor: '#F9F9F9' }}
-      <Header />
+    <Header />
       
       <main className="max-w-4xl mx-auto px-4 py-12">
         <div className="text-center mb-12">
