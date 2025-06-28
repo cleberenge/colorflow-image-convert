@@ -8,7 +8,7 @@ export const getConversionColor = (conversionType: string) => {
     'video-mp3': '#820263', // roxo escuro (trocado com png-jpg)
     'compress-video': '#8B5CF6', // roxo
     'split-pdf': '#73D2DE', // cor atualizada
-    'merge-pdf': '#EB5160', // âmbar
+    'merge-pdf': '#FD9869', // âmbar
     'reduce-pdf': '#F9F9F9', // rosa escuro (era do png-jpg)
     'reduce-png': '#FD9869', // rosa escuro (era do png-jpg)
     // Novas conversões
