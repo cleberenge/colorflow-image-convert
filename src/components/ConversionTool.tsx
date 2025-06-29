@@ -66,19 +66,16 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     const colorMap: Record<ConversionType, string> = {
       'png-jpg': 'text-black',      // #47E5BC - cor clara, texto preto
       'jpg-pdf': 'text-black',      // #FDEE00 - amarelo claro, texto preto
-      'pdf-word': 'text-white',     // #6366F1 - índigo escuro, texto branco
-      'word-pdf': 'text-white',     // #DC2626 - vermelho escuro, texto branco
-      'compress-video': 'text-white', // #8B5CF6 - roxo, texto branco
       'split-pdf': 'text-black',    // #73D2DE - azul claro, texto preto
       'merge-pdf': 'text-black',    // #FFAAA5 - rosa claro, texto preto
       'reduce-pdf': 'text-white',   // #784F41 - marrom escuro, texto branco
+      'video-mp3': 'text-white',    // Para compatibilidade
       'svg-png': 'text-white',      // #10B981 - verde escuro, texto branco
       'jpg-webp': 'text-white',     // #3B82F6 - azul escuro, texto branco
       'svg-jpg': 'text-white',      // #EF4444 - vermelho, texto branco
       'html-pdf': 'text-white',     // #8B5CF6 - roxo, texto branco
       'csv-json': 'text-black',     // #F59E0B - dourado, texto preto
       'csv-excel': 'text-white',    // #059669 - verde escuro, texto branco
-      'video-mp3': 'text-white'     // Para compatibilidade
     };
     
     return colorMap[conversionType] || 'text-black';
