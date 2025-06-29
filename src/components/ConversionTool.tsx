@@ -65,7 +65,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   const getUploadTextColor = (conversionType: ConversionType): string => {
     const textColorMap: Record<ConversionType, string> = {
       'png-jpg': '#text-black',           // Amarelo para PNG para JPG
-      'jpg-pdf': 'text-black',        // Preto para JPG para PDF  
+      'jpg-pdf': '#986C6A',        // Preto para JPG para PDF  
       'split-pdf': 'text-black',      // Preto para Dividir PDF
       'merge-pdf': 'text-black',      // Preto para Juntar PDF
       'reduce-pdf': 'text-white',     // Branco para Reduzir PDF
