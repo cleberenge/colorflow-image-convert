@@ -64,7 +64,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   // Function to determine text color based on background color
   const getTextColorForConversion = (conversionType: ConversionType): string => {
     const colorMap: Record<ConversionType, string> = {
-      'png-jpg': 'text-black',      // #47E5BC - cor clara, texto preto
+      'png-jpg': 'text-black',      // #FDEE00 - cor clara, texto preto
       'jpg-pdf': 'text-black',      // #FDEE00 - amarelo claro, texto preto
       'split-pdf': 'text-black',    // #73D2DE - azul claro, texto preto
       'merge-pdf': 'text-black',    // #FFAAA5 - rosa claro, texto preto
