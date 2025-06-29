@@ -61,24 +61,24 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     }
   }, [propConversionType]);
 
-  // Function to determine text color based on background color
-  const getTextColorForConversion = (conversionType: ConversionType): string => {
-    const colorMap: Record<ConversionType, string> = {
-      'png-jpg': 'text-black',      // #FDEE00 - cor clara, texto preto
-      'jpg-pdf': 'text-black',      // #FDEE00 - amarelo claro, texto preto
-      'split-pdf': 'text-black',    // #73D2DE - azul claro, texto preto
-      'merge-pdf': 'text-black',    // #FFAAA5 - rosa claro, texto preto
-      'reduce-pdf': 'text-white',   // #784F41 - marrom escuro, texto branco
-      'video-mp3': 'text-white',    // Para compatibilidade
-      'svg-png': 'text-white',      // #10B981 - verde escuro, texto branco
-      'jpg-webp': 'text-white',     // #3B82F6 - azul escuro, texto branco
-      'svg-jpg': 'text-white',      // #EF4444 - vermelho, texto branco
-      'html-pdf': 'text-white',     // #8B5CF6 - roxo, texto branco
-      'csv-json': 'text-black',     // #F59E0B - dourado, texto preto
-      'csv-excel': 'text-white',    // #059669 - verde escuro, texto branco
+  // Função para definir manualmente a cor do texto na área de upload para cada tipo de conversão
+  const getUploadTextColor = (conversionType: ConversionType): string => {
+    const textColorMap: Record<ConversionType, string> = {
+      'png-jpg': '#FDEE00',           // Amarelo para PNG para JPG
+      'jpg-pdf': 'text-black',        // Preto para JPG para PDF  
+      'split-pdf': 'text-black',      // Preto para Dividir PDF
+      'merge-pdf': 'text-black',      // Preto para Juntar PDF
+      'reduce-pdf': 'text-white',     // Branco para Reduzir PDF
+      'video-mp3': 'text-white',      // Branco para vídeo para MP3
+      'svg-png': 'text-white',        // Branco para SVG para PNG
+      'jpg-webp': 'text-white',       // Branco para JPG para WebP
+      'svg-jpg': 'text-white',        // Branco para SVG para JPG
+      'html-pdf': 'text-white',       // Branco para HTML para PDF
+      'csv-json': 'text-black',       // Preto para CSV para JSON
+      'csv-excel': 'text-white',      // Branco para CSV para Excel
     };
     
-    return colorMap[conversionType] || 'text-black';
+    return textColorMap[conversionType] || 'text-black';
   };
 
   // Debug: log do estado atual
@@ -287,7 +287,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
 
   // All calculations and derived state after hooks
   const conversionColor = getConversionColor(selectedConversion);
-  const textColor = getTextColorForConversion(selectedConversion);
+  const uploadTextColor = getUploadTextColor(selectedConversion);
   const isReducePdf = selectedConversion === 'reduce-pdf';
   const showDownloadButton = convertedFiles.length > 0 && !isConverting;
   const currentProgress = selectedConversion === 'reduce-pdf' ? localProgress : progress;
@@ -383,13 +383,28 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
             className="cursor-pointer flex flex-col items-center space-y-2"
           >
             <div className="w-12 h-12 bg-black/10 rounded-full flex items-center justify-center">
-              <Upload className={`w-6 h-6 ${textColor}`} />
+              <Upload 
+                className="w-6 h-6"
+                style={{ 
+                  color: uploadTextColor.startsWith('#') ? uploadTextColor : undefined 
+                }}
+              />
             </div>
             <div>
-              <p className={`text-base font-medium ${textColor} mb-1`}>
+              <p 
+                className="text-base font-medium mb-1"
+                style={{ 
+                  color: uploadTextColor.startsWith('#') ? uploadTextColor : undefined 
+                }}
+              >
                 Clique para selecionar {getUploadText()}
               </p>
-              <p className={`text-sm ${textColor}`}>
+              <p 
+                className="text-sm"
+                style={{ 
+                  color: uploadTextColor.startsWith('#') ? uploadTextColor : undefined 
+                }}
+              >
                 ou arraste e solte aqui
               </p>
             </div>
@@ -437,7 +452,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
                           className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
                           style={{ backgroundColor: conversionColor }}
                         >
-                          <span className={`text-xs font-bold ${textColor === 'text-white' ? 'text-white' : 'text-black'}`}>{fileNumber}</span>
+                          <span className="text-xs font-bold text-white">{fileNumber}</span>
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-gray-800 text-xs truncate">{file.name}</p>
@@ -455,7 +470,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
               <Button
                 onClick={convertSelectedFiles}
                 disabled={isConverting}
-                className={`font-medium transition-all duration-300 ${textColor === 'text-white' ? 'text-white' : 'text-black'}`}
+                className="font-medium transition-all duration-300 text-white"
                 style={{ 
                   backgroundColor: conversionColor,
                   borderColor: conversionColor
@@ -465,7 +480,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
               </Button>
               <Button
                 onClick={clearFiles}
-                className={`font-medium transition-all duration-300 ${textColor === 'text-white' ? 'text-white' : 'text-black'}`}
+                className="font-medium transition-all duration-300 text-white"
                 style={{ 
                   backgroundColor: conversionColor,
                   borderColor: conversionColor
@@ -476,7 +491,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
               {showDownloadButton && (
                 <Button
                   onClick={downloadZip}
-                  className={`font-medium transition-all duration-300 ${textColor === 'text-white' ? 'text-white' : 'text-black'}`}
+                  className="font-medium transition-all duration-300 text-white"
                   style={{ 
                     backgroundColor: conversionColor,
                     borderColor: conversionColor
