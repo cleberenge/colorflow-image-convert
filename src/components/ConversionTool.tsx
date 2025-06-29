@@ -61,6 +61,29 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     }
   }, [propConversionType]);
 
+  // Function to determine text color based on background color
+  const getTextColorForConversion = (conversionType: ConversionType): string => {
+    const colorMap: Record<ConversionType, string> = {
+      'png-jpg': 'text-black',      // #47E5BC - cor clara, texto preto
+      'jpg-pdf': 'text-black',      // #FDEE00 - amarelo claro, texto preto
+      'pdf-word': 'text-white',     // #6366F1 - índigo escuro, texto branco
+      'word-pdf': 'text-white',     // #DC2626 - vermelho escuro, texto branco
+      'compress-video': 'text-white', // #8B5CF6 - roxo, texto branco
+      'split-pdf': 'text-black',    // #73D2DE - azul claro, texto preto
+      'merge-pdf': 'text-black',    // #FFAAA5 - rosa claro, texto preto
+      'reduce-pdf': 'text-white',   // #784F41 - marrom escuro, texto branco
+      'svg-png': 'text-white',      // #10B981 - verde escuro, texto branco
+      'jpg-webp': 'text-white',     // #3B82F6 - azul escuro, texto branco
+      'svg-jpg': 'text-white',      // #EF4444 - vermelho, texto branco
+      'html-pdf': 'text-white',     // #8B5CF6 - roxo, texto branco
+      'csv-json': 'text-black',     // #F59E0B - dourado, texto preto
+      'csv-excel': 'text-white',    // #059669 - verde escuro, texto branco
+      'video-mp3': 'text-white'     // Para compatibilidade
+    };
+    
+    return colorMap[conversionType] || 'text-black';
+  };
+
   // Debug: log do estado atual
   useEffect(() => {
     console.log('[ConversionTool] Estado atual:');
@@ -117,10 +140,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     setProgressMessage('');
 
     try {
-      // Enhanced progress tracking for reduce-pdf with messages
       const progressCallback = (progress: number) => {
         if (selectedConversion === 'reduce-pdf') {
-          // Detailed progress messages for PDF compression
           if (progress <= 5) {
             updateProgressWithMessage(progress, 'Enviando...');
           } else if (progress <= 15) {
@@ -150,7 +171,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
         originalName: r.originalName 
       })));
       
-      // Para PDFs, verificar se houve redução de tamanho
       if (selectedConversion === 'reduce-pdf') {
         results.forEach((result, index) => {
           const originalFile = selectedFiles[index];
@@ -171,7 +191,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       console.error('[ConversionTool] === ERRO NA CONVERSÃO ===');
       console.error('Erro:', error);
       
-      // Mensagens de erro específicas e melhoradas
       let errorMessage = 'Erro desconhecido na conversão';
       
       if (error.message?.includes('muito grande')) {
@@ -271,9 +290,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
 
   // All calculations and derived state after hooks
   const conversionColor = getConversionColor(selectedConversion);
+  const textColor = getTextColorForConversion(selectedConversion);
   const isReducePdf = selectedConversion === 'reduce-pdf';
-  const isPngJpg = selectedConversion === 'png-jpg';
-  const textColor = isReducePdf ? 'text-white' : 'text-black';
   const showDownloadButton = convertedFiles.length > 0 && !isConverting;
   const currentProgress = selectedConversion === 'reduce-pdf' ? localProgress : progress;
 
@@ -422,7 +440,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
                           className="w-4 h-4 rounded-full flex items-center justify-center flex-shrink-0"
                           style={{ backgroundColor: conversionColor }}
                         >
-                          <span className={`text-xs font-bold ${isPngJpg ? 'text-black' : 'text-white'}`}>{fileNumber}</span>
+                          <span className={`text-xs font-bold ${textColor === 'text-white' ? 'text-white' : 'text-black'}`}>{fileNumber}</span>
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-gray-800 text-xs truncate">{file.name}</p>
@@ -440,7 +458,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
               <Button
                 onClick={convertSelectedFiles}
                 disabled={isConverting}
-                className={`font-medium transition-all duration-300 ${isPngJpg ? 'text-black' : 'text-white'}`}
+                className={`font-medium transition-all duration-300 ${textColor === 'text-white' ? 'text-white' : 'text-black'}`}
                 style={{ 
                   backgroundColor: conversionColor,
                   borderColor: conversionColor
@@ -450,7 +468,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
               </Button>
               <Button
                 onClick={clearFiles}
-                className={`font-medium transition-all duration-300 ${isPngJpg ? 'text-black' : 'text-white'}`}
+                className={`font-medium transition-all duration-300 ${textColor === 'text-white' ? 'text-white' : 'text-black'}`}
                 style={{ 
                   backgroundColor: conversionColor,
                   borderColor: conversionColor
@@ -461,7 +479,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
               {showDownloadButton && (
                 <Button
                   onClick={downloadZip}
-                  className={`font-medium transition-all duration-300 ${isPngJpg ? 'text-black' : 'text-white'}`}
+                  className={`font-medium transition-all duration-300 ${textColor === 'text-white' ? 'text-white' : 'text-black'}`}
                   style={{ 
                     backgroundColor: conversionColor,
                     borderColor: conversionColor
@@ -489,7 +507,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
               </span>
             </div>
             
-            {/* Enhanced progress bar with custom styling for PDF compression */}
             <div className="relative">
               <Progress 
                 value={currentProgress} 
@@ -507,7 +524,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
               )}
             </div>
             
-            {/* Progress message for PDF compression */}
             {isReducePdf && progressMessage && (
               <div className="text-center">
                 <span className="text-xs text-gray-600 font-medium">
