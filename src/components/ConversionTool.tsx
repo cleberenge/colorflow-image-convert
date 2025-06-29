@@ -64,11 +64,11 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   // Função para definir manualmente a cor do texto na área de upload para cada tipo de conversão
   const getUploadTextColor = (conversionType: ConversionType): string => {
     const textColorMap: Record<ConversionType, string> = {
-      'png-jpg': '#text-black',           // Amarelo para PNG para JPG
+      'png-jpg': 'text-black',           // Amarelo para PNG para JPG
       'jpg-pdf': '#text-black',        // Preto para JPG para PDF  
       'split-pdf': 'text-black',      // Preto para Dividir PDF
       'merge-pdf': 'text-black',      // Preto para Juntar PDF
-      'reduce-pdf': 'text-white',     // Branco para Reduzir PDF
+      'reduce-pdf': '#846C5B',     // Branco para Reduzir PDF
       'video-mp3': 'text-white',      // Branco para vídeo para MP3
       'svg-png': 'text-white',        // Branco para SVG para PNG
       'jpg-webp': 'text-white',       // Branco para JPG para WebP
