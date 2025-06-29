@@ -1,4 +1,4 @@
-
+// DEFINE A COR DA ÁREA DE UPLOAD
 export const getConversionColor = (conversionType: string) => {
   const colorMap: Record<string, string> = {
     'png-jpg': '#47E5BC', // amarelo claro (cor solicitada)
@@ -9,7 +9,7 @@ export const getConversionColor = (conversionType: string) => {
     'compress-video': '#8B5CF6', // roxo
     'split-pdf': '#73D2DE', // cor atualizada
     'merge-pdf': '#FFAAA5', // âmbar
-    'reduce-pdf': '#784F41', // rosa escuro (era do png-jpg)
+    'reduce-pdf': '#895A4A', // rosa escuro (era do png-jpg)
      // Novas conversões
     'svg-png': '#10B981', // verde esmeralda
     'jpg-webp': '#3B82F6', // azul
