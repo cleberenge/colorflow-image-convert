@@ -14,7 +14,7 @@ export const getConversionColor = (conversionType: string) => {
     'svg-png': '#F4F4F9', // verde esmeralda
     'jpg-webp': '#C36F09', // azul
     'svg-jpg': '#B91372', // vermelho
-    'html-pdf': '#E4FF1A', // roxo
+    'html-pdf': '#784F41', // roxo
     'csv-json': '#FB4B4E', // dourado
     'csv-excel': '#059669' // verde escuro
   };
