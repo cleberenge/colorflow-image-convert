@@ -18,3 +18,6 @@ verify_jwt = false
 
 [functions.compress-pdf-pdfcpu]
 verify_jwt = false
+
+[functions.send-contact-email]
+verify_jwt = false

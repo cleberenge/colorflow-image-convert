@@ -29,24 +29,29 @@ const ContactForm = () => {
     setIsSubmitting(true);
 
     try {
-      const { error } = await supabase
-        .from('contatos')
-        .insert([formData]);
+      console.log("Enviando mensagem de contato:", formData);
+
+      const { data, error } = await supabase.functions.invoke('send-contact-email', {
+        body: formData
+      });
 
       if (error) {
+        console.error("Erro ao enviar mensagem:", error);
         toast({
           title: "Erro ao enviar",
           description: "Tente novamente mais tarde.",
           variant: "destructive",
         });
       } else {
+        console.log("Resposta da função:", data);
         toast({
           title: "Mensagem enviada!",
-          description: "Recebemos sua mensagem e responderemos em breve.",
+          description: "Recebemos sua mensagem e responderemos em breve. Verifique seu email para confirmação.",
         });
         setFormData({ name: '', email: '', message: '' });
       }
     } catch (error) {
+      console.error("Erro na submissão:", error);
       toast({
         title: "Erro ao enviar",
         description: "Tente novamente mais tarde.",
