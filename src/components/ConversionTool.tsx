@@ -70,9 +70,9 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       'merge-pdf': 'text-black',      // Preto para Juntar PDF
       'reduce-pdf':'#FFFFFF',     // Branco para Reduzir PDF
       'video-mp3': 'text-white',      // Branco para vídeo para MP3
-      'svg-png': '#986C6A',        // Branco para SVG para PNG
+      'svg-png': '#D90368',        // Branco para SVG para PNG
       'jpg-webp': 'text-white',       // Branco para JPG para WebP
-      'svg-jpg': '#D90368',        // Branco para SVG para JPG
+      'svg-jpg': '#FFFFFF',        // Branco para SVG para JPG
       'html-pdf': 'text-white',       // Branco para HTML para PDF
       'csv-json': 'text-black',       // Preto para CSV para JSON
       'csv-excel': 'text-white',      // Branco para CSV para Excel
