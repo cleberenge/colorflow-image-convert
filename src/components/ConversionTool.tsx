@@ -72,7 +72,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       'video-mp3': 'text-white',      // Branco para vídeo para MP3
       'svg-png': '#986C6A',        // Branco para SVG para PNG
       'jpg-webp': 'text-white',       // Branco para JPG para WebP
-      'svg-jpg': '#5F464B',        // Branco para SVG para JPG
+      'svg-jpg': '#4D4847',        // Branco para SVG para JPG
       'html-pdf': 'text-white',       // Branco para HTML para PDF
       'csv-json': 'text-black',       // Preto para CSV para JSON
       'csv-excel': 'text-white',      // Branco para CSV para Excel
