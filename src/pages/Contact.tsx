@@ -1,6 +1,7 @@
 
 import React from 'react';
 import Header from '@/components/Header';
+import ContactForm from '@/components/ContactForm';
 import { useLanguage } from '@/hooks/useLanguage';
 import { Mail, MessageSquare, Clock } from 'lucide-react';
 
@@ -9,7 +10,7 @@ const Contact = () => {
 
   return (
     <div className="min-h-screen bg-white text-gray-700">
-    <Header />
+      <Header />
       
       <main className="max-w-4xl mx-auto px-4 py-12">
         <div className="text-center mb-12">
@@ -32,7 +33,7 @@ const Contact = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
           <div className="text-center bg-gray-50 p-8 rounded-lg">
             <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <Mail className="w-8 h-8 text-white" />
@@ -58,6 +59,8 @@ const Contact = () => {
             <p className="text-gray-600">Segunda a sexta, 9h às 18h</p>
           </div>
         </div>
+
+        <ContactForm />
       </main>
     </div>
   );
