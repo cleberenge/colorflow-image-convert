@@ -36,7 +36,7 @@ export const getConversionColorHover = (conversionType: string) => {
     // Novas conversões hover
     'svg-png': '#059669', // verde esmeralda hover
     'jpg-webp': '#2563EB', // azul hover
-    'svg-jpg': '#DC2626', // vermelho hover
+    'svg-jpg': '#FFFFFF', // vermelho hover
     'html-pdf': '#7C3AED', // roxo hover
     'csv-json': '#D97706', // dourado hover
     'csv-excel': '#047857' // verde escuro hover
