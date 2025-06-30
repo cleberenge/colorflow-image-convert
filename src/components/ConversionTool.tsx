@@ -74,8 +74,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       'jpg-webp': 'text-white',       // Branco para JPG para WebP
       'svg-jpg': '#FFFFFF',        // Branco para SVG para JPG
       'html-pdf': '#000000',       // Branco para HTML para PDF
-      'csv-json': 'text-black',       // Preto para CSV para JSON
-      'csv-excel': 'text-white',      // Branco para CSV para Excel
+      'csv-json': '#FFFFFF',       // Preto para CSV para JSON
+      'csv-excel': '#FFFFFF',      // Branco para CSV para Excel
     };
     
     return textColorMap[conversionType] || 'text-black';
