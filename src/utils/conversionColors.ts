@@ -11,11 +11,11 @@ export const getConversionColor = (conversionType: string) => {
     'merge-pdf': '#FFAAA5', // âmbar
     'reduce-pdf': '#846C5B', // rosa escuro (era do png-jpg)
      // Novas conversões
-    'svg-png': '#10B981', // verde esmeralda
-    'jpg-webp': '#3B82F6', // azul
-    'svg-jpg': '#EF4444', // vermelho
-    'html-pdf': '#8B5CF6', // roxo
-    'csv-json': '#F59E0B', // dourado
+    'svg-png': '#FF5A5F', // verde esmeralda
+    'jpg-webp': '#C36F09', // azul
+    'svg-jpg': '#B91372', // vermelho
+    'html-pdf': '#937666', // roxo
+    'csv-json': '#FB4B4E', // dourado
     'csv-excel': '#059669' // verde escuro
   };
   
