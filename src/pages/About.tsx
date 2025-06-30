@@ -7,7 +7,7 @@ const About = () => {
   const { t } = useLanguage();
 
   return (
-    <div className="min-h-screen bg-white text-gray-700">
+    <div className="min-h-screen bg-[#f5f5f5] text-gray-700">
       <Header />
       
       <main className="max-w-4xl mx-auto px-4 py-12">
