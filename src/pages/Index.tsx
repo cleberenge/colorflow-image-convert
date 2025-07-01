@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -40,7 +39,6 @@ const Index = () => {
     'reduce-pdf': '/reduce-jpg',
     'reduce-jpg': '/reduce-jpg',
     'reduce-png': '/reduce-png',
-    'video-mp3': '/video-to-mp3',
     'svg-png': '/svg-to-png',
     'jpg-webp': '/jpg-to-webp',
     'svg-jpg': '/svg-to-jpg',

@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { ConvertedFile, ConversionType } from '@/types/fileConverter';
 import { validateFileCount } from '@/utils/fileValidation';
@@ -39,10 +38,8 @@ export const useFileConverter = () => {
 
       let convertedFiles: ConvertedFile[];
 
-      // Handle video conversions separately
-      if (conversionType === 'video-mp3') {
-        convertedFiles = await convertVideoFiles(files, conversionType, progressUpdate);
-      } else if (['png-jpg', 'jpg-pdf', 'split-pdf', 'merge-pdf', 'reduce-pdf', 'reduce-jpg', 'reduce-png', 'svg-png', 'svg-jpg', 'jpg-webp', 'html-pdf', 'csv-json', 'csv-excel'].includes(conversionType)) {
+      // Handle all conversions through client-side converter
+      if (['png-jpg', 'jpg-pdf', 'split-pdf', 'merge-pdf', 'reduce-pdf', 'reduce-jpg', 'reduce-png', 'svg-png', 'svg-jpg', 'jpg-webp', 'html-pdf', 'csv-json', 'csv-excel'].includes(conversionType)) {
         convertedFiles = await convertClientSide(files, conversionType, progressUpdate);
       } else {
         throw new Error(`Tipo de conversão não suportado: ${conversionType}`);

@@ -12,7 +12,6 @@ export type ConversionType =
   | 'reduce-pdf'
   | 'reduce-jpg'
   | 'reduce-png'
-  | 'video-mp3'
   | 'svg-png'
   | 'jpg-webp'
   | 'svg-jpg'
