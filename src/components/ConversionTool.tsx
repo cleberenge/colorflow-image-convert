@@ -73,7 +73,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       'reduce-jpg':'#FFFFFF',     // Branco para Reduzir JPG
       'reduce-png':'#000000',     // Branco para Reduzir PNG
       'svg-png': '#784F41',        // Branco para SVG para PNG
-      'jpg-webp': 'text-white',       // Branco para JPG para WebP
+      'jpg-webp': 'F2C80F',       // Branco para JPG para WebP
       'svg-jpg': '#FFFFFF',        // Branco para SVG para JPG
       'html-pdf': '#000000',       // Branco para HTML para PDF
       'csv-json': '#FFFFFF',       // Preto para CSV para JSON
