@@ -9,7 +9,7 @@ export const getConversionColor = (conversionType: string) => {
     'compress-video': '#8B5CF6', // roxo
     'split-pdf': '#73D2DE', // cor atualizada
     'merge-pdf': '#FFAAA5', // âmber
-    'reduce-pdf': '#33AE81', // rosa escuro (era do png-jpg) FF5400
+    'reduce-pdf': '#BA0012', // rosa escuro (era do png-jpg) FF5400
     'reduce-jpg': '#5F6B6D', // rosa para reduzir JPG
     'reduce-png': '#B6B0FF', // roxo para reduzir PNG 7C3AED EC5656
     // Novas conversões
