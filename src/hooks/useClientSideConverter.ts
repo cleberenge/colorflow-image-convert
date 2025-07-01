@@ -45,27 +45,27 @@ export const useClientSideConverter = () => {
           });
         }
       } else if (conversionType === 'reduce-jpg') {
-        // Compressão de arquivos JPG
+        // Compressão de arquivos JPG - qualidade mais agressiva
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
           const baseProgress = 10 + (i * 70 / files.length);
           updateProgress(baseProgress);
           
           console.log(`[ClientSideConverter] Comprimindo JPG ${i + 1}/${files.length}: ${file.name}`);
-          const compressedFile = await compressJpg(file, 0.7);
+          const compressedFile = await compressJpg(file, 0.4); // Reduzido de 0.7 para 0.4
           convertedFiles.push({ file: compressedFile, originalName: file.name });
           
           updateProgress(baseProgress + (70 / files.length));
         }
       } else if (conversionType === 'reduce-png') {
-        // Compressão de arquivos PNG
+        // Compressão de arquivos PNG - qualidade mais agressiva
         for (let i = 0; i < files.length; i++) {
           const file = files[i];
           const baseProgress = 10 + (i * 70 / files.length);
           updateProgress(baseProgress);
           
           console.log(`[ClientSideConverter] Comprimindo PNG ${i + 1}/${files.length}: ${file.name}`);
-          const compressedFile = await compressPng(file, 0.7);
+          const compressedFile = await compressPng(file, 0.5); // Reduzido de 0.7 para 0.5
           convertedFiles.push({ file: compressedFile, originalName: file.name });
           
           updateProgress(baseProgress + (70 / files.length));
