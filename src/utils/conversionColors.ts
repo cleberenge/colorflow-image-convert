@@ -11,7 +11,7 @@ export const getConversionColor = (conversionType: string) => {
     'merge-pdf': '#FFAAA5', // âmber
     'reduce-pdf': '#FF5400', // rosa escuro (era do png-jpg)
     'reduce-jpg': '#E11D48', // rosa para reduzir JPG
-    'reduce-png': '#EC5656', // roxo para reduzir PNG 7C3AED
+    'reduce-png': '#B6B0FF', // roxo para reduzir PNG 7C3AED EC5656
     // Novas conversões
     'svg-png': '#F4F4F9', // verde esmeralda
     'jpg-webp': '#FD625E', // azul C36F09
