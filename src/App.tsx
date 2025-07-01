@@ -32,6 +32,7 @@ const App = () => (
             <Route path="/merge-pdf" element={<Index />} />
             <Route path="/reduce-jpg" element={<Index />} />
             <Route path="/reduce-png" element={<Index />} />
+            <Route path="/video-to-mp3" element={<Index />} />
             <Route path="/svg-to-png" element={<Index />} />
             <Route path="/jpg-to-webp" element={<Index />} />
             <Route path="/svg-to-jpg" element={<Index />} />

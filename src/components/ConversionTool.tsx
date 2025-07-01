@@ -34,6 +34,8 @@ const conversionOptions: ConversionOption[] = [
   { value: 'split-pdf', label: 'Dividir PDF', description: '' },
   { value: 'merge-pdf', label: 'Juntar PDF', description: '' },
   { value: 'reduce-pdf', label: 'Reduzir PDF', description: '' },
+  { value: 'reduce-jpg', label: 'Reduzir JPG', description: '' },
+  { value: 'reduce-png', label: 'Reduzir PNG', description: '' },
   { value: 'video-mp3', label: 'MP4 para MP3', description: '' },
   { value: 'svg-png', label: 'SVG para PNG', description: '' },
   { value: 'jpg-webp', label: 'JPG para WebP', description: '' },
@@ -69,6 +71,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       'split-pdf': 'text-black',      // Preto para Dividir PDF
       'merge-pdf': 'text-black',      // Preto para Juntar PDF
       'reduce-pdf':'#FFFFFF',     // Branco para Reduzir PDF
+      'reduce-jpg': 'text-white',     // Branco para Reduzir JPG
+      'reduce-png': 'text-white',     // Branco para Reduzir PNG
       'video-mp3': 'text-white',      // Branco para vídeo para MP3
       'svg-png': '#784F41',        // Branco para SVG para PNG
       'jpg-webp': 'text-white',       // Branco para JPG para WebP
@@ -315,8 +319,11 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     switch (selectedConversion) {
       case 'png-jpg':
         return '.png';
+      case 'reduce-png':
+        return '.png';
       case 'jpg-pdf':
       case 'jpg-webp':
+      case 'reduce-jpg':
         return '.jpg,.jpeg';
       case 'split-pdf':
       case 'reduce-pdf':
@@ -342,6 +349,10 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       return 'PDFs para mesclar';
     } else if (selectedConversion === 'reduce-pdf') {
       return 'PDF para reduzir';
+    } else if (selectedConversion === 'reduce-jpg') {
+      return 'imagens JPG para reduzir';
+    } else if (selectedConversion === 'reduce-png') {
+      return 'imagens PNG para reduzir';
     } else if (selectedConversion === 'split-pdf') {
       return 'PDF para dividir';
     } else if (selectedConversion === 'video-mp3') {

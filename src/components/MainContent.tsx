@@ -40,7 +40,7 @@ const MainContent: React.FC<MainContentProps> = ({
           </div>
           <div className="flex-shrink-0 p-1 relative">
             <img 
-              src="/lovable-uploads/fe65fafd-f469-4412-b9e0-489b1ccd3ad2.png" 
+              src="/lovable-uploads/621cf7a8-1c99-489f-ac67-6573c3dcaa96.png" 
               alt="QR Code" 
               className="w-40 h-40 object-contain"
             />

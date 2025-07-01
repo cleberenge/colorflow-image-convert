@@ -7,6 +7,7 @@ import { mergePdfs } from '@/utils/pdfMerger';
 import { compressPdfClientSide } from '@/utils/pdfCompressor';
 import { convertSvgToPng, convertSvgToJpg, convertJpgToWebp } from '@/utils/advancedImageConverter';
 import { convertHtmlToPdf, convertCsvToJson, convertCsvToExcel } from '@/utils/documentConverter';
+import { compressJpg, compressPng } from '@/utils/imageCompressor';
 
 export const useClientSideConverter = () => {
   const [isConverting, setIsConverting] = useState(false);
@@ -42,6 +43,32 @@ export const useClientSideConverter = () => {
             file: compressedFile, 
             originalName: file.name 
           });
+        }
+      } else if (conversionType === 'reduce-jpg') {
+        // Compressão de arquivos JPG
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const baseProgress = 10 + (i * 70 / files.length);
+          updateProgress(baseProgress);
+          
+          console.log(`[ClientSideConverter] Comprimindo JPG ${i + 1}/${files.length}: ${file.name}`);
+          const compressedFile = await compressJpg(file, 0.7);
+          convertedFiles.push({ file: compressedFile, originalName: file.name });
+          
+          updateProgress(baseProgress + (70 / files.length));
+        }
+      } else if (conversionType === 'reduce-png') {
+        // Compressão de arquivos PNG
+        for (let i = 0; i < files.length; i++) {
+          const file = files[i];
+          const baseProgress = 10 + (i * 70 / files.length);
+          updateProgress(baseProgress);
+          
+          console.log(`[ClientSideConverter] Comprimindo PNG ${i + 1}/${files.length}: ${file.name}`);
+          const compressedFile = await compressPng(file, 0.7);
+          convertedFiles.push({ file: compressedFile, originalName: file.name });
+          
+          updateProgress(baseProgress + (70 / files.length));
         }
       } else if (conversionType === 'png-jpg') {
         for (let i = 0; i < files.length; i++) {
