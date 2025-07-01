@@ -11,13 +11,13 @@ export const getConversionColor = (conversionType: string) => {
     'merge-pdf': '#FFAAA5', // âmber
     'reduce-pdf': '#FF5400', // rosa escuro (era do png-jpg)
     'reduce-jpg': '#E11D48', // rosa para reduzir JPG
-    'reduce-png': '#7C3AED', // roxo para reduzir PNG
+    'reduce-png': '#EC5656', // roxo para reduzir PNG 7C3AED
     // Novas conversões
     'svg-png': '#F4F4F9', // verde esmeralda
-    'jpg-webp': '#C36F09', // azul
+    'jpg-webp': '#FD625E', // azul C36F09
     'svg-jpg': '#FF0054', // vermelho
-    'html-pdf': '#F7C59F', // roxo
-    'csv-json': '#FB4B4E', // dourado
+    'html-pdf': '#998785', // roxo F7C59F
+    'csv-json': '#FF4500', // dourado
     'csv-excel': '#059669' // verde escuro
   };
   
