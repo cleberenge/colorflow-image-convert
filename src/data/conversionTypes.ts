@@ -138,14 +138,14 @@ export const conversionTypes = [
 
 export const getOrderedConversions = () => {
   return [
-    // Primeira linha (conversões existentes)
+    // Primeira linha (conversões principais)
     conversionTypes[0], // PNG para JPG
     conversionTypes[1], // JPG para PDF  
     conversionTypes[2], // Dividir PDF
     conversionTypes[3], // Juntar PDF
     conversionTypes[4], // Reduzir PDF
     conversionTypes[5], // Reduzir JPG
-    // Segunda linha (novas conversões)
+    // Segunda linha (conversões adicionais)
     conversionTypes[6], // Reduzir PNG
     conversionTypes[7], // SVG para PNG
     conversionTypes[8], // JPG para WebP

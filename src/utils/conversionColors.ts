@@ -1,3 +1,4 @@
+
 // DEFINE A COR DA ÁREA DE UPLOAD
 export const getConversionColor = (conversionType: string) => {
   const colorMap: Record<string, string> = {
@@ -5,12 +6,13 @@ export const getConversionColor = (conversionType: string) => {
     'jpg-pdf': '#FDEE00', // laranja
     'pdf-word': '#6366F1', // índigo (era do split-pdf)
     'word-pdf': '#DC2626', // crimson
-     //'video-mp3': '#820263', // roxo escuro (trocado com png-jpg)
     'compress-video': '#8B5CF6', // roxo
     'split-pdf': '#73D2DE', // cor atualizada
-    'merge-pdf': '#FFAAA5', // âmbar
+    'merge-pdf': '#FFAAA5', // âmber
     'reduce-pdf': '#FF5400', // rosa escuro (era do png-jpg)
-     // Novas conversões
+    'reduce-jpg': '#E11D48', // rosa para reduzir JPG
+    'reduce-png': '#7C3AED', // roxo para reduzir PNG
+    // Novas conversões
     'svg-png': '#F4F4F9', // verde esmeralda
     'jpg-webp': '#C36F09', // azul
     'svg-jpg': '#FF0054', // vermelho
@@ -28,11 +30,12 @@ export const getConversionColorHover = (conversionType: string) => {
     'jpg-pdf': '#EA580C',
     'pdf-word': '#4F46E5', // índigo hover (era do split-pdf)
     'word-pdf': '#B91C1C',
-    'video-mp3': '#6e0254', // roxo escuro hover (trocado com png-jpg)
     'compress-video': '#7C3AED', // roxo hover
     'split-pdf': '#3dd4aa', // hover para nova cor
     'merge-pdf': '#D97706',
     'reduce-pdf': '#c70e4f', // rosa escuro hover (era do png-jpg)
+    'reduce-jpg': '#BE123C', // rosa hover para reduzir JPG
+    'reduce-png': '#6D28D9', // roxo hover para reduzir PNG
     // Novas conversões hover
     'svg-png': '#059669', // verde esmeralda hover
     'jpg-webp': '#2563EB', // azul hover
