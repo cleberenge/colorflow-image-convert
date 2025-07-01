@@ -36,7 +36,6 @@ const conversionOptions: ConversionOption[] = [
   { value: 'reduce-pdf', label: 'Reduzir PDF', description: '' },
   { value: 'reduce-jpg', label: 'Reduzir JPG', description: '' },
   { value: 'reduce-png', label: 'Reduzir PNG', description: '' },
-  { value: 'video-mp3', label: 'MP4 para MP3', description: '' },
   { value: 'svg-png', label: 'SVG para PNG', description: '' },
   { value: 'jpg-webp', label: 'JPG para WebP', description: '' },
   { value: 'svg-jpg', label: 'SVG para JPG', description: '' },
@@ -73,7 +72,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       'reduce-pdf':'#FFFFFF',     // Branco para Reduzir PDF
       'reduce-jpg': 'text-white',     // Branco para Reduzir JPG
       'reduce-png': 'text-white',     // Branco para Reduzir PNG
-      'video-mp3': 'text-white',      // Branco para vídeo para MP3
       'svg-png': '#784F41',        // Branco para SVG para PNG
       'jpg-webp': 'text-white',       // Branco para JPG para WebP
       'svg-jpg': '#FFFFFF',        // Branco para SVG para JPG
@@ -329,8 +327,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       case 'reduce-pdf':
       case 'merge-pdf':
         return '.pdf';
-      case 'video-mp3':
-        return '.mp4,.avi,.mov,.wmv,.flv,.webm,.mkv,.m4v,.3gp';
       case 'svg-png':
       case 'svg-jpg':
         return '.svg';
@@ -355,8 +351,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       return 'imagens PNG para reduzir';
     } else if (selectedConversion === 'split-pdf') {
       return 'PDF para dividir';
-    } else if (selectedConversion === 'video-mp3') {
-      return 'vídeos para converter';
     } else if (selectedConversion === 'svg-png' || selectedConversion === 'svg-jpg') {
       return 'arquivos SVG';
     } else if (selectedConversion === 'html-pdf') {
