@@ -10,6 +10,8 @@ export type ConversionType =
   | 'split-pdf' 
   | 'merge-pdf' 
   | 'reduce-pdf'
+  | 'reduce-jpg'
+  | 'reduce-png'
   | 'video-mp3'
   | 'svg-png'
   | 'jpg-webp'
