@@ -71,7 +71,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       'merge-pdf': 'text-black',      // Preto para Juntar PDF
       'reduce-pdf':'#FFFFFF',     // Branco para Reduzir PDF
       'reduce-jpg':'#FFFFFF',     // Branco para Reduzir JPG
-      'reduce-png':'#FFFFFF',     // Branco para Reduzir PNG
+      'reduce-png':'#000000',     // Branco para Reduzir PNG
       'svg-png': '#784F41',        // Branco para SVG para PNG
       'jpg-webp': 'text-white',       // Branco para JPG para WebP
       'svg-jpg': '#FFFFFF',        // Branco para SVG para JPG
