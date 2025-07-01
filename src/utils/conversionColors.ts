@@ -13,7 +13,7 @@ export const getConversionColor = (conversionType: string) => {
     'reduce-jpg': '#5F6B6D', // rosa para reduzir JPG
     'reduce-png': '#B6B0FF', // roxo para reduzir PNG 7C3AED EC5656
     // Novas conversões
-    'svg-png': '#F4F4F9', // verde esmeralda
+    'svg-png': '#DCEDC1', // verde esmeralda F4F4F9
     'jpg-webp': '#FD625E', // azul C36F09
     'svg-jpg': '#FF0054', // vermelho
     'html-pdf': '#998785', // roxo F7C59F
