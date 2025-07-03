@@ -62,25 +62,25 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     }
   }, [propConversionType]);
 
-  // Função para definir a cor do texto na área de upload para each tipo de conversão
+  // Função para definir a cor do texto na área de upload para cada tipo de conversão
   const getUploadTextColor = (conversionType: ConversionType): string => {
     const textColorMap: Record<ConversionType, string> = {
-      'png-jpg': 'text-black',          // Preto para PNG para JPG
-      'jpg-pdf': 'text-black',          // Preto para JPG para PDF  
-      'split-pdf': 'text-black',        // Preto para Dividir PDF
-      'merge-pdf': 'text-black',        // Preto para Juntar PDF
-      'reduce-pdf':'text-white',        // Branco para Reduzir PDF
-      'reduce-jpg':'text-white',        // Branco para Reduzir JPG
-      'reduce-png':'text-white',        // Branco para Reduzir PNG
-      'svg-png': 'text-black',          // Preto para SVG para PNG
-      'jpg-webp': 'text-black',         // Preto para JPG para WebP
-      'svg-jpg': 'text-white',          // Branco para SVG para JPG
-      'html-pdf': '#F2C8OF',            // Preto para HTML para PDF
-      'csv-json': 'text-black',         // Preto para CSV para JSON
-      'csv-excel': 'text-white',        // Branco para CSV para Excel
+      'png-jpg': '#000000',          // Preto para PNG para JPG
+      'jpg-pdf': '#000000',          // Preto para JPG para PDF  
+      'split-pdf': '#000000',        // Preto para Dividir PDF
+      'merge-pdf': '#000000',        // Preto para Juntar PDF
+      'reduce-pdf': '#FFFFFF',       // Branco para Reduzir PDF
+      'reduce-jpg': '#FFFFFF',       // Branco para Reduzir JPG
+      'reduce-png': '#FFFFFF',       // Branco para Reduzir PNG
+      'svg-png': '#000000',          // Preto para SVG para PNG
+      'jpg-webp': '#000000',         // Preto para JPG para WebP
+      'svg-jpg': '#FFFFFF',          // Branco para SVG para JPG
+      'html-pdf': '#000000',         // Preto para HTML para PDF
+      'csv-json': '#000000',         // Preto para CSV para JSON
+      'csv-excel': '#FFFFFF',        // Branco para CSV para Excel
     };
     
-    return textColorMap[conversionType] || 'text-black';
+    return textColorMap[conversionType] || '#000000';
   };
 
   // Debug: log do estado atual
@@ -389,17 +389,20 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
           >
             <div className="w-12 h-12 bg-black/10 rounded-full flex items-center justify-center">
               <Upload 
-                className={`w-6 h-6 ${uploadTextColor}`}
+                className="w-6 h-6"
+                style={{ color: uploadTextColor }}
               />
             </div>
             <div>
               <p 
-                className={`text-base font-medium mb-1 ${uploadTextColor}`}
+                className="text-base font-medium mb-1"
+                style={{ color: uploadTextColor }}
               >
                 Clique para selecionar {getUploadText()}
               </p>
               <p 
-                className={`text-sm ${uploadTextColor}`}
+                className="text-sm"
+                style={{ color: uploadTextColor }}
               >
                 ou arraste e solte aqui
               </p>
