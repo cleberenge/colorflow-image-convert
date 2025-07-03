@@ -75,7 +75,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       'svg-png': 'text-black',          // Preto para SVG para PNG
       'jpg-webp': 'text-black',         // Preto para JPG para WebP
       'svg-jpg': 'text-white',          // Branco para SVG para JPG
-      'html-pdf': '#73D2DE',         // Preto para HTML para PDF
+      'html-pdf': '#73D2DE',            // Preto para HTML para PDF
       'csv-json': 'text-black',         // Preto para CSV para JSON
       'csv-excel': 'text-white',        // Branco para CSV para Excel
     };
