@@ -10,7 +10,7 @@ export const getConversionColor = (conversionType: string) => {
     'split-pdf': '#73D2DE', // ciano
     'merge-pdf': '#FFAAA5', // rosa claro
     'reduce-pdf': '#BA0012', // vermelho escuro
-    'reduce-jpg': '#BA0012', // vermelho escuro
+    'reduce-jpg': '#FFFFFF', // vermelho escuro
     'reduce-png': '#9D0C3F', // roxo escuro
     // Novas conversões
     'svg-png': '#DCEDC1', // verde pastel
