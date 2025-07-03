@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -20,6 +21,7 @@ const Index = () => {
     '/jpg-to-pdf': 'jpg-pdf',
     '/split-pdf': 'split-pdf',
     '/merge-pdf': 'merge-pdf',
+    '/reduce-pdf': 'reduce-pdf',
     '/reduce-jpg': 'reduce-jpg',
     '/reduce-png': 'reduce-png',
     '/svg-to-png': 'svg-png',
@@ -36,7 +38,7 @@ const Index = () => {
     'jpg-pdf': '/jpg-to-pdf',
     'split-pdf': '/split-pdf',
     'merge-pdf': '/merge-pdf',
-    'reduce-pdf': '/reduce-jpg',
+    'reduce-pdf': '/reduce-pdf',
     'reduce-jpg': '/reduce-jpg',
     'reduce-png': '/reduce-png',
     'svg-png': '/svg-to-png',

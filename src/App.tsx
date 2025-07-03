@@ -1,3 +1,4 @@
+
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -29,6 +30,7 @@ const App = () => (
             <Route path="/jpg-to-pdf" element={<Index />} />
             <Route path="/split-pdf" element={<Index />} />
             <Route path="/merge-pdf" element={<Index />} />
+            <Route path="/reduce-pdf" element={<Index />} />
             <Route path="/reduce-jpg" element={<Index />} />
             <Route path="/reduce-png" element={<Index />} />
             <Route path="/svg-to-png" element={<Index />} />
