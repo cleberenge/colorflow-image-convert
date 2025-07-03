@@ -72,10 +72,10 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
       'reduce-pdf':'text-white',        // Branco para Reduzir PDF
       'reduce-jpg':'text-white',        // Branco para Reduzir JPG
       'reduce-png':'text-white',        // Branco para Reduzir PNG
-      'svg-png': '#FFFFFF',             // Preto para SVG para PNG
+      'svg-png': '#000000',             // Preto para SVG para PNG
       'jpg-webp': 'text-black',         // Preto para JPG para WebP
       'svg-jpg': 'text-white',          // Branco para SVG para JPG
-      'html-pdf': '#73D2DE',            // Preto para HTML para PDF
+      'html-pdf': '#81E4D4',            // Preto para HTML para PDF
       'csv-json': 'text-black',         // Preto para CSV para JSON
       'csv-excel': 'text-white',        // Branco para CSV para Excel
     };
