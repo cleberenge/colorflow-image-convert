@@ -3,7 +3,6 @@ import React from 'react';
 import Header from '@/components/Header';
 import ContactForm from '@/components/ContactForm';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Mail } from 'lucide-react';
 
 const Contact = () => {
   const { t } = useLanguage();
@@ -31,17 +30,6 @@ const Contact = () => {
           <p className="text-lg text-gray-600 leading-relaxed text-left">
             Sua opinião é fundamental para nosso crescimento e melhoria contínua. Através do seu feedback, conseguimos identificar oportunidades de aprimoramento e desenvolver novas funcionalidades que realmente fazem a diferença no seu dia a dia.
           </p>
-        </div>
-        
-        <div className="flex justify-center mb-12">
-          <div className="text-center bg-gray-50 p-8 rounded-lg">
-            <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Mail className="w-8 h-8 text-white" />
-            </div>
-            <h3 className="font-semibold mb-3 text-lg text-gray-800">Email</h3>
-            <p className="text-gray-600">Envie suas dúvidas e sugestões</p>
-            <p className="text-blue-500 font-medium mt-2">choicepdf@gmail.com</p>
-          </div>
         </div>
 
         <ContactForm />

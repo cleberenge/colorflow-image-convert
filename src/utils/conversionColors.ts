@@ -10,7 +10,7 @@ export const getConversionColor = (conversionType: string) => {
     'split-pdf': '#73D2DE', // cor atualizada
     'merge-pdf': '#FFAAA5', // âmber
     'reduce-pdf': '#BA0012', // rosa escuro (cor correta)
-    'reduce-jpg': '#5F6B6D', // cinza para reduzir JPG
+    'reduce-jpg': '#BA0012', // mesma cor do reduce-pdf para consistência
     'reduce-png': '#581845', // roxo para reduzir PNG
     // Novas conversões
     'svg-png': '#DCEDC1', // verde esmeralda
@@ -34,7 +34,7 @@ export const getConversionColorHover = (conversionType: string) => {
     'split-pdf': '#3dd4aa', // hover para nova cor
     'merge-pdf': '#D97706',
     'reduce-pdf': '#A00010', // rosa escuro hover (cor correta)
-    'reduce-jpg': '#4A5568', // cinza hover para reduzir JPG
+    'reduce-jpg': '#A00010', // mesma cor hover do reduce-pdf
     'reduce-png': '#4A1A35', // roxo hover para reduzir PNG
     // Novas conversões hover
     'svg-png': '#059669', // verde esmeralda hover

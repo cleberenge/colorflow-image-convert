@@ -53,7 +53,16 @@ const ConversionIcon: React.FC<ConversionIconProps> = ({ conversionType, classNa
         return {
           color,
           icon: (
-            <svg className="w-3 h-3 text-black" fill="currentColor" viewBox="0 0 24 24">
+            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+            </svg>
+          )
+        };
+      case 'reduce-jpg':
+        return {
+          color,
+          icon: (
+            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
             </svg>
           )
