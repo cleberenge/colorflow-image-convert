@@ -9,14 +9,14 @@ export const getConversionColor = (conversionType: string) => {
     'compress-video': '#8B5CF6', // roxo
     'split-pdf': '#73D2DE', // cor atualizada
     'merge-pdf': '#FFAAA5', // âmber
-    'reduce-pdf': '#BA0012', // rosa escuro (era do png-jpg) FF5400
-    'reduce-jpg': '#5F6B6D', // rosa para reduzir JPG
-    'reduce-png': '#581845', // roxo para reduzir PNG 7C3AED EC5656 B6B0FF 9D0C3F
+    'reduce-pdf': '#BA0012', // rosa escuro (cor correta)
+    'reduce-jpg': '#5F6B6D', // cinza para reduzir JPG
+    'reduce-png': '#581845', // roxo para reduzir PNG
     // Novas conversões
-    'svg-png': '#DCEDC1', // verde esmeralda F4F4F9
-    'jpg-webp': '#FD625E', // azul C36F09
+    'svg-png': '#DCEDC1', // verde esmeralda
+    'jpg-webp': '#FD625E', // azul
     'svg-jpg': '#FF0054', // vermelho
-    'html-pdf': '#998785', // roxo F7C59F
+    'html-pdf': '#998785', // roxo
     'csv-json': '#F2C80F', // dourado
     'csv-excel': '#059669' // verde escuro
   };
@@ -33,13 +33,13 @@ export const getConversionColorHover = (conversionType: string) => {
     'compress-video': '#7C3AED', // roxo hover
     'split-pdf': '#3dd4aa', // hover para nova cor
     'merge-pdf': '#D97706',
-    'reduce-pdf': '#c70e4f', // rosa escuro hover (era do png-jpg)
-    'reduce-jpg': '#BE123C', // rosa hover para reduzir JPG
-    'reduce-png': '#6D28D9', // roxo hover para reduzir PNG
+    'reduce-pdf': '#A00010', // rosa escuro hover (cor correta)
+    'reduce-jpg': '#4A5568', // cinza hover para reduzir JPG
+    'reduce-png': '#4A1A35', // roxo hover para reduzir PNG
     // Novas conversões hover
     'svg-png': '#059669', // verde esmeralda hover
-    'jpg-webp': '#2563EB', // azul hover
-    'svg-jpg': '#FFFFFF', // vermelho hover
+    'jpg-webp': '#E53E3E', // azul hover
+    'svg-jpg': '#D53F8C', // vermelho hover
     'html-pdf': '#7C3AED', // roxo hover
     'csv-json': '#D97706', // dourado hover
     'csv-excel': '#047857' // verde escuro hover

@@ -66,18 +66,18 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   const getUploadTextColor = (conversionType: ConversionType): string => {
     const textColorMap: Record<ConversionType, string> = {
       'png-jpg': 'text-black',           // Amarelo para PNG para JPG
-      'jpg-pdf': '#text-black',        // Preto para JPG para PDF  
-      'split-pdf': 'text-black',      // Preto para Dividir PDF
-      'merge-pdf': 'text-black',      // Preto para Juntar PDF
-      'reduce-pdf':'#FFFFFF',     // Branco para Reduzir PDF
-      'reduce-jpg':'#FFFFFF',     // Branco para Reduzir JPG
-      'reduce-png':'#FFA500',     // Branco para Reduzir PNG
-      'svg-png': '#463041',        // Branco para SVG para PNG
-      'jpg-webp': '#F2C80F',       // Branco para JPG para WebP
-      'svg-jpg': '#FFADAD',        // Branco para SVG para JPG
-      'html-pdf': '#000000',       // Branco para HTML para PDF
-      'csv-json': '#FFFFFF',       // Preto para CSV para JSON
-      'csv-excel': '#FFFFFF',      // Branco para CSV para Excel
+      'jpg-pdf': 'text-black',          // Preto para JPG para PDF  
+      'split-pdf': 'text-black',        // Preto para Dividir PDF
+      'merge-pdf': 'text-black',        // Preto para Juntar PDF
+      'reduce-pdf':'text-white',        // Branco para Reduzir PDF
+      'reduce-jpg':'text-white',        // Branco para Reduzir JPG
+      'reduce-png':'text-white',        // Branco para Reduzir PNG
+      'svg-png': 'text-black',          // Preto para SVG para PNG
+      'jpg-webp': 'text-black',         // Preto para JPG para WebP
+      'svg-jpg': 'text-white',          // Branco para SVG para JPG
+      'html-pdf': 'text-black',         // Preto para HTML para PDF
+      'csv-json': 'text-black',         // Preto para CSV para JSON
+      'csv-excel': 'text-white',        // Branco para CSV para Excel
     };
     
     return textColorMap[conversionType] || 'text-black';
@@ -389,26 +389,17 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
           >
             <div className="w-12 h-12 bg-black/10 rounded-full flex items-center justify-center">
               <Upload 
-                className="w-6 h-6"
-                style={{ 
-                  color: uploadTextColor.startsWith('#') ? uploadTextColor : undefined 
-                }}
+                className={`w-6 h-6 ${uploadTextColor}`}
               />
             </div>
             <div>
               <p 
-                className="text-base font-medium mb-1"
-                style={{ 
-                  color: uploadTextColor.startsWith('#') ? uploadTextColor : undefined 
-                }}
+                className={`text-base font-medium mb-1 ${uploadTextColor}`}
               >
                 Clique para selecionar {getUploadText()}
               </p>
               <p 
-                className="text-sm"
-                style={{ 
-                  color: uploadTextColor.startsWith('#') ? uploadTextColor : undefined 
-                }}
+                className={`text-sm ${uploadTextColor}`}
               >
                 ou arraste e solte aqui
               </p>

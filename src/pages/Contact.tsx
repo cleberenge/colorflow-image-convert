@@ -3,7 +3,7 @@ import React from 'react';
 import Header from '@/components/Header';
 import ContactForm from '@/components/ContactForm';
 import { useLanguage } from '@/hooks/useLanguage';
-import { Mail, MessageSquare, Clock } from 'lucide-react';
+import { Mail } from 'lucide-react';
 
 const Contact = () => {
   const { t } = useLanguage();
@@ -33,30 +33,14 @@ const Contact = () => {
           </p>
         </div>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
+        <div className="flex justify-center mb-12">
           <div className="text-center bg-gray-50 p-8 rounded-lg">
             <div className="w-16 h-16 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-4">
               <Mail className="w-8 h-8 text-white" />
             </div>
             <h3 className="font-semibold mb-3 text-lg text-gray-800">Email</h3>
             <p className="text-gray-600">Envie suas dúvidas e sugestões</p>
-            <p className="text-blue-500 font-medium mt-2">cleber.conteudo@gmail.com</p>
-          </div>
-          
-          <div className="text-center bg-gray-50 p-8 rounded-lg">
-            <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <MessageSquare className="w-8 h-8 text-white" />
-            </div>
-            <h3 className="font-semibold mb-3 text-lg text-gray-800">Suporte</h3>
-            <p className="text-gray-600">Ajuda técnica especializada</p>
-          </div>
-          
-          <div className="text-center bg-gray-50 p-8 rounded-lg">
-            <div className="w-16 h-16 bg-purple-500 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Clock className="w-8 h-8 text-white" />
-            </div>
-            <h3 className="font-semibold mb-3 text-lg text-gray-800">Horário</h3>
-            <p className="text-gray-600">Segunda a sexta, 9h às 18h</p>
+            <p className="text-blue-500 font-medium mt-2">choicepdf@gmail.com</p>
           </div>
         </div>
 
