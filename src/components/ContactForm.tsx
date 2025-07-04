@@ -112,7 +112,8 @@ const ContactForm = () => {
         <Button 
           type="submit" 
           disabled={isSubmitting}
-          className="w-full bg-green-500 hover:bg-green-600"
+          className="w-full text-black hover:opacity-90"
+          style={{ backgroundColor: '#FDEE00' }}
         >
           {isSubmitting ? 'Enviando...' : 'Enviar'}
         </Button>
