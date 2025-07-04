@@ -54,7 +54,8 @@ const ConversionIcon: React.FC<ConversionIconProps> = ({ conversionType, classNa
           color,
           icon: (
             <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14l-5-5 1.41-1.41L14 14.17V7h2v10h-2z"/>
+              <path d="M21 3H3c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 16H5V5h14v14zm-9-9h4v4h-4v-4zm2 2h2v2h-2v-2z"/>
+              <circle cx="8" cy="8" r="1"/>
             </svg>
           )
         };
@@ -103,13 +104,13 @@ const ConversionIcon: React.FC<ConversionIconProps> = ({ conversionType, classNa
             </svg>
           )
         };
-      // Ícones melhorados
+      // Ícones únicos e melhorados
       case 'svg-png':
         return {
           color,
           icon: (
             <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M21 7v10c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V7c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2zm-2 0H5v10h14V7zm-7 8l-2-2.5L8 15h8l-2.5-3.5L11 15z"/>
+              <path d="M12 2L8 7h3v8h2V7h3l-4-5zm-8 16h16v2H4v-2zm4-4h8l-4-4-4 4z"/>
             </svg>
           )
         };
@@ -118,8 +119,8 @@ const ConversionIcon: React.FC<ConversionIconProps> = ({ conversionType, classNa
           color,
           icon: (
             <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-              <circle cx="9" cy="9" r="1.5"/>
+              <path d="M19 5v9l-3-3-4 4-4-4-4 4V5h15zm-15 0H2v16h20V5h-2L12 13 4 5z"/>
+              <path d="M7 7c.55 0 1-.45 1-1s-.45-1-1-1-1 .45-1 1 .45 1 1 1z"/>
             </svg>
           )
         };
@@ -128,7 +129,8 @@ const ConversionIcon: React.FC<ConversionIconProps> = ({ conversionType, classNa
           color,
           icon: (
             <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M21 5v6.59l-3-3.01-4 4.01-4-4-4 4-3-3.01V5c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2zm-3 6.42l3 3.01V19c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2v-4.57l3-3.01 4 4 4-4 4 4z"/>
+              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"/>
+              <path d="M15 12l-3 3-3-3h2V8h2v4h2z"/>
             </svg>
           )
         };
@@ -137,8 +139,7 @@ const ConversionIcon: React.FC<ConversionIconProps> = ({ conversionType, classNa
           color,
           icon: (
             <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-              <path d="M8 8h2v2H8V8zm4 0h2v2h-2V8zm4 0h2v2h-2V8z"/>
+              <path d="M16 1H4c-1.1 0-2 .9-2 2v14h2V3h12V1zm3 4H8c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h11c1.1 0 2-.9 2-2V7c0-1.1-.9-2-2-2zm-2 16H10v-2h7v2zm0-4H10v-2h7v2zm0-4H10V9h7v4z"/>
             </svg>
           )
         };

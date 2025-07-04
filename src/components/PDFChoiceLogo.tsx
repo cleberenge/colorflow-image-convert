@@ -21,7 +21,7 @@ const PDFChoiceLogo: React.FC<PDFChoiceLogoProps> = ({ className = "w-8 h-8", sh
           className="font-bold text-xl tracking-tight"
           style={{ 
             fontFamily: '"Helvetica Neue", Helvetica, Arial, sans-serif',
-            color: '#199900',
+            color: '#787B7B',
             fontWeight: '600',
             letterSpacing: '-0.025em'
           }}

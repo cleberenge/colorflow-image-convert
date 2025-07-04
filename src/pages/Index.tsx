@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
@@ -118,20 +117,9 @@ const Index = () => {
         
         {/* Footer */}
         <footer className="w-full py-4 px-6" style={{ backgroundColor: '#DBEAFE' }}>
-          <div className="flex justify-between items-center">
+          <div className="flex justify-center items-center">
             <p className="text-sm text-gray-600">
               © {new Date().getFullYear()} ChoicePDF. Todos os direitos reservados.
-            </p>
-            <p className="text-sm text-gray-600">
-              QR Codes fornecidos pela{' '}
-              <a 
-                href="https://www.qrplus.com.br" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="text-blue-600 hover:text-blue-800 underline"
-              >
-                QR Plus
-              </a>
             </p>
           </div>
         </footer>
