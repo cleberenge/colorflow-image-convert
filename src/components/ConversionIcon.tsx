@@ -54,7 +54,7 @@ const ConversionIcon: React.FC<ConversionIconProps> = ({ conversionType, classNa
           color,
           icon: (
             <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14l-5-5 1.41-1.41L14 14.17V7h2v10h-2z"/>
             </svg>
           )
         };
@@ -62,8 +62,8 @@ const ConversionIcon: React.FC<ConversionIconProps> = ({ conversionType, classNa
         return {
           color,
           icon: (
-            <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 3v10.55c-.59-.34-1.27-.55-2-.55-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4V7h4V3h-6z"/>
+            <svg className="w-3 h-3" fill="#EB5559" viewBox="0 0 24 24">
+              <path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-5 14l-5-5 1.41-1.41L14 14.17V7h2v10h-2z"/>
             </svg>
           )
         };
@@ -103,13 +103,13 @@ const ConversionIcon: React.FC<ConversionIconProps> = ({ conversionType, classNa
             </svg>
           )
         };
-      // Novas conversões
+      // Ícones melhorados
       case 'svg-png':
         return {
           color,
           icon: (
             <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              <path d="M21 7v10c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V7c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2zm-2 0H5v10h14V7zm-7 8l-2-2.5L8 15h8l-2.5-3.5L11 15z"/>
             </svg>
           )
         };
@@ -119,6 +119,7 @@ const ConversionIcon: React.FC<ConversionIconProps> = ({ conversionType, classNa
           icon: (
             <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
               <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              <circle cx="9" cy="9" r="1.5"/>
             </svg>
           )
         };
@@ -127,7 +128,7 @@ const ConversionIcon: React.FC<ConversionIconProps> = ({ conversionType, classNa
           color,
           icon: (
             <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M9 11H7v6h2v-6zm4 0h-2v6h2v-6zm4 0h-2v6h2v-6zm2.5-9H15V1h-6v1H3.5c-.55 0-1 .45-1 1s.45 1 1 1H4v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4h.5c.55 0 1-.45 1-1s-.45-1-1-1z"/>
+              <path d="M21 5v6.59l-3-3.01-4 4.01-4-4-4 4-3-3.01V5c0-1.1.9-2 2-2h14c1.1 0 2 .9 2 2zm-3 6.42l3 3.01V19c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2v-4.57l3-3.01 4 4 4-4 4 4z"/>
             </svg>
           )
         };
@@ -136,7 +137,8 @@ const ConversionIcon: React.FC<ConversionIconProps> = ({ conversionType, classNa
           color,
           icon: (
             <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 17.93c-3.94-.49-7-3.85-7-7.93 0-.62.08-1.21.21-1.79L9 15v1c0 1.1.9 2 2 2v1.93zm6.9-2.54c-.26-.81-1-1.39-1.9-1.39h-1v-3c0-.55-.45-1-1-1H8v-2h2c.55 0 1-.45 1-1V7h2c1.1 0 2-.9 2-2v-.41c2.93 1.19 5 4.06 5 7.41 0 2.08-.8 3.97-2.1 5.39z"/>
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+              <path d="M8 8h2v2H8V8zm4 0h2v2h-2V8zm4 0h2v2h-2V8z"/>
             </svg>
           )
         };
@@ -145,7 +147,10 @@ const ConversionIcon: React.FC<ConversionIconProps> = ({ conversionType, classNa
           color,
           icon: (
             <svg className="w-3 h-3 text-white" fill="currentColor" viewBox="0 0 24 24">
-              <path d="M5 4v3h5.5v12h3V7H19V4H5z"/>
+              <path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.89 2 2 2h12c1.11 0 2-.9 2-2V8l-6-6zm0 7V3.5L18.5 9H14zm-4 4h4v1h-4v-1zm0 2h6v1h-6v-1zm0 2h4v1h-4v-1z"/>
+              <circle cx="8" cy="13" r="1"/>
+              <circle cx="8" cy="15" r="1"/>
+              <circle cx="8" cy="17" r="1"/>
             </svg>
           )
         };
