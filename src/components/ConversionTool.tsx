@@ -83,27 +83,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
     return textColorMap[conversionType] || '#000000';
   };
 
-  // Função para definir a cor dos botões baseada no tipo de conversão
-  const getButtonColor = (conversionType: ConversionType): string => {
-    const buttonColorMap: Record<ConversionType, string> = {
-      'png-jpg': '#000000',          // Preto para PNG para JPG
-      'jpg-pdf': '#000000',          // Preto para JPG para PDF  
-      'split-pdf': '#000000',        // Preto para Dividir PDF
-      'merge-pdf': '#000000',        // Preto para Juntar PDF
-      'reduce-pdf': '#BA0012',       // Vermelho escuro para Reduzir PDF
-      'reduce-jpg': '#EB5559',       // Vermelho para Reduzir JPG
-      'reduce-png': '#FF7E6B',       // Roxo escuro para Reduzir PNG
-      'svg-png': '#DCEDC1',          // Verde pastel para SVG para PNG
-      'jpg-webp': '#FD625E',         // Vermelho coral para JPG para WebP
-      'svg-jpg': '#FDEE00',          // Amarelo para SVG para JPG
-      'html-pdf': '#998785',         // Cinza rosado para HTML para PDF
-      'csv-json': '#F2C80F',         // Dourado para CSV para JSON
-      'csv-excel': '#059669',        // Verde escuro para CSV para Excel
-    };
-    
-    return buttonColorMap[conversionType] || getConversionColor(conversionType);
-  };
-
   // Debug: log do estado atual
   useEffect(() => {
     console.log('[ConversionTool] Estado atual:');
@@ -311,7 +290,6 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
   // All calculations and derived state after hooks
   const conversionColor = getConversionColor(selectedConversion);
   const uploadTextColor = getUploadTextColor(selectedConversion);
-  const buttonColor = getButtonColor(selectedConversion);
   const isReducePdf = selectedConversion === 'reduce-pdf';
   const showDownloadButton = convertedFiles.length > 0 && !isConverting;
   const currentProgress = selectedConversion === 'reduce-pdf' ? localProgress : progress;
@@ -493,8 +471,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
                 disabled={isConverting}
                 className="font-medium transition-all duration-300 text-white"
                 style={{ 
-                  backgroundColor: buttonColor,
-                  borderColor: buttonColor
+                  backgroundColor: conversionColor,
+                  borderColor: conversionColor
                 }}
               >
                 {isConverting ? 'Convertendo...' : 'Converter'}
@@ -503,8 +481,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
                 onClick={clearFiles}
                 className="font-medium transition-all duration-300 text-white"
                 style={{ 
-                  backgroundColor: buttonColor,
-                  borderColor: buttonColor
+                  backgroundColor: conversionColor,
+                  borderColor: conversionColor
                 }}
               >
                 Limpar
@@ -514,8 +492,8 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
                   onClick={downloadZip}
                   className="font-medium transition-all duration-300 text-white"
                   style={{ 
-                    backgroundColor: buttonColor,
-                    borderColor: buttonColor
+                    backgroundColor: conversionColor,
+                    borderColor: conversionColor
                   }}
                 >
                   <Download className="w-4 h-4 mr-2" />
