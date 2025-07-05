@@ -549,7 +549,7 @@ const ConversionTool: React.FC<ConversionToolProps> = ({ conversionType: propCon
                   }}
                 >
                   <Download className="w-4 h-4 mr-2" />
-                  {isReducePdf ? 'Baixar' : `Baixar (${convertedFiles.length} arquivo${convertedFiles.length > 1 ? 's' : ''})`}
+                  Baixar
                 </Button>
               )}
             </div>
