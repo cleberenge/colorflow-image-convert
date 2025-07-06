@@ -1,38 +1,18 @@
+// Terms.tsx
+import React from "react";
+import { Helmet } from "react-helmet-async";
 
-import React from 'react';
-import Header from '@/components/Header';
-import { useLanguage } from '@/hooks/useLanguage';
-
-const Terms = () => {
-  const { t } = useLanguage();
-
-  return (
-    <div className="min-h-screen bg-white text-gray-700">
-      <Header />
-      
-      <main className="max-w-4xl mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-6 text-gray-800">
-            {t.terms.title}
-          </h1>
-        </div>
-        
-        <div className="prose prose-gray max-w-none text-center space-y-6">
-          <p className="text-lg text-gray-600 leading-relaxed text-justify">
-            Ao utilizar nossos serviços de conversão de arquivos, você concorda com estes termos de uso. Nossa plataforma é oferecida gratuitamente para uso pessoal e comercial, com limitações razoáveis de tamanho e frequência para garantir qualidade do serviço para todos os usuários.
-          </p>
-          
-          <p className="text-lg text-gray-600 leading-relaxed text-justify">
-            Você é responsável por garantir que possui os direitos necessários sobre os arquivos que converte e que seu uso está em conformidade com as leis aplicáveis. Proibimos o uso de nossos serviços para atividades ilegais, distribuição de malware ou violação de direitos autorais de terceiros.
-          </p>
-          
-          <p className="text-lg text-gray-600 leading-relaxed text-left">
-            Embora nos esforcemos para manter nossos serviços sempre disponíveis e funcionais, não podemos garantir operação ininterrupta. Reservamos o direito de modificar estes termos e nossos serviços a qualquer momento, sempre notificando os usuários sobre mudanças significativas através de nossos canais oficiais.
-          </p>
-        </div>
-      </main>
-    </div>
-  );
-};
-
+const Terms = () => (
+  <div className="max-w-3xl mx-auto px-4 py-8 text-gray-800">
+    <Helmet>
+      <title>Termos de Uso - ChoicePDF</title>
+      <meta name="description" content="Leia os termos de uso da plataforma ChoicePDF. Entenda suas responsabilidades e as regras de utilização dos nossos serviços." />
+    </Helmet>
+    <h1 className="text-3xl font-bold mb-4">Termos de Uso</h1>
+    <p className="mb-4">Ao utilizar nossos serviços, você concorda com estes termos de uso. O ChoicePDF é gratuito para fins pessoais e comerciais, respeitando limites razoáveis de uso para garantir estabilidade e qualidade para todos os usuários.</p>
+    <p className="mb-4">Você é responsável por garantir que possui os direitos legais sobre os arquivos que converte e que seu uso está em conformidade com a legislação vigente. É expressamente proibido o uso da plataforma para fins ilegais, como distribuição de malware, violação de direitos autorais ou disseminação de conteúdo nocivo.</p>
+    <p className="mb-4">Nos reservamos o direito de modificar estes termos e nossos serviços a qualquer momento, com aviso prévio sobre mudanças significativas. Também podemos suspender ou desativar contas ou acessos em caso de uso indevido.</p>
+    <p className="mb-4">Estes termos são regidos pelas leis da República Federativa do Brasil e, subsidiariamente, por normas internacionais aplicáveis ao ambiente digital.</p>
+  </div>
+);
 export default Terms;
