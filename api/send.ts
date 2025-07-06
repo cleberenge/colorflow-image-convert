@@ -1,45 +1,32 @@
-// api/send.ts
+// /api/send.ts
+
+export const config = {
+  runtime: 'nodejs',
+};
+
 import { Resend } from 'resend';
+import { NextApiRequest, NextApiResponse } from 'next';
 
 const resend = new Resend(process.env.RESEND_API_KEY);
 
-export const config = {
-  runtime: 'edge',
-};
-
-export default async function handler(req: Request) {
+export default async function handler(req: NextApiRequest, res: NextApiResponse) {
   if (req.method !== 'POST') {
-    return new Response(JSON.stringify({ error: 'Method Not Allowed' }), {
-      status: 405,
-    });
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  const { name, email, message } = req.body;
+
   try {
-    const { name, email, message } = await req.json();
-
-    if (!name || !email || !message) {
-      return new Response(JSON.stringify({ error: 'Missing fields' }), {
-        status: 400,
-      });
-    }
-
     const data = await resend.emails.send({
-      from: 'ChoicePDF <no-reply@choicepdf.com>',
-      to: 'cleber.engeamb@gmail.com',
-      subject: `Novo contato de ${name}`,
-      reply_to: email,
-      text: `
-        Nome: ${name}
-        E-mail: ${email}
-        Mensagem: ${message}
-      `,
+      from: 'ChoicePDF <noreply@choicepdf.com>',
+      to: ['cleber.engeamb@gmail.com'],
+      subject: `Nova mensagem de contato de ${name}`,
+      text: `Nome: ${name}\nEmail: ${email}\nMensagem: ${message}`
     });
 
-    return new Response(JSON.stringify({ message: 'Email sent successfully' }));
-  } catch (error) {
-    console.error(error);
-    return new Response(JSON.stringify({ error: 'Failed to send email' }), {
-      status: 500,
-    });
+    return res.status(200).json({ success: true, data });
+  } catch (err) {
+    console.error('Erro ao enviar email:', err);
+    return res.status(500).json({ error: 'Erro ao enviar email' });
   }
 }
