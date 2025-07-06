@@ -1,3 +1,4 @@
+// src/components/MainContent.tsx
 
 import React from 'react';
 import ConversionTool from '@/components/ConversionTool';
@@ -22,31 +23,35 @@ const MainContent: React.FC<MainContentProps> = ({
   conversionTypes
 }) => {
   const { t } = useLanguage();
+  const activeInfo = conversionTypes.find(t => t.id === activeConversion);
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#DBEAFE' }}>
       <main className="max-w-4xl mx-auto px-4 py-1">
         <div className="mb-1 max-w-3xl mx-auto flex items-start gap-6">
           <div className="flex-1 mt-6">
-            <h1 className="text-4xl font-bold animate-fade-in mb-0 leading-tight" style={{ color: '#878A8A' }}>
-              O melhor e mais rápido
+            <h1 className="text-3xl font-bold animate-fade-in mb-2 text-gray-800">
+              {activeInfo?.label?.pt || 'Conversão de arquivos'}
             </h1>
-            <h2 className="text-xl text-gray-600 animate-fade-in mb-0 leading-tight">
-              Ferramenta gratuita e segura para conversão de arquivos
-            </h2>
-            <h2 className="text-xl text-gray-600 animate-fade-in mb-0 leading-tight mt-0">
-              Mantenha esse projeto livre com qualquer doação
-            </h2>
+            <p className="text-lg text-gray-600 mb-4">
+              Converta {activeInfo?.from} para {activeInfo?.to} gratuitamente, com segurança e diretamente no seu navegador.
+            </p>
+            <p className="text-sm text-gray-500 mb-4">
+              Para começar, selecione ou arraste seu arquivo. O processamento será automático e seu arquivo convertido estará disponível para download em segundos.
+            </p>
+            <p className="text-sm text-gray-500 mb-4">
+              Sua privacidade é prioridade: a maioria das conversões ocorre localmente no seu navegador, sem envio para servidores.
+            </p>
           </div>
           <div className="flex-shrink-0 p-1 relative">
             <img 
               src="/lovable-uploads/3a8f2786-6621-4544-9c02-2049444074f3.png" 
-              alt="QR Code" 
+              alt="Doe para apoiar o ChoicePDF via QR Code do Pix" 
               className="w-40 h-40 object-contain"
             />
           </div>
         </div>
-        
+
         <div className="-mt-3">
           <ConversionSelector
             orderedConversions={orderedConversions}
@@ -54,15 +59,15 @@ const MainContent: React.FC<MainContentProps> = ({
             onConversionChange={onConversionChange}
           />
         </div>
-        
+
         <div className="rounded-xl p-6 -mt-6" style={{ backgroundColor: '#DBEAFE' }}>
           <ConversionTool 
             key={activeConversion}
             conversionType={activeConversion} 
-            conversionInfo={conversionTypes.find(t => t.id === activeConversion) || conversionTypes[0]} 
+            conversionInfo={activeInfo || conversionTypes[0]} 
           />
         </div>
-        
+
         <div className="-mt-6">
           <PageLinksGrid pageLinks={pageLinks} />
         </div>
