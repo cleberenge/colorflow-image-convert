@@ -1,9 +1,8 @@
-
 import React, { useState, useCallback, useEffect } from 'react';
 import { useFileConverter } from '@/hooks/useFileConverter';
 import { useConversionColors } from '@/hooks/useConversionColors';
 import { useFileUpload } from '@/hooks/useFileUpload';
-import { ConversionType, ConvertedFile, ConversionInfo } from '@/types/fileConverter';
+import { ConversionType, ConvertedFile } from '@/types/fileConverter';
 import UploadArea from './UploadArea';
 import ConversionOptions from './ConversionOptions';
 import FileList from './FileList';
@@ -12,7 +11,7 @@ import ErrorMessage from './ErrorMessage';
 
 interface ConversionToolProps {
   conversionType?: ConversionType;
-  conversionInfo?: ConversionInfo;
+  conversionInfo?: any;
 }
 
 const ConversionTool: React.FC<ConversionToolProps> = ({ 
