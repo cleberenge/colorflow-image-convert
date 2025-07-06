@@ -4,6 +4,7 @@ import { Helmet } from 'react-helmet-async';
 import Header from '@/components/Header';
 import MainContent from '@/components/MainContent';
 import { ConversionType } from '@/types/fileConverter';
+import { conversionTextMap } from '@/data/conversionTextMap';
 import { conversionTypes, getOrderedConversions } from '@/data/conversionTypes';
 import { pageLinks } from '@/data/pageLinks';
 
