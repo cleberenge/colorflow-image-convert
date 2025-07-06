@@ -1,17 +1,60 @@
 // Contact.tsx
-import React from "react";
+import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 
-const Contact = () => (
-  <div className="max-w-3xl mx-auto px-4 py-8 text-gray-800">
-    <Helmet>
-      <title>Contato - ChoicePDF</title>
-      <meta name="description" content="Entre em contato com a equipe do ChoicePDF. Suporte rápido e eficaz para dúvidas, sugestões e suporte técnico." />
-    </Helmet>
-    <h1 className="text-3xl font-bold mb-4">Fale Conosco</h1>
-    <p className="mb-4">Valorizamos cada usuário e estamos prontos para ajudar. Nossa equipe de suporte trabalha para garantir que você tenha a melhor experiência possível com nossas ferramentas.</p>
-    <p className="mb-4">Se você encontrou algum problema técnico, tem sugestões ou deseja compartilhar sua experiência, envie um e-mail para: <strong>cleber.engeamb@gmail.com.com</strong></p>
-    <p className="mb-4">Respondemos todas as mensagens dentro de 24 horas úteis. Seu feedback é fundamental para nosso crescimento e desenvolvimento de novas funcionalidades. Conte conosco!</p>
-  </div>
-);
+const Contact = () => {
+  const [form, setForm] = useState({ name: '', email: '', message: '' });
+  const [submitted, setSubmitted] = useState(false);
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Formulário enviado:", form);
+    setSubmitted(true);
+    setForm({ name: '', email: '', message: '' });
+  };
+
+  return (
+    <div className="max-w-3xl mx-auto px-4 py-8 text-gray-800">
+      <Helmet>
+        <title>Fale conosco - ChoicePDF</title>
+        <meta name="description" content="Entre em contato com a equipe do ChoicePDF para suporte, feedback ou dúvidas sobre nossos serviços de conversão." />
+        <meta name="robots" content="index, follow" />
+      </Helmet>
+
+      <h1 className="text-3xl font-bold mb-4">Fale conosco</h1>
+      <p className="mb-6 text-gray-600">Tem alguma dúvida, sugestão ou problema? Preencha o formulário abaixo e responderemos em até 24h úteis.</p>
+
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div>
+          <label htmlFor="name" className="block text-sm font-medium text-gray-700">Nome</label>
+          <input type="text" name="name" id="name" required value={form.name} onChange={handleChange}
+            className="w-full border rounded-md p-2" />
+        </div>
+
+        <div>
+          <label htmlFor="email" className="block text-sm font-medium text-gray-700">E-mail</label>
+          <input type="email" name="email" id="email" required value={form.email} onChange={handleChange}
+            className="w-full border rounded-md p-2" />
+        </div>
+
+        <div>
+          <label htmlFor="message" className="block text-sm font-medium text-gray-700">Mensagem</label>
+          <textarea name="message" id="message" required rows={5} value={form.message} onChange={handleChange}
+            className="w-full border rounded-md p-2" />
+        </div>
+
+        <button type="submit" className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+          Enviar mensagem
+        </button>
+
+        {submitted && <p className="text-green-600 mt-2">Mensagem enviada com sucesso!</p>}
+      </form>
+    </div>
+  );
+};
+
 export default Contact;
