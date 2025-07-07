@@ -90,13 +90,7 @@
     "postcss": "^8.4.47",
     "tailwindcss": "^3.4.11",
     "typescript": "^5.5.3",
-    HEAD
-    "typescript-eslint": "^8.0.1"
     "typescript-eslint": "^8.0.1",
     "vite": "^5.4.19"
-    6feea3b (fix: move vite to dependencies for Vercel build)
   }
 }
- 
-
-
