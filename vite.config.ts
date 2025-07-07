@@ -4,7 +4,6 @@ import path from "path";
 import { componentTagger } from "lovable-tagger";
 import { visualizer } from "rollup-plugin-visualizer";
 
-// https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
   server: {
     host: "::",
@@ -17,12 +16,12 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     mode === 'development' && componentTagger(),
-    visualizer({                    // visualizer({ open: true }),
-    filename: "dist/stats.html",
-    open: true,
-    gzipSize: true,
-    brotliSize: true,  
-  }),
+    visualizer({
+      filename: "dist/stats.html",
+      open: true,
+      gzipSize: true,
+      brotliSize: true
+    })
   ].filter(Boolean),
   resolve: {
     alias: {
