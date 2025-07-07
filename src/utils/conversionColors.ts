@@ -9,12 +9,12 @@ export const getConversionColor = (conversionType: string) => {
     'compress-video': '#8B5CF6', // roxo
     'split-pdf': '#73D2DE', // ciano
     'merge-pdf': '#FFAAA5', // rosa claro
-    'reduce-pdf': '#BA0012', // vermelho escuro
+    'reduce-pdf': '#EF476F', // vermelho escuro
     'reduce-jpg': '#FFFFFF', // vermelho escuro
     'reduce-png': '#FF7E6B', // roxo escuro
     // Novas conversões
     'svg-png': '#DCEDC1', // verde pastel
-    'jpg-webp': '#FD625E', // vermelho coral
+    'jpg-webp': '#706F6F', // vermelho coral
     'svg-jpg':  '#8A89C0', // magenta
     'html-pdf': '#998785', // cinza rosado
     'csv-json': '#F2C80F', // dourado
