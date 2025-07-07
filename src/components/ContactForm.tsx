@@ -133,11 +133,15 @@ const ContactForm = () => {
             <Button 
               type="submit" 
               disabled={isSubmitting}
-              className="w-full bg-blue-600 hover:bg-blue-700 transition-colors duration-200 py-3 text-lg font-semibold"
+              className="w-full text-black font-semibold py-3 text-lg transition-colors duration-200"
+              style={{ 
+                backgroundColor: '#FDEE00',
+                borderColor: '#FDEE00'
+              }}
             >
               {isSubmitting ? (
                 <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2" />
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mr-2" />
                   Enviando...
                 </>
               ) : (
