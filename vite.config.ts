@@ -17,7 +17,12 @@ export default defineConfig(({ mode }) => ({
   plugins: [
     react(),
     mode === 'development' && componentTagger(),
-    visualizer({ open: true }),
+    visualizer({                    // visualizer({ open: true }),
+    filename: "dist/stats.html",
+    open: true,
+    gzipSize: true,
+    brotliSize: true,  
+  }),
   ].filter(Boolean),
   resolve: {
     alias: {
