@@ -6,6 +6,7 @@ import { visualizer } from "rollup-plugin-visualizer";
 
 // https://vitejs.dev/config/
 export default defineConfig(({ mode }) => ({
+  base: "/", // ← ESSENCIAL para funcionar corretamente na Vercel
   server: {
     host: "::",
     port: 8080,
@@ -25,7 +26,7 @@ export default defineConfig(({ mode }) => ({
     },
   },
   build: {
-    chunkSizeWarningLimit: 1000, // aumenta o limite de aviso (opcional)
+    chunkSizeWarningLimit: 1000,
     rollupOptions: {
       output: {
         manualChunks(id) {
