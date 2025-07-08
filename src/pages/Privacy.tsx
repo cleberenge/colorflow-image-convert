@@ -1,9 +1,12 @@
 // Privacy.tsx
 import React from "react";
 import { Helmet } from "react-helmet-async";
+import Header from '@/components/Header';
 
 const Privacy = () => (
-  <div className="max-w-3xl mx-auto px-4 py-8 text-gray-800">
+  <div className="min-h-screen bg-white text-gray-700">
+    <Header />
+    <div className="max-w-3xl mx-auto px-4 py-8 text-gray-800">
     <Helmet>
       <title>Privacidade - ChoicePDF</title>
       <meta name="description" content="Saiba como protegemos seus dados e garantimos sua privacidade ao usar o ChoicePDF. Cumprimos com a LGPD e o GDPR." />
@@ -13,6 +16,7 @@ const Privacy = () => (
     <p className="mb-4">Não armazenamos, compartilhamos ou vendemos seus dados pessoais a terceiros. Coletamos apenas informações técnicas anônimas, como tipo de navegador e métricas de uso, exclusivamente para melhorar nossos serviços. Esses dados são agregados e não permitem identificação individual.</p>
     <p className="mb-4">Você pode revisar e ajustar suas preferências de cookies a qualquer momento por meio do nosso sistema de consentimento. Implementamos protocolos rigorosos de segurança e revisamos regularmente nossas práticas para garantir conformidade com a LGPD (Lei Geral de Proteção de Dados) e o GDPR (Regulamento Europeu de Proteção de Dados).</p>
     <p className="mb-4">Se desejar exercer seus direitos de acesso, retificação ou exclusão de dados pessoais, entre em contato conosco. Responderemos em até 10 dias úteis conforme exigido por lei.</p>
+    </div>
   </div>
 );
 export default Privacy;

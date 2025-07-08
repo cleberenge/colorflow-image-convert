@@ -1,10 +1,13 @@
 
 import React from "react";
 import { Helmet } from "react-helmet-async";
+import Header from '@/components/Header';
 
 const Contact = () => {
   return (
-    <div className="max-w-3xl mx-auto px-4 py-8 text-gray-800">
+    <div className="min-h-screen bg-white text-gray-700">
+      <Header />
+      <div className="max-w-3xl mx-auto px-4 py-8 text-gray-800">
       <Helmet>
         <title>Fale conosco - ChoicePDF</title>
         <meta name="description" content="Entre em contato com a equipe do ChoicePDF para suporte, feedback ou dúvidas sobre nossos serviços de conversão." />
@@ -60,6 +63,7 @@ const Contact = () => {
         <p className="text-sm text-gray-500 border-t pt-4">
           <strong>ChoicePDF</strong> - Conversão de arquivos gratuita, rápida e segura.
         </p>
+      </div>
       </div>
     </div>
   );
