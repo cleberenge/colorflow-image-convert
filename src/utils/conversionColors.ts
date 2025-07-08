@@ -9,7 +9,7 @@ export const getConversionColor = (conversionType: string) => {
     'compress-video': '#8B5CF6', // roxo
     'split-pdf': '#73D2DE', // ciano
     'merge-pdf': '#FFAAA5', // rosa claro
-    'reduce-pdf': '#B6B0FF', // vermelho escuro
+    'reduce-pdf': '#CE8D66', // vermelho escuro
     'reduce-jpg': '#FFFFFF', // vermelho escuro
     'reduce-png': '#FF7E6B', // roxo escuro
     // Novas conversões
