@@ -52,7 +52,7 @@ const Contact = () => {
           <h2 className="text-xl font-semibold mb-3 text-gray-800">Apoie nosso projeto</h2>
           <p>
             O ChoicePDF é mantido através de doações. Se nossas ferramentas são úteis para você, 
-            considere fazer uma contribuição via PIX usando o QR code disponível na página principal. 
+            considere fazer uma contribuição usando o QR code disponível na página principal. 
             Cada contribuição nos ajuda a manter o serviço gratuito e melhorar continuamente.
           </p>
         </div>

@@ -189,3 +189,5 @@ const conversionTextMap: Record<string, ConversionText> = {
     ]
   }
 };
+
+export { conversionTextMap };

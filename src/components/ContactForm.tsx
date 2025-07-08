@@ -129,29 +129,31 @@ const ContactForm = () => {
               />
             </div>
 
-            <div className="flex justify-end">
-              <Button 
-                type="submit" 
-                disabled={isSubmitting}
-                className="text-black font-semibold py-3 px-6 text-base transition-colors duration-200 w-auto"
-                style={{ 
-                  backgroundColor: '#FDEE00',
-                  borderColor: '#FDEE00'
-                }}
-              >
-                {isSubmitting ? (
-                  <>
-                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mr-2" />
-                    Enviando...
-                  </>
-                ) : (
-                  'Enviar Mensagem'
-                )}
-              </Button>
-            </div>
           </form>
         </CardContent>
       </Card>
+      
+      <div className="flex justify-end mt-4">
+        <Button 
+          type="submit" 
+          disabled={isSubmitting}
+          className="text-black font-semibold py-3 px-6 text-base transition-colors duration-200 w-auto"
+          style={{ 
+            backgroundColor: '#FDEE00',
+            borderColor: '#FDEE00'
+          }}
+          onClick={handleSubmit}
+        >
+          {isSubmitting ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mr-2" />
+              Enviando...
+            </>
+          ) : (
+            'Enviar'
+          )}
+        </Button>
+      </div>
     </div>
   );
 };
