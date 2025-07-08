@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -130,27 +129,26 @@ const ContactForm = () => {
               />
             </div>
 
-            <Button 
-              type="submit" 
-              disabled={isSubmitting}
-              className="w-full text-black font-semibold py-3 text-lg transition-colors duration-200"
-              style={{ 
-                backgroundColor: '#FDEE00',
-                borderColor: '#FDEE00'
-              }}
-            >
-              {isSubmitting ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mr-2" />
-                  Enviando...
-                </>
-              ) : (
-                <>
-                  <Mail className="h-4 w-4 mr-2" />
-                  Enviar Mensagem
-                </>
-              )}
-            </Button>
+            <div className="flex justify-end">
+              <Button 
+                type="submit" 
+                disabled={isSubmitting}
+                className="text-black font-semibold py-3 px-6 text-base transition-colors duration-200 w-auto"
+                style={{ 
+                  backgroundColor: '#FDEE00',
+                  borderColor: '#FDEE00'
+                }}
+              >
+                {isSubmitting ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-black mr-2" />
+                    Enviando...
+                  </>
+                ) : (
+                  'Enviar Mensagem'
+                )}
+              </Button>
+            </div>
           </form>
         </CardContent>
       </Card>

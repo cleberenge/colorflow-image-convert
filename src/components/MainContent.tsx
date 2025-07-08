@@ -46,7 +46,7 @@ const MainContent: React.FC<MainContentProps> = ({
               Sua privacidade é prioridade: a maioria das conversões ocorre localmente no seu navegador, sem envio para servidores.
             </p>
           </div>
-          <div className="flex-shrink-0 p-1 relative" style={{ marginTop: '8px' }}>
+          <div className="flex-shrink-0 p-1 relative" style={{ marginTop: '16px' }}>
             <img 
               src="/lovable-uploads/3a8f2786-6621-4544-9c02-2049444074f3.png" 
               alt="Doe para apoiar o ChoicePDF via QR Code do Pix" 
