@@ -68,7 +68,6 @@ const ContactForm = () => {
       <Card className="shadow-lg">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl font-bold text-gray-800 flex items-center justify-center gap-2">
-            <Mail className="h-6 w-6" />
             Fale Conosco
           </CardTitle>
           <p className="text-sm text-gray-600 mt-2">
@@ -81,7 +80,7 @@ const ContactForm = () => {
             <div className="space-y-2">
               <Label htmlFor="name" className="flex items-center gap-2">
                 <User className="h-4 w-4" />
-                Seu nome
+                Nome
               </Label>
               <Input
                 id="name"
@@ -98,7 +97,7 @@ const ContactForm = () => {
             <div className="space-y-2">
               <Label htmlFor="email" className="flex items-center gap-2">
                 <Mail className="h-4 w-4" />
-                Seu e-mail
+                Email
               </Label>
               <Input
                 id="email"
@@ -115,7 +114,7 @@ const ContactForm = () => {
             <div className="space-y-2">
               <Label htmlFor="message" className="flex items-center gap-2">
                 <MessageSquare className="h-4 w-4" />
-                Sua mensagem
+                Mensagem
               </Label>
               <Textarea
                 id="message"
