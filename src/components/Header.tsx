@@ -15,8 +15,8 @@ const Header: React.FC<HeaderProps> = ({ activeConversion = 'png-jpg' }) => {
         <PDFChoiceLogo />
       </Link>
       
-      {/* Centered navigation between logo and right edge */}
-      <div className="absolute left-1/2 transform -translate-x-1/2 flex items-center space-x-6">
+      {/* Navigation positioned 8px to the right of the logo */}
+      <div className="flex items-center space-x-6 ml-2">
         <Link 
           to="/blog" 
           className="font-medium transition-colors"
