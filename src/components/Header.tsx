@@ -10,9 +10,12 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ activeConversion = 'png-jpg' }) => {
   return (
-    <header className="w-full py-5 px-6 flex items-center relative" style={{ backgroundColor: '#DBEAFE' }}>
-      {/* Navigation positioned 8px to the left of the logo */}
-      <div className="flex items-center space-x-6 mr-2">
+    <header className="w-full py-5 px-6 flex justify-between items-center" style={{ backgroundColor: '#DBEAFE' }}>
+      <Link to="/" onClick={() => window.location.href = '/'}>
+        <PDFChoiceLogo />
+      </Link>
+      
+      <nav className="flex items-center space-x-6" style={{ marginRight: '-8px' }}>
         <Link 
           to="/blog" 
           className="font-medium transition-colors"
@@ -27,11 +30,7 @@ const Header: React.FC<HeaderProps> = ({ activeConversion = 'png-jpg' }) => {
         >
           Contato
         </Link>
-      </div>
-      
-      <Link to="/" onClick={() => window.location.href = '/'}>
-        <PDFChoiceLogo />
-      </Link>
+      </nav>
     </header>
   );
 };
