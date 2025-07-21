@@ -15,7 +15,7 @@ const Header: React.FC<HeaderProps> = ({ activeConversion = 'png-jpg' }) => {
         <PDFChoiceLogo />
       </Link>
       
-      <nav className="flex items-center space-x-6" style={{ marginRight: '-8px' }}>
+      <nav className="flex items-center space-x-6 absolute right-1/2 transform translate-x-1/2">
         <Link 
           to="/blog" 
           className="font-medium transition-colors"
