@@ -1,36 +1,25 @@
 
 import React from 'react';
+import { Helmet } from "react-helmet-async";
 import Header from '@/components/Header';
-import { useLanguage } from '@/hooks/useLanguage';
 
 const Transparency = () => {
-  const { t } = useLanguage();
-
   return (
     <div className="min-h-screen bg-white text-gray-700">
       <Header />
       
-      <main className="max-w-4xl mx-auto px-4 py-12">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold mb-6 text-gray-800">
-            {t.transparency.title}
-          </h1>
-        </div>
+      <div className="max-w-3xl mx-auto px-4 py-8 text-gray-800">
+        <Helmet>
+          <title>Transparência - ChoicePDF</title>
+          <meta name="description" content="Conheça nossa política de transparência e como protegemos seus dados no ChoicePDF." />
+        </Helmet>
         
-        <div className="prose prose-gray max-w-none text-center space-y-6">
-          <p className="text-lg text-gray-600 leading-relaxed text-justify">
-            Acreditamos na transparência total sobre como nossos serviços funcionam. Utilizamos tecnologias web modernas para processar conversões localmente sempre que possível, reduzindo tempo de processamento e maximizando sua privacidade. Quando o processamento remoto é necessário, utilizamos servidores seguros em datacenters certificados.
-          </p>
-          
-          <p className="text-lg text-gray-600 leading-relaxed text-justify">
-            Nossa receita vem de parcerias estratégicas e publicidade não intrusiva, permitindo manter todos os serviços essenciais gratuitos. Não vendemos dados de usuários nem implementamos tracking invasivo. Todas as métricas coletadas são anonimizadas e usadas exclusivamente para melhorar a experiência do usuário.
-          </p>
-          
-          <p className="text-lg text-gray-600 leading-relaxed text-left">
-            Publicamos relatórios regulares sobre nossa infraestrutura, políticas de segurança e uso de recursos. Nosso código de conduta e práticas operacionais são revisados por auditores independentes, garantindo que cumprimos os mais altos padrões éticos da indústria de tecnologia.
-          </p>
-        </div>
-      </main>
+        <h1 className="text-3xl font-bold mb-4">Transparência</h1>
+        <p className="mb-4">No ChoicePDF, acreditamos que a confiança é fundamental. Por isso, mantemos total transparência sobre como nossas ferramentas funcionam e como lidamos com seus dados.</p>
+        <p className="mb-4">Os arquivos enviados para conversão não são armazenados em nossos servidores.</p>
+        <p className="mb-4">Nenhuma informação pessoal é exigida para utilizar nossos serviços. Apenas coletamos dados técnicos mínimos (como estatísticas anônimas de uso) para melhorar a plataforma.</p>
+        <p className="mb-4">Se quiser saber mais sobre como protegemos sua privacidade, consulte nossa Política de Privacidade.</p>
+      </div>
     </div>
   );
 };
