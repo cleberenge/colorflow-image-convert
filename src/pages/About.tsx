@@ -1,3 +1,4 @@
+
 // About.tsx
 import React from "react";
 import { Helmet } from "react-helmet-async";
@@ -12,10 +13,10 @@ const About = () => (
       <meta name="description" content="Conheça o propósito e os valores por trás da plataforma ChoicePDF. Saiba como oferecemos conversões rápidas, gratuitas e seguras." />
     </Helmet>
     <h1 className="text-3xl font-bold mb-4">Sobre o ChoicePDF</h1>
-    <p className="mb-4">Nossa plataforma foi criada para simplificar sua vida digital, oferecendo ferramentas de conversão de arquivos rápidas, seguras e totalmente gratuitas. Acreditamos que a tecnologia deve ser acessível a todos, sem complicações ou custos ocultos.</p>
-    <p className="mb-4">Com foco na privacidade e segurança, processamos seus arquivos localmente sempre que possível, garantindo que suas informações permaneçam protegidas. Nossa interface intuitiva permite que qualquer pessoa, independentemente do nível técnico, realize conversões profissionais em segundos.</p>
-    <p className="mb-4">O ChoicePDF nasceu da paixão por produtividade digital, desenvolvido por uma equipe dedicada a facilitar tarefas rotineiras sem comprometer a segurança. Utilizamos tecnologias modernas como WebAssembly, compressão no lado do cliente e renderização reativa para garantir desempenho de ponta.</p>
-    <p className="mb-4">Estamos constantemente evoluindo para atender às suas necessidades, adicionando novos formatos e funcionalidades com base no feedback da comunidade. Junte-se a milhares de usuários que já descobriram a simplicidade e eficiência das nossas ferramentas.</p>
+    <p className="mb-4">O ChoicePDF foi criado para tornar sua vida digital mais simples e produtiva. Oferecemos ferramentas rápidas, seguras e gratuitas para conversão e manipulação de arquivos, diretamente no navegador e sem necessidade de cadastro.</p>
+    <p className="mb-4">Nosso objetivo é que qualquer pessoa, independentemente do nível técnico, consiga realizar conversões profissionais em poucos segundos, com total privacidade e segurança. Sempre que possível, os arquivos são processados localmente no seu dispositivo, garantindo que seus dados permaneçam protegidos.</p>
+    <p className="mb-4">Desenvolvemos nossas soluções utilizando tecnologias modernas, como WebAssembly e compressão no lado do cliente, para entregar alto desempenho e uma experiência intuitiva.</p>
+    <p className="mb-4">Estamos em constante evolução, adicionando novas funcionalidades com base no feedback dos usuários. Se tiver sugestões ou dúvidas, fale conosco através da página de contato. É um prazer ajudar você a trabalhar melhor com seus documentos!</p>
     </div>
   </div>
 );

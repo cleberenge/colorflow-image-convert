@@ -40,50 +40,6 @@ const Contact = () => {
         <div className="mb-8">
           <ContactForm />
         </div>
-        
-        <div className="space-y-6 text-gray-600 leading-relaxed">
-          <div>
-            <h2 className="text-xl font-semibold mb-3 text-gray-800">Sobre o ChoicePDF</h2>
-            <p>
-              Bem-vindo ao <strong>ChoicePDF</strong> - sua plataforma gratuita e segura para conversão de arquivos!
-            </p>
-            
-            <p className="mt-3">
-              Nossa missão é oferecer ferramentas de conversão de alta qualidade que funcionam diretamente no seu navegador, 
-              garantindo total privacidade e segurança dos seus documentos. Com processamento local na maioria das conversões, 
-              seus arquivos nunca saem do seu dispositivo.
-            </p>
-          </div>
-          
-          <div>
-            <h2 className="text-xl font-semibold mb-3 text-gray-800">O que oferecemos:</h2>
-            <ul className="list-disc list-inside space-y-2 ml-4">
-              <li>Conversão de imagens (PNG, JPG, SVG, WebP)</li>
-              <li>Processamento de documentos PDF (divisão, junção, compressão)</li>
-              <li>Conversão de documentos (Word para PDF, HTML para PDF)</li>
-              <li>Manipulação de dados (CSV para JSON, CSV para Excel)</li>
-              <li>Compressão de arquivos de imagem e vídeo</li>
-            </ul>
-          </div>
-          
-          <p>
-            Todas as nossas ferramentas são <strong>100% gratuitas</strong> e não requerem cadastro ou login. 
-            Acreditamos que ferramentas essenciais de produtividade devem ser acessíveis a todos.
-          </p>
-          
-          <div>
-            <h2 className="text-xl font-semibold mb-3 text-gray-800">Apoie nosso projeto</h2>
-            <p>
-              O ChoicePDF é mantido através de doações. Se nossas ferramentas são úteis para você, 
-              considere fazer uma contribuição usando o QR code disponível na página principal. 
-              Cada contribuição nos ajuda a manter o serviço gratuito e melhorar continuamente.
-            </p>
-          </div>
-          
-          <p className="text-sm text-gray-500 border-t pt-4">
-            <strong>ChoicePDF</strong> - Conversão de arquivos gratuita, rápida e segura.
-          </p>
-        </div>
       </div>
     </div>
   );
