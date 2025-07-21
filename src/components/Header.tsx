@@ -19,14 +19,14 @@ const Header: React.FC<HeaderProps> = ({ activeConversion = 'png-jpg' }) => {
         <Link 
           to="/blog" 
           className="font-medium transition-colors"
-          style={{ color: '#784F41' }}
+          style={{ color: '#787B7B' }}
         >
           Blog
         </Link>
         <Link 
           to="/contact" 
           className="font-medium transition-colors"
-          style={{ color: '#784F41' }}
+          style={{ color: '#787B7B' }}
         >
           Contato
         </Link>
