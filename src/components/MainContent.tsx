@@ -5,7 +5,6 @@ import React from 'react';
 import ConversionTool from '@/components/ConversionTool';
 import ConversionSelector from '@/components/ConversionSelector';
 import PageLinksGrid from '@/components/PageLinksGrid';
-import ContactForm from '@/components/ContactForm';
 import { Toaster } from '@/components/ui/toaster';
 import { useLanguage } from '@/hooks/useLanguage';
 import { ConversionType } from '@/types/fileConverter';
@@ -73,10 +72,6 @@ const MainContent: React.FC<MainContentProps> = ({
 
         <div className="-mt-6 mb-8">
           <PageLinksGrid pageLinks={pageLinks} />
-        </div>
-
-        <div className="mt-8">
-          <ContactForm />
         </div>
       </main>
       <Toaster />

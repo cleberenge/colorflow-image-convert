@@ -22,6 +22,12 @@ const Header: React.FC<HeaderProps> = ({ activeConversion = 'png-jpg' }) => {
         >
           Blog
         </Link>
+        <Link 
+          to="/contact" 
+          className="text-gray-800 font-medium hover:text-blue-600 transition-colors"
+        >
+          Contato
+        </Link>
       </nav>
     </header>
   );
