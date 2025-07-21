@@ -14,6 +14,11 @@ import Terms from "./pages/Terms";
 import Transparency from "./pages/Transparency";
 import Cookies from "./pages/Cookies";
 import NotFound from "./pages/NotFound";
+import ConverterPngParaPdf from "./pages/blog/ConverterPngParaPdf";
+import DiferencaJpgPngPdf from "./pages/blog/DiferencaJpgPngPdf";
+import ReduzirTamanhoPdf from "./pages/blog/ReduzirTamanhoPdf";
+import ProtegerPdfSenha from "./pages/blog/ProtegerPdfSenha";
+import ErrosEnviarArquivosEmail from "./pages/blog/ErrosEnviarArquivosEmail";
 
 const queryClient = new QueryClient();
 
@@ -45,6 +50,11 @@ const App = () => (
             <Route path="/terms" element={<Terms />} />
             <Route path="/transparency" element={<Transparency />} />
             <Route path="/cookies" element={<Cookies />} />
+            <Route path="/blog/converter-png-para-pdf" element={<ConverterPngParaPdf />} />
+            <Route path="/blog/diferenca-jpg-png-pdf" element={<DiferencaJpgPngPdf />} />
+            <Route path="/blog/reduzir-tamanho-pdf" element={<ReduzirTamanhoPdf />} />
+            <Route path="/blog/proteger-pdf-senha" element={<ProtegerPdfSenha />} />
+            <Route path="/blog/erros-enviar-arquivos-email" element={<ErrosEnviarArquivosEmail />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>

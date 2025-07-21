@@ -6,6 +6,7 @@ import ConversionTool from '@/components/ConversionTool';
 import ConversionSelector from '@/components/ConversionSelector';
 import PageLinksGrid from '@/components/PageLinksGrid';
 import ContactForm from '@/components/ContactForm';
+import Header from '@/components/Header';
 import { Toaster } from '@/components/ui/toaster';
 import { useLanguage } from '@/hooks/useLanguage';
 import { ConversionType } from '@/types/fileConverter';
@@ -30,6 +31,8 @@ const MainContent: React.FC<MainContentProps> = ({
 
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#DBEAFE' }}>
+      <Header activeConversion={activeConversion} />
+      
       <main className="max-w-4xl mx-auto px-4 py-1">
         <div className="mb-1 max-w-3xl mx-auto flex items-start gap-6">
           <div className="flex-1 mt-6">
