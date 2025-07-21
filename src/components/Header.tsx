@@ -15,18 +15,16 @@ const Header: React.FC<HeaderProps> = ({ activeConversion = 'png-jpg' }) => {
         <PDFChoiceLogo />
       </Link>
       
-      <nav className="flex items-center space-x-6 mr-auto ml-8">
+      <nav className="flex items-center space-x-6">
         <Link 
           to="/blog" 
-          className="font-medium hover:opacity-80 transition-opacity"
-          style={{ color: '#784F41' }}
+          className="text-gray-800 font-medium hover:text-blue-600 transition-colors"
         >
           Blog
         </Link>
         <Link 
           to="/contact" 
-          className="font-medium hover:opacity-80 transition-opacity"
-          style={{ color: '#784F41' }}
+          className="text-gray-800 font-medium hover:text-blue-600 transition-colors"
         >
           Contato
         </Link>
