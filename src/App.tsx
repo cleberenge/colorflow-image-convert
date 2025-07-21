@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { HelmetProvider } from 'react-helmet-async';
 import CookieConsentManager from "@/components/CookieConsentManager";
 import Index from "./pages/Index";
+import Blog from "./pages/Blog";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Privacy from "./pages/Privacy";
@@ -44,6 +45,7 @@ const App = () => (
             <Route path="/html-to-pdf" element={<Index />} />
             <Route path="/csv-to-json" element={<Index />} />
             <Route path="/csv-to-excel" element={<Index />} />
+            <Route path="/blog" element={<Blog />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/privacy" element={<Privacy />} />
