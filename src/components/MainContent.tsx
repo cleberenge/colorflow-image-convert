@@ -1,4 +1,6 @@
 
+// src/components/MainContent.tsx
+
 import React from 'react';
 import ConversionTool from '@/components/ConversionTool';
 import ConversionSelector from '@/components/ConversionSelector';
