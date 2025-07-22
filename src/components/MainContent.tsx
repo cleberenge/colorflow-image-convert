@@ -32,16 +32,16 @@ const MainContent: React.FC<MainContentProps> = ({
       <main className="max-w-4xl mx-auto px-4 py-1">
         <div className="mb-1 max-w-3xl mx-auto flex items-start gap-6">
           <div className="flex-1 mt-6">
-            <h1 className="text-3xl font-bold animate-fade-in mb-2 text-gray-800">
+            <h1 className="text-3xl font-bold animate-fade-in mb-2" style={{ color: '#000000' }}>
               {activeInfo?.label?.pt || 'Conversão de arquivos'}
             </h1>
-            <p className="text-lg text-gray-600 mb-4">
+            <p className="text-lg mb-4" style={{ color: '#000000' }}>
               Converta {activeInfo?.from} para {activeInfo?.to} gratuitamente, com segurança e diretamente no seu navegador.
             </p>
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-sm mb-4" style={{ color: '#000000' }}>
               Para começar, selecione ou arraste seu arquivo. O processamento será automático e seu arquivo convertido estará disponível para download em segundos.
             </p>
-            <p className="text-sm text-gray-500 mb-4">
+            <p className="text-sm mb-4" style={{ color: '#000000' }}>
               Sua privacidade é prioridade: a maioria das conversões ocorre localmente no seu navegador, sem envio para servidores.
             </p>
           </div>
