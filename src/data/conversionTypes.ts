@@ -5,9 +5,9 @@ export const conversionTypes = [
   { 
     id: 'png-jpg', 
     label: { 
-      pt: 'Converter PNG para JPG', en: 'Convert PNG to JPG', zh: '转换PNG到JPG', es: 'Convertir PNG a JPG', 
-      fr: 'Convertir PNG vers JPG', de: 'PNG zu JPG konvertieren', hi: 'PNG को JPG में कन्वर्ट करें', ar: 'تحويل PNG إلى JPG', 
-      ko: 'PNG를 JPG로 변환', ja: 'PNGをJPGに変換', ru: 'Конвертировать PNG в JPG'
+      pt: 'PNG para JPG', en: 'PNG to JPG', zh: 'PNG转JPG', es: 'PNG a JPG', 
+      fr: 'PNG vers JPG', de: 'PNG zu JPG', hi: 'PNG से JPG', ar: 'PNG إلى JPG', 
+      ko: 'PNG를 JPG로', ja: 'PNGをJPGへ', ru: 'PNG в JPG'
     }, 
     from: 'PNG', to: 'JPG', 
     icon: '🖼️' 
@@ -15,9 +15,9 @@ export const conversionTypes = [
   { 
     id: 'jpg-pdf', 
     label: { 
-      pt: 'Converter JPG para PDF', en: 'Convert JPG to PDF', zh: '转换JPG到PDF', es: 'Convertir JPG a PDF', 
-      fr: 'Convertir JPG vers PDF', de: 'JPG zu PDF konvertieren', hi: 'JPG को PDF में कन्वर्ट करें', ar: 'تحويل JPG إلى PDF', 
-      ko: 'JPG를 PDF로 변환', ja: 'JPGをPDFに変換', ru: 'Конвертировать JPG в PDF'
+      pt: 'JPG para PDF', en: 'JPG to PDF', zh: 'JPG转PDF', es: 'JPG a PDF', 
+      fr: 'JPG vers PDF', de: 'JPG zu PDF', hi: 'JPG से PDF', ar: 'JPG إلى PDF', 
+      ko: 'JPG를 PDF로', ja: 'JPGをPDFへ', ru: 'JPG в PDF'
     }, 
     from: 'JPG', to: 'PDF', 
     icon: '📸' 
@@ -73,13 +73,13 @@ export const conversionTypes = [
     from: 'PNG', to: 'PNG Comprimido', 
     icon: '📦' 
   },
-  // Conversões com "Converter" no nome
+  // Novas conversões
   { 
     id: 'svg-png', 
     label: { 
-      pt: 'Converter SVG para PNG', en: 'Convert SVG to PNG', zh: '转换SVG到PNG', es: 'Convertir SVG a PNG', 
-      fr: 'Convertir SVG vers PNG', de: 'SVG zu PNG konvertieren', hi: 'SVG को PNG में कन्वर्ट करें', ar: 'تحويل SVG إلى PNG', 
-      ko: 'SVG를 PNG로 변환', ja: 'SVGをPNGに変換', ru: 'Конвертировать SVG в PNG'
+      pt: 'SVG para PNG', en: 'SVG to PNG', zh: 'SVG转PNG', es: 'SVG a PNG', 
+      fr: 'SVG vers PNG', de: 'SVG zu PNG', hi: 'SVG से PNG', ar: 'SVG إلى PNG', 
+      ko: 'SVG를 PNG로', ja: 'SVGをPNGへ', ru: 'SVG в PNG'
     }, 
     from: 'SVG', to: 'PNG', 
     icon: '🎨' 
@@ -87,9 +87,9 @@ export const conversionTypes = [
   { 
     id: 'jpg-webp', 
     label: { 
-      pt: 'Converter JPG para WebP', en: 'Convert JPG to WebP', zh: '转换JPG到WebP', es: 'Convertir JPG a WebP', 
-      fr: 'Convertir JPG vers WebP', de: 'JPG zu WebP konvertieren', hi: 'JPG को WebP में कन्वर्ट करें', ar: 'تحويل JPG إلى WebP', 
-      ko: 'JPG를 WebP로 변환', ja: 'JPGをWebPに変換', ru: 'Конвертировать JPG в WebP'
+      pt: 'JPG para WebP', en: 'JPG to WebP', zh: 'JPG转WebP', es: 'JPG a WebP', 
+      fr: 'JPG vers WebP', de: 'JPG zu WebP', hi: 'JPG से WebP', ar: 'JPG إلى WebP', 
+      ko: 'JPG를 WebP로', ja: 'JPGをWebPへ', ru: 'JPG в WebP'
     }, 
     from: 'JPG', to: 'WebP', 
     icon: '🌐' 
@@ -97,9 +97,9 @@ export const conversionTypes = [
   { 
     id: 'svg-jpg', 
     label: { 
-      pt: 'Converter SVG para JPG', en: 'Convert SVG to JPG', zh: '转换SVG到JPG', es: 'Convertir SVG a JPG', 
-      fr: 'Convertir SVG vers JPG', de: 'SVG zu JPG konvertieren', hi: 'SVG को JPG में कन्वर्ट करें', ar: 'تحويل SVG إلى JPG', 
-      ko: 'SVG를 JPG로 변환', ja: 'SVGをJPGに変換', ru: 'Конвертировать SVG в JPG'
+      pt: 'SVG para JPG', en: 'SVG to JPG', zh: 'SVG转JPG', es: 'SVG a JPG', 
+      fr: 'SVG vers JPG', de: 'SVG zu JPG', hi: 'SVG से JPG', ar: 'SVG إلى JPG', 
+      ko: 'SVG를 JPG로', ja: 'SVGをJPGへ', ru: 'SVG в JPG'
     }, 
     from: 'SVG', to: 'JPG', 
     icon: '🖌️' 
@@ -107,9 +107,9 @@ export const conversionTypes = [
   { 
     id: 'html-pdf', 
     label: { 
-      pt: 'Converter HTML para PDF', en: 'Convert HTML to PDF', zh: '转换HTML到PDF', es: 'Convertir HTML a PDF', 
-      fr: 'Convertir HTML vers PDF', de: 'HTML zu PDF konvertieren', hi: 'HTML को PDF में कन्वर्ट करें', ar: 'تحويل HTML إلى PDF', 
-      ko: 'HTML을 PDF로 변환', ja: 'HTMLをPDFに変換', ru: 'Конвертировать HTML в PDF'
+      pt: 'HTML para PDF', en: 'HTML to PDF', zh: 'HTML转PDF', es: 'HTML a PDF', 
+      fr: 'HTML vers PDF', de: 'HTML zu PDF', hi: 'HTML से PDF', ar: 'HTML إلى PDF', 
+      ko: 'HTML을 PDF로', ja: 'HTMLをPDFへ', ru: 'HTML в PDF'
     }, 
     from: 'HTML', to: 'PDF', 
     icon: '🌍' 
@@ -117,9 +117,9 @@ export const conversionTypes = [
   { 
     id: 'csv-json', 
     label: { 
-      pt: 'Converter CSV para JSON', en: 'Convert CSV to JSON', zh: '转换CSV到JSON', es: 'Convertir CSV a JSON', 
-      fr: 'Convertir CSV vers JSON', de: 'CSV zu JSON konvertieren', hi: 'CSV को JSON में कन्वर्ट करें', ar: 'تحويل CSV إلى JSON', 
-      ko: 'CSV를 JSON으로 변환', ja: 'CSVをJSONに変換', ru: 'Конвертировать CSV в JSON'
+      pt: 'CSV para JSON', en: 'CSV to JSON', zh: 'CSV转JSON', es: 'CSV a JSON', 
+      fr: 'CSV vers JSON', de: 'CSV zu JSON', hi: 'CSV से JSON', ar: 'CSV إلى JSON', 
+      ko: 'CSV를 JSON으로', ja: 'CSVをJSONへ', ru: 'CSV в JSON'
     }, 
     from: 'CSV', to: 'JSON', 
     icon: '📊' 
@@ -127,9 +127,9 @@ export const conversionTypes = [
   { 
     id: 'csv-excel', 
     label: { 
-      pt: 'Converter CSV para Excel', en: 'Convert CSV to Excel', zh: '转换CSV到Excel', es: 'Convertir CSV a Excel', 
-      fr: 'Convertir CSV vers Excel', de: 'CSV zu Excel konvertieren', hi: 'CSV को Excel में कन्वर्ट करें', ar: 'تحويل CSV إلى Excel', 
-      ko: 'CSV를 Excel로 변환', ja: 'CSVをExcelに변환', ru: 'Конвертировать CSV в Excel'
+      pt: 'CSV para Excel', en: 'CSV to Excel', zh: 'CSV转Excel', es: 'CSV a Excel', 
+      fr: 'CSV vers Excel', de: 'CSV zu Excel', hi: 'CSV से Excel', ar: 'CSV إلى Excel', 
+      ko: 'CSV를 Excel로', ja: 'CSVをExcelへ', ru: 'CSV в Excel'
     }, 
     from: 'CSV', to: 'Excel', 
     icon: '📈' 

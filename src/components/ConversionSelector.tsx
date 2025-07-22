@@ -37,8 +37,9 @@ const ConversionSelector: React.FC<ConversionSelectorProps> = ({
           >
             <ConversionIcon conversionType={type.id} className="w-4 h-4 flex-shrink-0 mr-0.5" />
             <span 
-              className="text-xs font-medium text-center leading-tight"
-              style={{ color: '#000000' }}
+              className={`text-xs font-medium text-center leading-tight ${
+                activeConversion === type.id ? 'text-black' : 'text-gray-600'
+              }`}
             >
               {type.label[language]}
             </span>
