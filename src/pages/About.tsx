@@ -9,7 +9,7 @@ const About = () => (
     <Header />
     <div className="max-w-3xl mx-auto px-4 py-8 text-gray-800">
     <Helmet>
-      <title>Sobre o ChoicePDF - ChoicePDF</title>
+      <title>Sobre - ChoicePDF</title>
       <meta name="description" content="Conheça o propósito e os valores por trás da plataforma ChoicePDF. Saiba como oferecemos conversões rápidas, gratuitas e seguras." />
     </Helmet>
     <h1 className="text-3xl font-bold mb-4">Sobre o ChoicePDF</h1>

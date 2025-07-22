@@ -10,13 +10,13 @@ const Contact = () => {
       <Header />
       <div className="max-w-3xl mx-auto px-4 py-8 text-gray-800">
         <Helmet>
-          <title>Formulário de Contato - ChoicePDF</title>
+          <title>Fale conosco - ChoicePDF</title>
           <meta name="description" content="Entre em contato com a equipe do ChoicePDF para suporte, feedback ou dúvidas sobre nossos serviços de conversão." />
           <meta name="robots" content="index, follow" />
         </Helmet>
 
         <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold mb-6">Formulário de Contato</h1>
+          <h1 className="text-3xl font-bold mb-6">Fale conosco</h1>
           
           <div className="bg-blue-50 p-6 rounded-lg mb-8">
             <p className="text-lg mb-4">
