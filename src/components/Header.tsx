@@ -28,7 +28,7 @@ const Header: React.FC<HeaderProps> = ({ activeConversion = 'png-jpg' }) => {
           className="font-medium transition-colors"
           style={{ color: '#787B7B' }}
         >
-          Contato
+          Formulário de Contato
         </Link>
       </nav>
       
