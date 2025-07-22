@@ -37,10 +37,21 @@ jobs:
           NODE_ENV: production
       
       - name: Add .nojekyll file
-        run: touch ./out/.nojekyll
+        run: |
+          if [ -d "./out" ]; then
+            touch ./out/.nojekyll
+          else
+            echo "Error: ./out directory not found after build"
+            exit 1
+          fi
       
-      - name: Copy CNAME to output
-        run: cp CNAME ./out/CNAME
+      - name: Copy CNAME to output (if exists)
+        run: |
+          if [ -f "CNAME" ]; then
+            cp CNAME ./out/CNAME
+          else
+            echo "CNAME file not found, skipping..."
+          fi
       
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
