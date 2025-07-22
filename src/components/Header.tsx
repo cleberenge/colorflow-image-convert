@@ -32,7 +32,7 @@ const Header: React.FC<HeaderProps> = ({ activeConversion = 'png-jpg' }) => {
         </Link>
       </nav>
       
-      {/* Links de navegação no formato solicitado */}
+      {/* Links de navegação atualizados */}
       <ul style={{ display: 'none' }}>
         <li><a href="/sobre">Sobre o ChoicePDF</a></li>
         <li><a href="/termos">Termos de Uso</a></li>
