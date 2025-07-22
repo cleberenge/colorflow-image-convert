@@ -31,6 +31,16 @@ const Header: React.FC<HeaderProps> = ({ activeConversion = 'png-jpg' }) => {
           Contato
         </Link>
       </nav>
+      
+      {/* Links de navegação no formato solicitado */}
+      <ul style={{ display: 'none' }}>
+        <li><a href="/about">Sobre o ChoicePDF</a></li>
+        <li><a href="/terms">Termos de Uso</a></li>
+        <li><a href="/privacy">Política de Privacidade</a></li>
+        <li><a href="/cookies">Política de Cookies</a></li>
+        <li><a href="/transparency">Transparência</a></li>
+        <li><a href="/contact">Formulário de Contato</a></li>
+      </ul>
     </header>
   );
 };
