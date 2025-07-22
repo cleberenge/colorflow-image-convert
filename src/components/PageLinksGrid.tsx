@@ -10,6 +10,16 @@ interface PageLinksGridProps {
 const PageLinksGrid: React.FC<PageLinksGridProps> = ({ pageLinks }) => {
   const { language } = useLanguage();
 
+  // Mapeamento dos títulos personalizados
+  const customTitles: { [key: string]: string } = {
+    '/about': 'Sobre o ChoicePDF',
+    '/contact': 'Formulário de Contato',
+    '/terms': 'Termos de Uso',
+    '/privacy': 'Política de Privacidade',
+    '/cookies': 'Política de Cookies',
+    '/transparency': 'Transparência'
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mx-auto mt-8">
       {pageLinks.map((link) => (
@@ -31,7 +41,7 @@ const PageLinksGrid: React.FC<PageLinksGridProps> = ({ pageLinks }) => {
           }}
         >
           <h3 className="font-semibold mb-1 text-base text-left" style={{ color: '#979A9A' }}>
-            {link.title[language]}
+            {customTitles[link.path] || link.title[language]}
           </h3>
           <p className="text-gray-600 text-xs leading-snug text-left">{link.description[language]}</p>
         </Link>
