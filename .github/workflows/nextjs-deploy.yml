@@ -32,7 +32,21 @@ jobs:
         run: npm install
       
       - name: Build with Next.js
-        run: npm run build
+        run: |
+          npm run build
+          echo "Build completed, checking output directory..."
+          ls -la
+          if [ -d "./out" ]; then
+            echo "✅ ./out directory found"
+            ls -la ./out
+          elif [ -d "./.next" ]; then
+            echo "❌ Found .next but not ./out - static export may not be configured"
+            echo "Please check your next.config.js file"
+            exit 1
+          else
+            echo "❌ No output directory found"
+            exit 1
+          fi
         env:
           NODE_ENV: production
       
@@ -40,8 +54,9 @@ jobs:
         run: |
           if [ -d "./out" ]; then
             touch ./out/.nojekyll
+            echo "✅ .nojekyll file created"
           else
-            echo "Error: ./out directory not found after build"
+            echo "❌ Error: ./out directory not found after build"
             exit 1
           fi
       
@@ -49,8 +64,9 @@ jobs:
         run: |
           if [ -f "CNAME" ]; then
             cp CNAME ./out/CNAME
+            echo "✅ CNAME file copied"
           else
-            echo "CNAME file not found, skipping..."
+            echo "ℹ️ CNAME file not found, skipping..."
           fi
       
       - name: Upload artifact
