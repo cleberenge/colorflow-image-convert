@@ -1,12 +1,13 @@
 
+// src/components/MainContent.tsx
+
 import React from 'react';
-import ConversionSelector from './ConversionSelector';
-import ConversionTool from './ConversionTool';
-import PageLinksGrid from './PageLinksGrid';
-import CookieBanner from './CookieBanner';
-import { ConversionType } from '@/types/fileConverter';
+import ConversionTool from '@/components/ConversionTool';
+import ConversionSelector from '@/components/ConversionSelector';
+import PageLinksGrid from '@/components/PageLinksGrid';
+import { Toaster } from '@/components/ui/toaster';
 import { useLanguage } from '@/hooks/useLanguage';
-import { useCookieConsent } from '@/hooks/useCookieConsent';
+import { ConversionType } from '@/types/fileConverter';
 
 interface MainContentProps {
   orderedConversions: any[];
@@ -23,88 +24,58 @@ const MainContent: React.FC<MainContentProps> = ({
   pageLinks,
   conversionTypes
 }) => {
-  const { language } = useLanguage();
-  const { 
-    showBanner, 
-    acceptAll, 
-    acceptNecessary, 
-    showSettings, 
-    setShowSettings,
-    resetConsent 
-  } = useCookieConsent();
-
-  const getActiveConversionInfo = () => {
-    return conversionTypes.find(type => type.id === activeConversion);
-  };
-
-  const getMainTitle = () => {
-    const conversionInfo = getActiveConversionInfo();
-    if (!conversionInfo) return 'Converter PNG para JPG';
-    
-    // Mapear os tipos de conversão para os títulos com "Converter"
-    const titleMap: Record<string, string> = {
-      'png-jpg': 'Converter PNG para JPG',
-      'jpg-pdf': 'Converter JPG para PDF',
-      'svg-png': 'Converter SVG para PNG',
-      'jpg-webp': 'Converter JPG para WebP',
-      'svg-jpg': 'Converter SVG para JPG',
-      'html-pdf': 'Converter HTML para PDF',
-      'csv-json': 'Converter CSV para JSON',
-      'csv-excel': 'Converter CSV para Excel',
-      'split-pdf': 'Converter Dividir PDF',
-      'merge-pdf': 'Converter Juntar PDF',
-      'reduce-pdf': 'Converter Reduzir PDF',
-      'reduce-jpg': 'Converter Reduzir JPG',
-      'reduce-png': 'Converter Reduzir PNG'
-    };
-    
-    return titleMap[activeConversion] || `Converter ${conversionInfo.from} para ${conversionInfo.to}`;
-  };
+  const { t } = useLanguage();
+  const activeInfo = conversionTypes.find(t => t.id === activeConversion);
 
   return (
-    <main className="flex-1 max-w-4xl mx-auto px-6 py-8">
-      <div className="text-center mb-8">
-        <h1 className="text-4xl font-bold mb-4" style={{ color: '#000000' }}>
-          {getMainTitle()}
-        </h1>
-        
-        <p className="text-lg mb-6 max-w-2xl mx-auto" style={{ color: '#000000' }}>
-          Converta seus arquivos de forma rápida, segura e gratuita. Sem necessidade de registro ou instalação.
-        </p>
+    <div className="min-h-screen" style={{ backgroundColor: '#DBEAFE' }}>
+      <main className="max-w-4xl mx-auto px-4 py-1">
+        <div className="mb-1 max-w-3xl mx-auto flex items-start gap-6">
+          <div className="flex-1 mt-6">
+            <h1 className="text-3xl font-bold animate-fade-in mb-2" style={{ color: '#000000' }}>
+              {activeInfo?.label?.pt || 'Conversão de arquivos'}
+            </h1>
+            <p className="text-lg mb-4" style={{ color: '#000000' }}>
+              Converta {activeInfo?.from} para {activeInfo?.to} gratuitamente, com segurança e diretamente no seu navegador.
+            </p>
+            <p className="text-sm mb-4" style={{ color: '#000000' }}>
+              Para começar, selecione ou arraste seu arquivo. O processamento será automático e seu arquivo convertido estará disponível para download em segundos.
+            </p>
+            <p className="text-sm mb-4" style={{ color: '#000000' }}>
+              Sua privacidade é prioridade: a maioria das conversões ocorre localmente no seu navegador, sem envio para servidores.
+            </p>
+          </div>
+          <div className="flex-shrink-0 p-1 relative" style={{ marginTop: '24px' }}>
+            <img 
+              src="/lovable-uploads/3a8f2786-6621-4544-9c02-2049444074f3.png" 
+              alt="Doe para apoiar o ChoicePDF via QR Code do Pix" 
+              className="w-40 h-40 object-contain"
+            />
+          </div>
+        </div>
 
-        <p className="text-sm mb-4 max-w-2xl mx-auto" style={{ color: '#000000' }}>
-          Para começar, selecione seus arquivos ou arraste-os para a área destacada abaixo.
-        </p>
+        <div className="-mt-3">
+          <ConversionSelector
+            orderedConversions={orderedConversions}
+            activeConversion={activeConversion}
+            onConversionChange={onConversionChange}
+          />
+        </div>
 
-        <p className="text-xs mb-8 max-w-2xl mx-auto" style={{ color: '#000000' }}>
-          Sua privacidade é importante. Todos os arquivos são processados localmente no seu navegador ou excluídos dos nossos servidores após 1 hora.
-        </p>
-      </div>
+        <div className="rounded-xl p-6 -mt-6" style={{ backgroundColor: '#DBEAFE' }}>
+          <ConversionTool 
+            key={activeConversion}
+            conversionType={activeConversion} 
+            conversionInfo={activeInfo || conversionTypes[0]} 
+          />
+        </div>
 
-      <ConversionSelector
-        orderedConversions={orderedConversions}
-        activeConversion={activeConversion}
-        onConversionChange={onConversionChange}
-      />
-
-      <div className="mb-12">
-        <ConversionTool 
-          conversionType={activeConversion}
-          conversionInfo={getActiveConversionInfo()}
-        />
-      </div>
-
-      <PageLinksGrid pageLinks={pageLinks} />
-      
-      {showBanner && (
-        <CookieBanner 
-          onAcceptAll={acceptAll}
-          onAcceptNecessary={acceptNecessary}
-          onShowSettings={() => setShowSettings(true)}
-          onClose={() => resetConsent()}
-        />
-      )}
-    </main>
+        <div className="-mt-6 mb-8">
+          <PageLinksGrid pageLinks={pageLinks} />
+        </div>
+      </main>
+      <Toaster />
+    </div>
   );
 };
 
