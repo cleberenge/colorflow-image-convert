@@ -6,6 +6,7 @@ import PageLinksGrid from './PageLinksGrid';
 import CookieBanner from './CookieBanner';
 import { ConversionType } from '@/types/fileConverter';
 import { useLanguage } from '@/hooks/useLanguage';
+import { useCookieConsent } from '@/hooks/useCookieConsent';
 
 interface MainContentProps {
   orderedConversions: any[];
@@ -23,6 +24,14 @@ const MainContent: React.FC<MainContentProps> = ({
   conversionTypes
 }) => {
   const { language } = useLanguage();
+  const { 
+    showBanner, 
+    acceptAll, 
+    acceptNecessary, 
+    showSettings, 
+    setShowSettings,
+    resetConsent 
+  } = useCookieConsent();
 
   const getActiveConversionInfo = () => {
     return conversionTypes.find(type => type.id === activeConversion);
@@ -85,9 +94,16 @@ const MainContent: React.FC<MainContentProps> = ({
         />
       </div>
 
-      <PageLinksGrid links={pageLinks} />
+      <PageLinksGrid pageLinks={pageLinks} />
       
-      <CookieBanner />
+      {showBanner && (
+        <CookieBanner 
+          onAcceptAll={acceptAll}
+          onAcceptNecessary={acceptNecessary}
+          onShowSettings={() => setShowSettings(true)}
+          onClose={() => resetConsent()}
+        />
+      )}
     </main>
   );
 };
