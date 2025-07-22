@@ -27,13 +27,40 @@ const MainContent: React.FC<MainContentProps> = ({
   const { t } = useLanguage();
   const activeInfo = conversionTypes.find(t => t.id === activeConversion);
 
+  // Lista das conversões que devem ter "Converter" no início
+  const conversionsWithConverter = [
+    'png-jpg',
+    'jpg-pdf', 
+    'svg-png',
+    'jpg-webp',
+    'svg-jpg',
+    'html-pdf',
+    'csv-json'
+  ];
+
+  // Função para obter o título com ou sem "Converter"
+  const getConversionTitle = () => {
+    const baseTitle = activeInfo?.label?.pt || 'Conversão de arquivos';
+    
+    if (conversionsWithConverter.includes(activeConversion)) {
+      // Se já começa com "Converter", mantém como está
+      if (baseTitle.startsWith('Converter')) {
+        return baseTitle;
+      }
+      // Caso contrário, adiciona "Converter" no início
+      return `Converter ${baseTitle}`;
+    }
+    
+    return baseTitle;
+  };
+
   return (
     <div className="min-h-screen" style={{ backgroundColor: '#DBEAFE' }}>
       <main className="max-w-4xl mx-auto px-4 py-1">
         <div className="mb-1 max-w-3xl mx-auto flex items-start gap-6">
           <div className="flex-1 mt-6">
             <h1 className="text-3xl font-bold animate-fade-in mb-2" style={{ color: '#000000' }}>
-              {activeInfo?.label?.pt || 'Conversão de arquivos'}
+              {getConversionTitle()}
             </h1>
             <p className="text-lg mb-4" style={{ color: '#000000' }}>
               Converta {activeInfo?.from} para {activeInfo?.to} gratuitamente, com segurança e diretamente no seu navegador.
