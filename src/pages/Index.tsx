@@ -1,6 +1,5 @@
-
 import React, { useState, useEffect } from 'react';
-import { useRouter } from 'next/router';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { Helmet } from 'react-helmet-async';
 import Header from '@/components/Header';
 import MainContent from '@/components/MainContent';
@@ -11,7 +10,8 @@ import { pageLinks } from '@/data/pageLinks';
 
 const Index = () => {
   const [activeConversion, setActiveConversion] = useState<ConversionType>('png-jpg');
-  const router = useRouter();
+  const navigate = useNavigate();
+  const location = useLocation();
 
   const orderedConversions = getOrderedConversions();
 
@@ -51,20 +51,21 @@ const Index = () => {
 
   // Definir conversão ativa baseada na URL atual
   useEffect(() => {
-    const currentPath = router.asPath;
+    const currentPath = location.pathname;
     const conversionFromUrl = urlToConversionMap[currentPath];
     
     if (conversionFromUrl) {
       setActiveConversion(conversionFromUrl);
     } else if (currentPath === '/') {
+      // Se estiver na raiz, manter png-jpg como padrão
       setActiveConversion('png-jpg');
     }
-  }, [router.asPath]);
+  }, [location.pathname]);
 
   const handleConversionChange = (newConversion: ConversionType) => {
     setActiveConversion(newConversion);
     const newUrl = conversionToUrlMap[newConversion];
-    router.push(newUrl, undefined, { shallow: true });
+    navigate(newUrl, { replace: true });
   };
 
   // Obter título e descrição baseados na conversão ativa
