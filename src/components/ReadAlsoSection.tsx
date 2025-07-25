@@ -57,11 +57,11 @@ const ReadAlsoSection: React.FC<ReadAlsoSectionProps> = ({
     }
   ];
 
-  // Filtra o post atual e pega posts aleatórios
-  const relatedPosts = blogPosts
-    .filter(post => post.id !== currentPostId)
-    .sort(() => Math.random() - 0.5)
-    .slice(0, maxPosts);
+  // Pega os próximos posts na sequência após o post atual
+  const currentIndex = blogPosts.findIndex(post => post.id === currentPostId);
+  const relatedPosts = currentIndex !== -1 
+    ? blogPosts.slice(currentIndex + 1, currentIndex + 1 + maxPosts)
+    : blogPosts.slice(0, maxPosts);
 
   if (relatedPosts.length === 0) return null;
 
