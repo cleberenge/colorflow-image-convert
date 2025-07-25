@@ -3,6 +3,7 @@ import React from 'react';
 import { Helmet } from 'react-helmet-async';
 import Header from '@/components/Header';
 import { Card, CardContent } from '@/components/ui/card';
+import ReadAlsoSection from '@/components/ReadAlsoSection';
 
 const ErrosEnviarArquivosEmail = () => {
   return (
@@ -55,6 +56,8 @@ const ErrosEnviarArquivosEmail = () => {
               </div>
             </CardContent>
           </Card>
+          
+          <ReadAlsoSection currentPostId={5} />
         </main>
       </div>
     </>
